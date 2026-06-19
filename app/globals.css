@@ -61,12 +61,26 @@
   --color-dark-teal-900: #07252c;
   --color-dark-teal-950: #051a1f;
 
+  --color-vegr-cream: #fbfaf6;
+  --color-vegr-paper: #ffffff;
+  --color-vegr-ink: #241b22;
+  --color-vegr-berry: #91446f;
+  --color-vegr-berry-dark: #713354;
+  --color-vegr-berry-soft: #f2e4ec;
+  --color-vegr-green: #3f7d48;
+  --color-vegr-green-dark: #2f6137;
+  --color-vegr-green-soft: #e5f0e5;
+  --color-vegr-gold: #f4ad4e;
+  --color-vegr-gold-dark: #cf8126;
+  --color-vegr-gold-soft: #fff0d9;
+  --color-vegr-peach: #f8dcc4;
+
   --font-indie-flower: var(--font-indie-flower);
 }
 
 :root {
-  --background: #fce9f4;
-  --foreground: #1f0515;
+  --background: #fbfaf6;
+  --foreground: #241b22;
 }
 
 body {

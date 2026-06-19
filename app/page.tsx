@@ -1,14 +1,23 @@
 "use client";
 
-import { useSession } from "@/lib/session"
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+import { useSession } from "@/lib/session";
 import VisitorHome from "@/components/home/VisitorHome";
-import ModHome from "@/components/home/ModHome";
 
 export default function HomeRouter() {
+  const router = useRouter();
   const { currentUser } = useSession();
 
-  if (currentUser.userType === "MODERATOR") {
-    return <ModHome />;
+  useEffect(() => {
+    if (currentUser.userType !== "VISITOR") {
+      router.replace("/profile");
+    }
+  }, [currentUser.userType, router]);
+
+  if (currentUser.userType !== "VISITOR") {
+    return null;
   }
 
   return <VisitorHome />;

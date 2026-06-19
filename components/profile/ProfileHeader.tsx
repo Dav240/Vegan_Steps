@@ -13,6 +13,7 @@ export default function ProfileHeader() {
     setCurrentUser({
       id: null,
       username: "Visitor",
+      email: "",
       userType: "VISITOR",
     });
   }
@@ -20,8 +21,8 @@ export default function ProfileHeader() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" className="flex h-20 items-center gap-3 px-5 font-indie-flower text-2xl text-crimson-violet-100 outline-none transition-colors hover:bg-crimson-violet-800 hover:text-white focus-visible:bg-crimson-violet-800 focus-visible:text-white">
-          <span className="flex size-10 items-center justify-center rounded-full border border-crimson-violet-500 bg-crimson-violet-900 text-crimson-violet-100">
+        <button type="button" className="flex h-20 items-center gap-3 px-5 font-indie-flower text-2xl text-vegr-cream outline-none transition-colors hover:bg-vegr-berry-dark hover:text-white focus-visible:bg-vegr-berry-dark focus-visible:text-white">
+          <span className="flex size-10 items-center justify-center rounded-full border border-vegr-gold bg-vegr-berry-dark text-vegr-gold-soft">
             <UserRound className="size-5" />
           </span>
           <span>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { useSession, type CurrentUser } from "@/lib/session";
 type AuthMode = "login" | "register";
 
 export default function LoginWindow() {
+    const router = useRouter();
     const { setCurrentUser } = useSession();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -35,6 +37,7 @@ export default function LoginWindow() {
         setSuccess("");
         setError("");
         setIsOpen(false);
+        router.replace("/profile");
     }
 
     async function handleLogin() {
@@ -101,32 +104,32 @@ export default function LoginWindow() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button className="font-indie-flower bg-crimson-violet-600 px-6 py-6 text-2xl text-white hover:bg-crimson-violet-700">
+                <Button className="font-indie-flower bg-vegr-green px-6 py-6 text-2xl text-white hover:bg-vegr-green-dark">
                     Login
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="border-crimson-violet-800 bg-crimson-violet-950 text-crimson-violet-50 sm:max-w-md">
+            <DialogContent className="border-vegr-berry-soft bg-vegr-cream text-vegr-ink sm:max-w-md">
 
             <DialogClose asChild>
-                <Button variant="ghost" size="icon" className="absolute right-4 top-4 text-crimson-violet-100 hover:bg-crimson-violet-800 hover:text-white">
+                <Button variant="ghost" size="icon" className="absolute right-4 top-4 text-vegr-berry hover:bg-vegr-berry-soft hover:text-vegr-berry-dark">
                     <X className="h-5 w-5" />
                 </Button>
             </DialogClose>
 
             <DialogHeader>
-                <DialogTitle className="font-indie-flower text-4xl font-bold text-crimson-violet-100">
+                <DialogTitle className="font-indie-flower text-4xl font-bold text-vegr-ink">
                     {isLogin ? "Login" : "Register"}
                 </DialogTitle>
             </DialogHeader>
 
-            <div className="mt-4 grid grid-cols-2 rounded-lg border border-crimson-violet-800 bg-crimson-violet-900 p-1">
+            <div className="mt-4 grid grid-cols-2 rounded-lg border border-vegr-berry-soft bg-vegr-berry-soft p-1">
                 <Button type="button" variant="ghost"
                 onClick={() => {
                     setMode("login");
                     setError("");
                     setSuccess("");
-                }} className={ isLogin ? "bg-crimson-violet-600 text-white hover:bg-crimson-violet-600" : "text-crimson-violet-200 hover:bg-crimson-violet-800 hover:text-white"}>
+                }} className={ isLogin ? "bg-vegr-berry text-white hover:bg-vegr-berry-dark" : "text-vegr-berry-dark hover:bg-white/70"}>
                     Login
                 </Button>
 
@@ -134,7 +137,7 @@ export default function LoginWindow() {
                     setMode("register");
                     setError("");
                     setSuccess("");
-                }} className={ !isLogin ? "bg-crimson-violet-600 text-white hover:bg-crimson-violet-600": "text-crimson-violet-200 hover:bg-crimson-violet-800 hover:text-white"}>
+                }} className={ !isLogin ? "bg-vegr-berry text-white hover:bg-vegr-berry-dark": "text-vegr-berry-dark hover:bg-white/70"}>
                     Register
                 </Button>
             </div>
@@ -142,56 +145,56 @@ export default function LoginWindow() {
             <div className="mt-4 space-y-5">
                 {!isLogin && (
                     <div className="space-y-2">
-                        <Label htmlFor="username" className="text-crimson-violet-100" >
+                        <Label htmlFor="username" className="text-zinc-700" >
                             Username
                         </Label>
 
                         <Input id="username" type="text" value={username} 
                         onChange={(event) => setUsername(event.target.value)} placeholder="Enter username"
-                        className="border-crimson-violet-700 bg-crimson-violet-50 text-crimson-violet-950 placeholder:text-dark-teal-700"/>
+                        className="border-vegr-berry-soft bg-white text-vegr-ink placeholder:text-zinc-400 focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"/>
                     </div>
                 )}
 
                 <div className="space-y-2">
-                    <Label htmlFor="email" className="text-crimson-violet-100">
+                    <Label htmlFor="email" className="text-zinc-700">
                         Email
                     </Label>
 
                     <Input id="email" type="email" value={email} 
                     onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email"
-                    className="border-crimson-violet-700 bg-crimson-violet-50 text-crimson-violet-950 placeholder:text-dark-teal-700"/>
+                    className="border-vegr-berry-soft bg-white text-vegr-ink placeholder:text-zinc-400 focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"/>
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="password" className="text-crimson-violet-100">
+                    <Label htmlFor="password" className="text-zinc-700">
                         Password
                     </Label>
 
                     <Input id="password" type="password" value={password}
                         onChange={(event) => setPassword(event.target.value)} placeholder="Enter your password"
-                        className="border-crimson-violet-700 bg-crimson-violet-50 text-crimson-violet-950 placeholder:text-dark-teal-700"/>
+                        className="border-vegr-berry-soft bg-white text-vegr-ink placeholder:text-zinc-400 focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"/>
                 </div>
 
                 {!isLogin && (
                     <div className="space-y-2">
-                        <Label htmlFor="confirmPassword" className="text-crimson-violet-100" >
+                        <Label htmlFor="confirmPassword" className="text-zinc-700" >
                             Confirm Password
                         </Label>
 
                         <Input id="confirmPassword" type="password" value={confirmPassword}
                         onChange={(event) => setConfirmPassword(event.target.value)} placeholder="Confirm your password"
-                        className="border-crimson-violet-700 bg-crimson-violet-50 text-crimson-violet-950 placeholder:text-dark-teal-700"/>
+                        className="border-vegr-berry-soft bg-white text-vegr-ink placeholder:text-zinc-400 focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"/>
                     </div>
                 )}
 
                 {error && (
-                    <div className="rounded-md border border-deep-crimson-500 bg-deep-crimson-950/40 p-3 text-sm font-medium text-deep-crimson-300">
+                    <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">
                         {error}
                     </div>
                 )}
 
                 {success && (
-                    <div className="rounded-md border border-dark-teal-500 bg-dark-teal-950/40 p-3 text-sm text-dark-teal-100">
+                    <div className="rounded-md border border-vegr-green-soft bg-vegr-green-soft p-3 text-sm text-vegr-green-dark">
                         {success}
                     </div>
                 )}
@@ -199,12 +202,12 @@ export default function LoginWindow() {
                 <div className="grid grid-cols-2 gap-3 pt-2">
                     <Button type="button" 
                     onClick={() => { if (isLogin) {handleLogin();} else {handleRegister();}}}
-                    className="w-full bg-princeton-orange-500 text-white hover:bg-princeton-orange-600">
+                    className="w-full bg-vegr-green text-white hover:bg-vegr-green-dark">
                         {isLogin ? "Login" : "Register"}
                     </Button>
 
                     <DialogClose asChild>
-                        <Button type="button" variant="outline" className="w-full border-crimson-violet-300 bg-transparent text-crimson-violet-100 hover:bg-crimson-violet-800 hover:text-white">
+                        <Button type="button" variant="outline" className="w-full border-vegr-berry bg-white text-vegr-berry hover:bg-vegr-berry-soft hover:text-vegr-berry-dark">
                             Cancel
                         </Button>
                     </DialogClose>
@@ -212,7 +215,7 @@ export default function LoginWindow() {
 
                 {isLogin && (
                     <div className="text-center">
-                        <Link href="#" className="text-sm font-medium text-dark-teal-300 hover:text-dark-teal-100 hover:underline">
+                        <Link href="#" className="text-sm font-medium text-vegr-berry hover:text-vegr-berry-dark hover:underline">
                             Forgot password?
                         </Link>
                     </div>

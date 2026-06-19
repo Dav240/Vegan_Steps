@@ -1,12 +1,19 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type UserType = "VISITOR" | "CLIENT" | "MODERATOR";
 
 export type CurrentUser = {
   id: string | null;
   username: string;
+  email: string;
   userType: UserType;
 };
 
@@ -18,6 +25,7 @@ type SessionContextType = {
 const visitorUser: CurrentUser = {
   id: null,
   username: "Visitor",
+  email: "",
   userType: "VISITOR",
 };
 
@@ -36,7 +44,10 @@ function getStoredUser() {
   }
 
   try {
-    return JSON.parse(storedUser) as CurrentUser;
+    return {
+      ...visitorUser,
+      ...(JSON.parse(storedUser) as Partial<CurrentUser>),
+    };
   } catch {
     sessionStorage.setItem("currentUser", JSON.stringify(visitorUser));
     return visitorUser;
@@ -50,9 +61,9 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
   }, [currentUser]);
 
-  function setCurrentUser(user: CurrentUser) {
+  const setCurrentUser = useCallback((user: CurrentUser) => {
     setCurrentUserState(user);
-  }
+  }, []);
 
   return (
     <SessionContext.Provider value={{ currentUser, setCurrentUser }}>

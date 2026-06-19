@@ -33,7 +33,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-48 rounded-lg border border-crimson-violet-800 bg-crimson-violet-950 p-1 text-crimson-violet-50 shadow-lg outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+          "z-50 min-w-48 rounded-lg border border-vegr-berry-soft bg-vegr-cream p-1 text-vegr-ink shadow-lg outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           className
         )}
         {...props}
@@ -50,7 +50,7 @@ function DropdownMenuItem({
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
       className={cn(
-        "flex cursor-default items-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-crimson-violet-800 hover:text-white focus:bg-crimson-violet-800 focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+        "flex cursor-default items-center gap-2 rounded-md px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-vegr-green-soft hover:text-vegr-green-dark focus:bg-vegr-green-soft focus:text-vegr-green-dark data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
         className
       )}
       {...props}
