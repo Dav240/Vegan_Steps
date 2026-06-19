@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserType {
+  CLIENT
+  MODERATOR
+}
+
+enum RecipeStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  REMOVED
+}
+
+enum ReportStatus {
+  OPEN
+  DISMISSED
+  ACTION_TAKEN
+}
+
+enum ReportReason {
+  NOT_VEGAN
+  INAPPROPRIATE_IMAGE
+  WRONG_INFORMATION
+  OFFENSIVE_CONTENT
+  OTHER
+}
+
+enum Unit {
+  GRAM
+  KILOGRAM
+  MILLILITRE
+  LITRE
+  TEASPOON
+  TABLESPOON
+  CUP
+  PIECE
+  PINCH
+  POUNDS
+  OUNCES
+  NONE
+}
+
+enum Tag {
+  PROTEIN_RICH
+  GLUTEN_FREE
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  password     String
+  userType     UserType @default(CLIENT)
+
+  recipes        Recipe[]        @relation("UserRecipes")
+  ratings        Rating[]
+  savedRecipes   SavedRecipe[]
+  reportsMade    Report[]        @relation("ReportsMade")
+  reportsResolved Report[]       @relation("ReportsResolved")
+  approvedRecipes Recipe[]       @relation("ApprovedRecipes")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Recipe {
+  id            String       @id @default(cuid())
+  name          String
+  description   String
+  servings      Int
+  viewCount     Int          @default(0)
+  averageRating Decimal      @db.Decimal(1, 1)
+
+  prepTimeMinutes Int?
+  cookTimeMinutes Int?
+
+  status RecipeStatus @default(DRAFT)
+
+  imageUrl String?
+  imageKey String?
+
+  authorId String
+  author   User   @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
+
+  approvedById String?
+  approvedBy   User?   @relation("ApprovedRecipes", fields: [approvedById], references: [id])
+
+  ingredients Ingredient[]
+  steps       InstructionStep[]
+  tags        Tag[]
+  ratings     Rating[]
+  savedBy     SavedRecipe[]
+  reports     Report[]
+
+  submittedAt     DateTime?
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([authorId])
+  @@index([name])
+}
+
+model Ingredient {
+  id       String @id @default(cuid())
+  name     String
+  quantity Float?
+  unit     Unit?
+
+  order Int
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+}
+
+model InstructionStep {
+  id     String @id @default(cuid())
+  number Int
+  text   String
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, number])
+  @@index([recipeId])
+}
+
+model Rating {
+  id    String @id @default(cuid())
+  stars Int
+
+  ownerId String
+  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([ownerId, recipeId])
+  @@index([recipeId])
+}
+
+model SavedRecipe {
+  userId   String
+  recipeId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([userId, recipeId])
+}
+
+model Report {
+  id      String       @id @default(cuid())
+  reason  ReportReason
+  details String?
+  status  ReportStatus @default(OPEN)
+
+  reporterId String
+  reporter   User @relation("ReportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  resolvedById String?
+  resolvedBy   User? @relation("ReportsResolved", fields: [resolvedById], references: [id])
+
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+
+  @@index([status])
+  @@index([recipeId])
+  @@index([reporterId])
+}

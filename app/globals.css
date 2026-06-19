@@ -1,22 +1,72 @@
 @import "tailwindcss";
 
+@theme {
+  --color-crimson-violet-50: #fce9f4;
+  --color-crimson-violet-100: #f8d3ea;
+  --color-crimson-violet-200: #f1a7d5;
+  --color-crimson-violet-300: #ea7bc0;
+  --color-crimson-violet-400: #e34faa;
+  --color-crimson-violet-500: #dd2295;
+  --color-crimson-violet-600: #b01c77;
+  --color-crimson-violet-700: #84155a;
+  --color-crimson-violet-800: #580e3c;
+  --color-crimson-violet-900: #2c071e;
+  --color-crimson-violet-950: #1f0515;
+
+  --color-deep-crimson-50: #fee6ea;
+  --color-deep-crimson-100: #fecdd6;
+  --color-deep-crimson-200: #fd9bad;
+  --color-deep-crimson-300: #fc6984;
+  --color-deep-crimson-400: #fb375b;
+  --color-deep-crimson-500: #fa0532;
+  --color-deep-crimson-600: #c80428;
+  --color-deep-crimson-700: #96031e;
+  --color-deep-crimson-800: #640214;
+  --color-deep-crimson-900: #32010a;
+  --color-deep-crimson-950: #230107;
+
+  --color-princeton-orange-50: #fef2e6;
+  --color-princeton-orange-100: #fee5cd;
+  --color-princeton-orange-200: #fdca9b;
+  --color-princeton-orange-300: #fcb069;
+  --color-princeton-orange-400: #fb9637;
+  --color-princeton-orange-500: #fa7b05;
+  --color-princeton-orange-600: #c86304;
+  --color-princeton-orange-700: #964a03;
+  --color-princeton-orange-800: #643102;
+  --color-princeton-orange-900: #321901;
+  --color-princeton-orange-950: #231101;
+
+  --color-autumn-leaf-50: #fdf0e8;
+  --color-autumn-leaf-100: #fbe1d0;
+  --color-autumn-leaf-200: #f7c2a1;
+  --color-autumn-leaf-300: #f3a472;
+  --color-autumn-leaf-400: #ef8543;
+  --color-autumn-leaf-500: #eb6714;
+  --color-autumn-leaf-600: #bc5210;
+  --color-autumn-leaf-700: #8d3e0c;
+  --color-autumn-leaf-800: #5e2908;
+  --color-autumn-leaf-900: #2f1504;
+  --color-autumn-leaf-950: #210e03;
+
+  --color-dark-teal-50: #e9f8fb;
+  --color-dark-teal-100: #d3f1f8;
+  --color-dark-teal-200: #a7e2f1;
+  --color-dark-teal-300: #7bd4ea;
+  --color-dark-teal-400: #50c5e2;
+  --color-dark-teal-500: #24b7db;
+  --color-dark-teal-600: #1d92af;
+  --color-dark-teal-700: #156e84;
+  --color-dark-teal-800: #0e4958;
+  --color-dark-teal-900: #07252c;
+  --color-dark-teal-950: #051a1f;
+
+  --font-indie-flower: var(--font-indie-flower);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #fce9f4;
+  --foreground: #1f0515;
 }
 
 body {
