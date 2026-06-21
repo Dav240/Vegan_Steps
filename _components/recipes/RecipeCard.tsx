@@ -26,21 +26,8 @@ export type RecipeCardProps = {
   className?: string;
 };
 
-export default function RecipeCard({
-  recipeId,
-  name,
-  imageUrl,
-  imageAlt = "",
-  prepTimeMinutes,
-  cookTimeMinutes,
-  tags,
-  rating,
-  initiallySaved = false,
-  savedState,
-  onReport,
-  onSavedChange,
-  className,
-}: RecipeCardProps) {
+export default function RecipeCard({ recipeId, name, imageUrl, imageAlt = "", prepTimeMinutes, cookTimeMinutes, tags, rating, initiallySaved = false, savedState,
+  onReport, onSavedChange, className }: RecipeCardProps) {
   const { currentUser } = useSession();
   const [confirmedSaved, setConfirmedSaved] = useState(initiallySaved);
   const [optimisticSaved, setOptimisticSaved] = useState<boolean | null>(null);
@@ -91,12 +78,7 @@ export default function RecipeCard({
   }
 
   return (
-    <article
-      className={cn(
-        "w-full overflow-hidden rounded-lg border border-vegr-berry-soft bg-vegr-paper shadow-sm transition-shadow hover:shadow-md",
-        className
-      )}
-    >
+    <article className={cn( "w-full max-w-[336px] self-stretch overflow-hidden rounded-lg border border-vegr-berry-soft bg-vegr-paper shadow-sm transition-shadow hover:shadow-md", className )}>
       <div className="relative aspect-[4/3] overflow-hidden bg-vegr-green-soft">
         {imageUrl ? (
           <Image src={imageUrl} alt={imageAlt || name} fill
@@ -245,14 +227,9 @@ function formatMinutes(minutes: number) {
   const hours = Math.floor(safeMinutes / 60);
   const remainingMinutes = safeMinutes % 60;
 
-  return remainingMinutes === 0
-    ? `${hours} hr`
-    : `${hours} hr ${remainingMinutes} min`;
+  return remainingMinutes === 0 ? `${hours} hr` : `${hours} hr ${remainingMinutes} min`;
 }
 
 function formatTag(tag: string) {
-  return tag
-    .replaceAll("_", " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (character) => character.toUpperCase());
+  return tag.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (character) => character.toUpperCase());
 }
