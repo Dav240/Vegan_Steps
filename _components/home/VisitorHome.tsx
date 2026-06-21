@@ -3,8 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import LoginWindow from "@/components/login/LoginWindow";
-import { Button } from "@/components/ui/button";
+import LoginWindow from "@/_components/login/LoginWindow";
+import { Button } from "@/_components/ui/button";
 
 export default function VisitorHome() {
   const bannerUrl = "/banner.jpeg";

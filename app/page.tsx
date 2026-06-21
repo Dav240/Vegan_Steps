@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useSession } from "@/lib/session";
-import VisitorHome from "@/components/home/VisitorHome";
+import VisitorHome from "@/_components/home/VisitorHome";
 
 export default function HomeRouter() {
   const router = useRouter();

@@ -69,6 +69,7 @@ model User {
   ratings        Rating[]
   savedRecipes   SavedRecipe[]
   reportsMade    Report[]        @relation("ReportsMade")
+
   reportsResolved Report[]       @relation("ReportsResolved")
   approvedRecipes Recipe[]       @relation("ApprovedRecipes")
 
@@ -82,7 +83,7 @@ model Recipe {
   description   String
   servings      Int
   viewCount     Int          @default(0)
-  averageRating Decimal      @db.Decimal(1, 1)
+  averageRating Decimal      @db.Decimal(2, 1)
 
   prepTimeMinutes Int?
   cookTimeMinutes Int?
