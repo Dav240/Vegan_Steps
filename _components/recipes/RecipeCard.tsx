@@ -78,7 +78,7 @@ export default function RecipeCard({ recipeId, name, imageUrl, imageAlt = "", pr
   }
 
   return (
-    <article className={cn( "w-full max-w-[336px] self-stretch overflow-hidden rounded-lg border border-vegr-berry-soft bg-vegr-paper shadow-sm transition-shadow hover:shadow-md", className )}>
+    <article className={cn( "w-full max-w-[370px] self-stretch overflow-hidden rounded-lg border border-vegr-berry-soft bg-vegr-paper shadow-sm transition-shadow hover:shadow-md", className )}>
       <div className="relative aspect-[4/3] overflow-hidden bg-vegr-green-soft">
         {imageUrl ? (
           <Image src={imageUrl} alt={imageAlt || name} fill

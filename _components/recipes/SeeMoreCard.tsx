@@ -17,7 +17,7 @@ export default function SeeMoreCard({
       href={href}
       aria-label={label}
       className={cn(
-        "group flex min-h-[380px] w-full max-w-[336px] self-stretch flex-col items-center justify-center rounded-lg border border-vegr-berry-soft bg-vegr-gold-soft p-6 text-center text-vegr-ink shadow-sm transition-colors hover:border-vegr-berry hover:bg-vegr-peach focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry",
+        "group flex min-h-[380px] w-full max-w-[370px] self-stretch flex-col items-center justify-center rounded-lg border border-vegr-berry-soft bg-vegr-gold-soft p-6 text-center text-vegr-ink shadow-sm transition-colors hover:border-vegr-berry hover:bg-vegr-peach focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry",
         className
       )}
     >

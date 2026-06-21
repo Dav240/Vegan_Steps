@@ -76,11 +76,11 @@ export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onS
       </h2>
 
       {recipesLoading ? (
-        <div className="mt-8 flex max-w-[1440px] flex-wrap items-stretch gap-8">
+        <div className="mt-8 grid max-w-[1576px] grid-cols-1 items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 3 }, (_, index) => (
             <div
               key={index}
-              className="min-h-[380px] w-full max-w-[336px] animate-pulse rounded-lg border border-vegr-berry-soft bg-white"
+              className="min-h-[380px] w-full max-w-[370px] animate-pulse rounded-lg border border-vegr-berry-soft bg-white"
             >
               <div className="aspect-[4/3] bg-vegr-green-soft" />
               <div className="space-y-3 p-4">
@@ -97,7 +97,7 @@ export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onS
           You have not saved any recipes yet.
         </p>
       ) : (
-        <div className="mt-8 flex max-w-[1440px] flex-wrap items-stretch gap-8">
+        <div className="mt-8 grid max-w-[1576px] grid-cols-1 items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {savedRecipes.map((recipe) => (
             <RecipeCard
               key={recipe.recipeId}

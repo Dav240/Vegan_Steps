@@ -7,7 +7,8 @@ import LoginWindow from "@/_components/login/LoginWindow";
 import { Button } from "@/_components/ui/button";
 
 export default function VisitorHome() {
-  const bannerUrl = "/banner.jpeg";
+  const bannerUrl =
+    "https://res.cloudinary.com/diqefvh29/image/upload/banner_plbcgv";
 
   return (
     <main className="min-h-screen bg-vegr-cream text-vegr-ink">
