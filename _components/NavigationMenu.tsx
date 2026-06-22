@@ -32,7 +32,7 @@ export default function NavigationMenu() {
 
   return (
     <aside
-      className={cn( "flex min-h-screen shrink-0 flex-col border-r border-vegr-berry-dark bg-vegr-berry transition-[width] duration-200",
+      className={cn( "sticky top-0 flex h-dvh max-h-dvh shrink-0 self-start flex-col border-r border-vegr-berry-dark bg-vegr-berry transition-[width] duration-200",
         isOpen ? "w-60" : "w-20"
       )}
     >
@@ -65,7 +65,7 @@ export default function NavigationMenu() {
           {isOpen && <span>Profile</span>}
         </Link>
 
-        <Link href="/recipes" className={linkClass("/recipes")}>
+        <Link href="/explore" className={linkClass("/explore")}>
           <BookOpen className="size-5 shrink-0" />
           {isOpen && <span>Explore Recipes</span>}
         </Link>

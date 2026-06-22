@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-import RecipeCard from "@/_components/recipes/RecipeCard";
-import SeeMoreCard from "@/_components/recipes/SeeMoreCard";
+import RecipeCard from "@/_components/recipes/cards/RecipeCard";
+import SeeMoreCard from "@/_components/recipes/cards/SeeMoreCard";
 import { useSession } from "@/lib/session";
 
 type SavedRecipe = {

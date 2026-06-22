@@ -100,7 +100,8 @@ model Recipe {
   approvedBy   User?   @relation("ApprovedRecipes", fields: [approvedById], references: [id])
 
   ingredients Ingredient[]
-  steps       InstructionStep[]
+  stepsPrep   InstructionStep[] @relation("RecipePrepSteps")
+  stepsCook   InstructionStep[] @relation("RecipeCookSteps")
   tags        Tag[]
   ratings     Rating[]
   savedBy     SavedRecipe[]
@@ -138,11 +139,16 @@ model InstructionStep {
   number Int
   text   String
 
-  recipeId String
-  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  prepRecipeId String?
+  prepRecipe   Recipe? @relation("RecipePrepSteps", fields: [prepRecipeId], references: [id], onDelete: Cascade)
 
-  @@unique([recipeId, number])
-  @@index([recipeId])
+  cookRecipeId String?
+  cookRecipe   Recipe? @relation("RecipeCookSteps", fields: [cookRecipeId], references: [id], onDelete: Cascade)
+
+  @@unique([prepRecipeId, number])
+  @@unique([cookRecipeId, number])
+  @@index([prepRecipeId])
+  @@index([cookRecipeId])
 }
 
 model Rating {

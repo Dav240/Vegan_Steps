@@ -3,28 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import LoginWindow from "@/_components/login/LoginWindow";
+import VisitorHeader from "@/_components/home/VisitorHeader";
 import { Button } from "@/_components/ui/button";
 
 export default function VisitorHome() {
-  const bannerUrl =
-    "https://res.cloudinary.com/diqefvh29/image/upload/banner_plbcgv";
+  const bannerUrl ="https://res.cloudinary.com/diqefvh29/image/upload/banner_plbcgv";
 
   return (
     <main className="min-h-screen bg-vegr-cream text-vegr-ink">
-      <header className="sticky top-0 z-50 border-b border-vegr-gold border-t-8 border-t-vegr-berry bg-vegr-cream/95 backdrop-blur-md">
-        <div className="flex h-20 w-full items-center justify-between px-8 md:px-16 lg:px-24">
-          <Link href="/"
-            className="font-indie-flower text-5xl font-bold tracking-tight text-vegr-green-dark hover:text-vegr-green"
-          >
-            VegR
-          </Link>
-
-          <nav className="flex h-20 items-center">
-            <LoginWindow />
-          </nav>
-        </div>
-      </header>
+      <VisitorHeader />
 
       <section className="relative flex min-h-[520px] items-center justify-center overflow-hidden">
         <Image src={bannerUrl} alt="Vegan food banner" fill className="object-cover" priority/>

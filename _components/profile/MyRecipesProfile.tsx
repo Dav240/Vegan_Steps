@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-import RecipeCard from "@/_components/recipes/RecipeCard";
-import SeeMoreCard from "@/_components/recipes/SeeMoreCard";
+import AddSeeMoreCard from "@/_components/recipes/cards/AddSeeMoreCard";
+import RecipeCard from "@/_components/recipes/cards/RecipeCard";
 import { useSession } from "@/lib/session";
 
 type RecentRecipe = {
@@ -23,7 +23,6 @@ export default function MyRecipesProfile({ savedRecipeStates, onSavedChange }: {
 }) {
   const { currentUser } = useSession();
   const [recentRecipes, setRecentRecipes] = useState<RecentRecipe[]>([]);
-  const [hasMoreRecipes, setHasMoreRecipes] = useState(false);
   const [recipesLoading, setRecipesLoading] = useState(true);
   const [recipesError, setRecipesError] = useState("");
 
@@ -51,7 +50,6 @@ export default function MyRecipesProfile({ savedRecipeStates, onSavedChange }: {
       })
       .then((data) => {
         setRecentRecipes(data.recipes);
-        setHasMoreRecipes(data.hasMore);
       })
       .catch((error: unknown) => {
         if (error instanceof Error && error.name !== "AbortError") {
@@ -89,22 +87,24 @@ export default function MyRecipesProfile({ savedRecipeStates, onSavedChange }: {
         </div>
       ) : recipesError ? (
         <p className="mt-6 text-sm font-medium text-red-700">{recipesError}</p>
-      ) : recentRecipes.length === 0 ? (
-        <p className="mt-6 text-zinc-600">
-          You have not written any recipes yet.
-        </p>
       ) : (
-        <div className="mt-8 grid max-w-[1576px] grid-cols-1 items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {recentRecipes.map((recipe) => (
-            <RecipeCard
-              key={recipe.recipeId}
-              {...recipe}
-              savedState={savedRecipeStates[recipe.recipeId]}
-              onSavedChange={onSavedChange}
-            />
-          ))}
-          {hasMoreRecipes && <SeeMoreCard />}
-        </div>
+        <>
+          {recentRecipes.length === 0 && (
+            <p className="mt-6 text-zinc-600">
+              You have not written any recipes yet.
+            </p>
+          )}
+          <div className="mt-8 grid max-w-[1576px] grid-cols-1 items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {recentRecipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.recipeId}
+                {...recipe}
+                savedState={savedRecipeStates[recipe.recipeId]}
+                onSavedChange={onSavedChange}/>
+            ))}
+            <AddSeeMoreCard />
+          </div>
+        </>
       )}
     </section>
   );
