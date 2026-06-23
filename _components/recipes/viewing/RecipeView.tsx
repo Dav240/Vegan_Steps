@@ -2,21 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { CalendarDays, Utensils } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { CalendarDays } from "lucide-react";
 
 import NavigationMenu from "@/_components/NavigationMenu";
 import VisitorHeader from "@/_components/home/VisitorHeader";
-import EditableStarsRating, {
-  type RatingUpdate,
-} from "@/_components/recipes/ui/EditableStarsRating";
-import InstructionTable, {
-  type RecipeInstruction,
-} from "@/_components/recipes/ui/InstructionTable";
-import SaveButton from "@/_components/recipes/ui/SaveButton";
-import StarsRating from "@/_components/recipes/ui/StarsRating";
-import TagBubble from "@/_components/recipes/ui/TagBubble";
-import TimeBubble from "@/_components/recipes/ui/TimeBubble";
+import LoginWindow from "@/_components/login/LoginWindow";
+
+import EditableStarsRating, { type RatingUpdate } from "@/_components/recipes/viewing/EditableStarsRating";
+import InstructionTable, { type RecipeInstruction } from "@/_components/recipes/viewing/InstructionTable";
+import SaveButton from "@/_components/recipes/viewing/SaveButton";
+import StarsRating from "@/_components/recipes/viewing/StarsRating";
+import TagBubble from "@/_components/recipes/viewing/TagBubble";
+import TimeBubble from "@/_components/recipes/viewing/TimeBubble";
+
 import { Button } from "@/_components/ui/button";
+import RecipeImagePlaceholder from "@/_components/ui/RecipeImagePlaceholder";
+import { createRecipeDraft } from "@/lib/recipe-draft";
 import { useSession } from "@/lib/session";
 
 type RecipeViewData = {
@@ -47,10 +49,14 @@ type RecipeIngredient = {
 };
 
 export default function RecipeView({ recipeId }: { recipeId: string }) {
+  const router = useRouter();
   const { currentUser } = useSession();
   const [recipe, setRecipe] = useState<RecipeViewData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [copyError, setCopyError] = useState("");
+  const [isCreatingCopy, setIsCreatingCopy] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   const isLoggedIn =
     Boolean(currentUser.id) && currentUser.userType !== "VISITOR";
@@ -96,9 +102,7 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
 
   function handleSavedChange(_recipeId: string, saved: boolean) {
     setRecipe((currentRecipe) =>
-      currentRecipe
-        ? { ...currentRecipe, initiallySaved: saved }
-        : currentRecipe
+      currentRecipe ? { ...currentRecipe, initiallySaved: saved } : currentRecipe
     );
   }
 
@@ -113,6 +117,29 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
           }
         : currentRecipe
     );
+  }
+
+  async function editYourOwn() {
+    if (!currentUser.id || currentUser.userType === "VISITOR") {
+      setLoginOpen(true);
+      return;
+    }
+
+    if (isCreatingCopy) return;
+
+    setIsCreatingCopy(true);
+    setCopyError("");
+    try {
+      const draftId = await createRecipeDraft(currentUser.id, recipeId);
+      router.push(`/recipes/write?recipeId=${encodeURIComponent(draftId)}`);
+    } catch (copyRequestError) {
+      setCopyError(
+        copyRequestError instanceof Error
+          ? copyRequestError.message
+          : "Could not copy this recipe."
+      );
+      setIsCreatingCopy(false);
+    }
   }
 
   return (
@@ -160,19 +187,9 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
 
                 <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-vegr-berry-soft bg-vegr-green-soft">
                   {recipe.imageUrl ? (
-                    <Image
-                      src={recipe.imageUrl}
-                      alt={recipe.name}
-                      fill
-                      priority
-                      sizes="(max-width: 1024px) 100vw, 60vw"
-                      className="object-cover"
-                    />
+                    <Image src={recipe.imageUrl} alt={recipe.name} fill priority sizes="(max-width: 1024px) 100vw, 60vw" className="object-cover"/>
                   ) : (
-                    <div className="flex size-full items-center justify-center text-vegr-green">
-                      <Utensils className="size-20" aria-hidden="true" />
-                      <span className="sr-only">No recipe image available</span>
-                    </div>
+                    <RecipeImagePlaceholder iconClassName="size-20" />
                   )}
                 </div>
 
@@ -229,11 +246,18 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
                   <Button
                     type="button"
                     variant="outline"
+                    onClick={() => void editYourOwn()}
+                    disabled={isCreatingCopy}
                     className="h-12 border-vegr-berry bg-white px-6 text-vegr-berry hover:bg-vegr-berry-soft hover:text-vegr-berry-dark"
                   >
-                    Edit Your Own
+                    {isCreatingCopy ? "Creating copy..." : "Edit Your Own"}
                   </Button>
                 </div>
+                {copyError && (
+                  <p className="mt-3 text-sm font-medium text-red-700">
+                    {copyError}
+                  </p>
+                )}
 
                 <div className="mt-9">
                   <h2 className="text-sm font-bold uppercase text-vegr-berry-dark">
@@ -262,6 +286,13 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
           </div>
         )}
       </div>
+
+      <LoginWindow
+        open={loginOpen}
+        onOpenChange={setLoginOpen}
+        showTrigger={false}
+        redirectAfterAuth={null}
+      />
     </main>
   );
 }

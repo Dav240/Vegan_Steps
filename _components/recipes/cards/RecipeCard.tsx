@@ -1,24 +1,28 @@
 "use client";
 
-import type { KeyboardEvent, MouseEvent } from "react";
+import { useState, type KeyboardEvent, type MouseEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Ellipsis, Flag, Utensils } from "lucide-react";
+import { Ellipsis, Flag, Pencil } from "lucide-react";
 
-import SaveButton from "@/_components/recipes/ui/SaveButton";
-import StarsRating from "@/_components/recipes/ui/StarsRating";
-import TagBubble from "@/_components/recipes/ui/TagBubble";
-import TimeBubble from "@/_components/recipes/ui/TimeBubble";
+import SaveButton from "@/_components/recipes/viewing/SaveButton";
+import StarsRating from "@/_components/recipes/viewing/StarsRating";
+import TagBubble from "@/_components/recipes/viewing/TagBubble";
+import TimeBubble from "@/_components/recipes/viewing/TimeBubble";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu";
+import RecipeImagePlaceholder from "@/_components/ui/RecipeImagePlaceholder";
+import { createRecipeDraft, type EditableRecipeStatus } from "@/lib/recipe-draft";
+import { useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 export type RecipeCardProps = {
   recipeId: string;
+  authorId?: string;
   name: string;
   imageUrl?: string | null;
   imageAlt?: string;
@@ -26,6 +30,7 @@ export type RecipeCardProps = {
   cookTimeMinutes?: number | null;
   tags: string[];
   rating: number;
+  status?: EditableRecipeStatus;
   initiallySaved?: boolean;
   savedState?: boolean;
   onReport?: () => void;
@@ -35,6 +40,7 @@ export type RecipeCardProps = {
 
 export default function RecipeCard({
   recipeId,
+  authorId,
   name,
   imageUrl,
   imageAlt = "",
@@ -42,6 +48,7 @@ export default function RecipeCard({
   cookTimeMinutes,
   tags,
   rating,
+  status,
   initiallySaved = false,
   savedState,
   onReport,
@@ -49,8 +56,27 @@ export default function RecipeCard({
   className,
 }: RecipeCardProps) {
   const router = useRouter();
+  const { currentUser } = useSession();
+  const [isOpeningEditor, setIsOpeningEditor] = useState(false);
   const visibleTags = tags.slice(0, 3);
   const recipeHref = `/recipes?recipeId=${encodeURIComponent(recipeId)}`;
+  const isOwner = Boolean(currentUser.id) && currentUser.id === authorId;
+
+  async function openEditor() {
+    if (!currentUser.id || !isOwner || isOpeningEditor) return;
+
+    setIsOpeningEditor(true);
+    try {
+      const draftId =
+        status === "DRAFT"
+          ? recipeId
+          : await createRecipeDraft(currentUser.id, recipeId);
+      router.push(`/recipes/write?recipeId=${encodeURIComponent(draftId)}`);
+    } catch (error) {
+      console.error(error);
+      setIsOpeningEditor(false);
+    }
+  }
 
   function openRecipe(event: MouseEvent<HTMLElement>) {
     if (isInteractiveTarget(event.target)) {
@@ -90,10 +116,7 @@ export default function RecipeCard({
             className="object-cover transition-transform duration-300 hover:scale-[1.02]"
           />
         ) : (
-          <div className="flex size-full items-center justify-center text-vegr-green">
-            <Utensils className="size-14" aria-hidden="true" />
-            <span className="sr-only">No recipe image available</span>
-          </div>
+          <RecipeImagePlaceholder />
         )}
 
         <div className="absolute right-3 top-3 flex flex-col items-end gap-2">
@@ -121,6 +144,12 @@ export default function RecipeCard({
               </span>
             )}
           </div>
+
+          {isOwner && status && (
+            <p className="mt-3 text-xs font-bold uppercase text-vegr-berry-dark">
+              Status: {formatStatus(status)}
+            </p>
+          )}
         </div>
 
         <div className="flex min-w-[104px] flex-col items-end">
@@ -144,13 +173,24 @@ export default function RecipeCard({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-36">
-                <DropdownMenuItem
-                  onSelect={onReport}
-                  className="text-red-700 hover:bg-red-50 hover:text-red-800 focus:bg-red-50 focus:text-red-800"
-                >
-                  <Flag />
-                  Report
-                </DropdownMenuItem>
+                {isOwner ? (
+                  <DropdownMenuItem
+                    onSelect={() => void openEditor()}
+                    disabled={isOpeningEditor}
+                    className="text-vegr-green-dark focus:bg-vegr-green-soft focus:text-vegr-green-dark"
+                  >
+                    <Pencil />
+                    Edit
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    onSelect={onReport}
+                    className="text-red-700 hover:bg-red-50 hover:text-red-800 focus:bg-red-50 focus:text-red-800"
+                  >
+                    <Flag />
+                    Report
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -164,4 +204,8 @@ export default function RecipeCard({
 
 function isInteractiveTarget(target: EventTarget) {
   return target instanceof Element && Boolean(target.closest("button, a, [role='menuitem']"));
+}
+
+function formatStatus(status: EditableRecipeStatus) {
+  return status.charAt(0) + status.slice(1).toLowerCase();
 }

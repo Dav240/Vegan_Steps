@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { recipeCardSelect, toRecipeCard } from "@/lib/recipe-card-data";
 
 type SaveRecipeBody = {
   userId?: unknown;
@@ -40,30 +41,15 @@ export async function GET(request: Request) {
       take: 4,
       select: {
         recipe: {
-          select: {
-            id: true,
-            name: true,
-            imageUrl: true,
-            prepTimeMinutes: true,
-            cookTimeMinutes: true,
-            tags: true,
-            averageRating: true,
-          },
+          select: recipeCardSelect,
         },
       },
     });
 
     return NextResponse.json({
-      recipes: savedRecipes.slice(0, 3).map(({ recipe }) => ({
-        recipeId: recipe.id,
-        name: recipe.name,
-        imageUrl: recipe.imageUrl,
-        prepTimeMinutes: recipe.prepTimeMinutes,
-        cookTimeMinutes: recipe.cookTimeMinutes,
-        tags: recipe.tags,
-        rating: Number(recipe.averageRating),
-        initiallySaved: true,
-      })),
+      recipes: savedRecipes
+        .slice(0, 3)
+        .map(({ recipe }) => toRecipeCard(recipe, true)),
       hasMore: savedRecipes.length > 3,
     });
   } catch (error) {

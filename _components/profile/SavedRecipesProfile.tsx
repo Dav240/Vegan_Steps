@@ -8,6 +8,7 @@ import { useSession } from "@/lib/session";
 
 type SavedRecipe = {
   recipeId: string;
+  authorId: string;
   name: string;
   imageUrl: string | null;
   prepTimeMinutes: number | null;
@@ -15,6 +16,7 @@ type SavedRecipe = {
   tags: string[];
   rating: number;
   initiallySaved: true;
+  status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "REMOVED";
 };
 
 export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onSavedChange }: {

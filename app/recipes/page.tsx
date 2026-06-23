@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import RecipeView from "@/_components/recipes/RecipeView";
+import RecipeView from "@/_components/recipes/viewing/RecipeView";
 
 export default async function RecipesPage({ searchParams }: {
   searchParams: Promise<{

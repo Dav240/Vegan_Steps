@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { recipeCardSelect } from "@/lib/recipe-card-data";
 
 const recipeSelect = {
-  id: true,
-  name: true,
+  ...recipeCardSelect,
   description: true,
   servings: true,
-  imageUrl: true,
-  prepTimeMinutes: true,
-  cookTimeMinutes: true,
-  tags: true,
-  averageRating: true,
   updatedAt: true,
   author: {
     select: {
@@ -114,6 +109,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       recipe: {
         recipeId: recipe.id,
+        authorId: recipe.authorId,
         name: recipe.name,
         description: recipe.description,
         servings: recipe.servings,
@@ -122,6 +118,7 @@ export async function GET(request: Request) {
         cookTimeMinutes: recipe.cookTimeMinutes,
         tags: recipe.tags,
         averageRating: Number(recipe.averageRating),
+        status: recipe.status,
         ratingCount: recipe._count.ratings,
         userRating: recipe.ratings[0]?.stars ?? 0,
         initiallySaved: recipe.savedBy.length > 0,
