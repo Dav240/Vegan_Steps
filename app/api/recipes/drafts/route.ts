@@ -130,7 +130,6 @@ export async function POST(request: Request) {
             servings: true,
             prepTimeMinutes: true,
             cookTimeMinutes: true,
-            imageUrl: true,
             tags: true,
             ingredients: {
               orderBy: { order: "asc" },
@@ -166,7 +165,7 @@ export async function POST(request: Request) {
             servings: source.servings,
             prepTimeMinutes: source.prepTimeMinutes,
             cookTimeMinutes: source.cookTimeMinutes,
-            imageUrl: source.imageUrl,
+            imageUrl: null,
             imageKey: null,
             tags: source.tags,
             averageRating: 0,

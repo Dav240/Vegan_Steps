@@ -82,7 +82,7 @@ export default function RecipeCard({
     if (isInteractiveTarget(event.target)) {
       return;
     }
-    router.push(recipeHref);
+    navigateToRecipe();
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
@@ -90,8 +90,21 @@ export default function RecipeCard({
       event.key === "Enter" &&
       event.target === event.currentTarget
     ) {
-      router.push(recipeHref);
+      navigateToRecipe();
     }
+  }
+
+  function navigateToRecipe() {
+    if (status === "APPROVED") {
+      void fetch("/api/recipes/view", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipeId }),
+        keepalive: true,
+      });
+    }
+
+    router.push(recipeHref);
   }
 
   return (
@@ -180,7 +193,7 @@ export default function RecipeCard({
                     className="text-vegr-green-dark focus:bg-vegr-green-soft focus:text-vegr-green-dark"
                   >
                     <Pencil />
-                    Edit
+                    {status === "APPROVED" ? "Make New Recipe" : "Edit"}
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem

@@ -250,7 +250,7 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
                     disabled={isCreatingCopy}
                     className="h-12 border-vegr-berry bg-white px-6 text-vegr-berry hover:bg-vegr-berry-soft hover:text-vegr-berry-dark"
                   >
-                    {isCreatingCopy ? "Creating copy..." : "Edit Your Own"}
+                    {isCreatingCopy ? "Creating copy..." : "Make New Recipe"}
                   </Button>
                 </div>
                 {copyError && (

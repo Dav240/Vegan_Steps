@@ -19,7 +19,7 @@ export async function GET(request: Request) {
         authorId: userId,
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
       take: 4,
       select: {

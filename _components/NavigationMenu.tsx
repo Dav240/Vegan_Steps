@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, ChevronLeft, ChevronRight, LogOut, UserRound } from "lucide-react";
+
+import { BookOpen, ChefHat, ChevronLeft, ChevronRight, Heart, LogOut, UserRound } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useSession } from "@/lib/session";
@@ -68,6 +69,16 @@ export default function NavigationMenu() {
         <Link href="/explore" className={linkClass("/explore")}>
           <BookOpen className="size-5 shrink-0" />
           {isOpen && <span>Explore Recipes</span>}
+        </Link>
+
+        <Link href="/my-recipes" className={linkClass("/my-recipes")}>
+          <ChefHat className="size-5 shrink-0" />
+          {isOpen && <span>My Recipes</span>}
+        </Link>
+
+        <Link href="/saved-recipes" className={linkClass("/saved-recipes")}>
+          <Heart className="size-5 shrink-0" />
+          {isOpen && <span>Saved Recipes</span>}
         </Link>
       </nav>
 

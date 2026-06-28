@@ -137,3 +137,36 @@ export async function GET(request: Request) {
     );
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = (await request.json()) as { recipeId?: unknown };
+    const recipeId =
+      typeof body.recipeId === "string" ? body.recipeId.trim() : "";
+
+    if (!recipeId) {
+      return NextResponse.json(
+        { error: "A recipe ID is required." },
+        { status: 400 }
+      );
+    }
+
+    const result = await prisma.recipe.updateMany({
+      where: {
+        id: recipeId,
+        status: "APPROVED",
+      },
+      data: {
+        viewCount: { increment: 1 },
+      },
+    });
+
+    return NextResponse.json({ counted: result.count === 1 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Something went wrong while recording this recipe view." },
+      { status: 500 }
+    );
+  }
+}
