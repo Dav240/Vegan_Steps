@@ -60,6 +60,34 @@ export async function validateEmail(
   email: string,
   currentUserId?: string
 ): Promise<ValidationResult> {
+  const emailFormatValidation = validateEmailFormat(email);
+
+  if (!emailFormatValidation.isValid) {
+    return emailFormatValidation;
+  }
+
+  const normalizedEmail = emailFormatValidation.value;
+
+  const existingEmail = await prisma.user.findUnique({
+    where: {
+      email: normalizedEmail,
+    },
+  });
+
+  if (existingEmail && existingEmail.id !== currentUserId) {
+    return {
+      isValid: false,
+      error: "An account with this email already exists.",
+    };
+  }
+
+  return {
+    isValid: true,
+    value: normalizedEmail,
+  };
+}
+
+export function validateEmailFormat(email: string): ValidationResult {
   const normalizedEmail = email.trim().toLowerCase();
 
   if (!normalizedEmail) {
@@ -73,19 +101,6 @@ export async function validateEmail(
     return {
       isValid: false,
       error: "Please enter a valid email address.",
-    };
-  }
-
-  const existingEmail = await prisma.user.findUnique({
-    where: {
-      email: normalizedEmail,
-    },
-  });
-
-  if (existingEmail && existingEmail.id !== currentUserId) {
-    return {
-      isValid: false,
-      error: "An account with this email already exists.",
     };
   }
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import cloudinary, { hasCloudinaryConfig } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
+import { deleteRecipeImageIfUnused } from "@/lib/recipe-image-cleanup";
 import {
   MAX_RECIPE_INGREDIENTS,
   MAX_RECIPE_STEPS,
@@ -344,31 +344,21 @@ export async function DELETE(request: Request) {
 
     const recipe = await prisma.recipe.findFirst({
       where: { id: recipeId, authorId: userId },
-      select: { id: true, status: true, imageKey: true },
+      select: { id: true, imageKey: true },
     });
 
     if (!recipe) {
       return NextResponse.json(
-        { error: "Recipe draft not found." },
+        { error: "Recipe not found." },
         { status: 404 }
-      );
-    }
-
-    if (recipe.status !== "DRAFT") {
-      return NextResponse.json(
-        { error: "Only drafts can be deleted from the editor." },
-        { status: 409 }
       );
     }
 
     await prisma.recipe.delete({ where: { id: recipeId } });
 
-    if (recipe.imageKey && hasCloudinaryConfig()) {
+    if (recipe.imageKey) {
       try {
-        await cloudinary.uploader.destroy(recipe.imageKey, {
-          resource_type: "image",
-          invalidate: true,
-        });
+        await deleteRecipeImageIfUnused(recipe.imageKey);
       } catch (imageError) {
         console.error("Recipe deleted, but its Cloudinary image could not be removed.", imageError);
       }
@@ -378,7 +368,7 @@ export async function DELETE(request: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Something went wrong while deleting the recipe draft." },
+      { error: "Something went wrong while deleting the recipe." },
       { status: 500 }
     );
   }

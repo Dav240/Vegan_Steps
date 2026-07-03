@@ -75,8 +75,11 @@ export async function PUT(request: Request) {
     const { userId, recipeId } = saveRequest;
     const [user, recipe] = await Promise.all([
       prisma.user.findUnique({ where: { id: userId }, select: { id: true } }),
-      prisma.recipe.findUnique({
-        where: { id: recipeId },
+      prisma.recipe.findFirst({
+        where: {
+          id: recipeId,
+          OR: [{ status: "APPROVED" }, { authorId: userId }],
+        },
         select: { id: true },
       }),
     ]);

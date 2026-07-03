@@ -38,6 +38,13 @@ enum ReportReason {
   OTHER
 }
 
+enum EmailVerificationPurpose {
+  REGISTER
+  CHANGE_EMAIL_OLD
+  CHANGE_EMAIL_NEW
+  PASSWORD_RESET
+}
+
 enum Unit {
   GRAM
   KILOGRAM
@@ -56,11 +63,45 @@ enum Unit {
 enum Tag {
   PROTEIN_RICH
   GLUTEN_FREE
+  GLUTEN
+  CONTAINS_NUTS
+  CONTAINS_SOY
+  SNACK
+  PARTY_MEAL
+  BREAKFAST
+  MEAL_PREP
+  SALAD
+  SIDE_DISH
+  DESSERT
+  SAVOURY
+  SWEET
+  UMAMI
+  SPICY
+  CREAMY
+  CRISPY
+  BITTER
+  SOUR
+  MEXICAN
+  SOUTH_AMERICAN
+  CARRIBEAN
+  ITALIAN
+  FRENCH
+  MEDITERRANEAN
+  INDIAN
+  CHINESE
+  JAPANESE 
+  KOREAN
+  SOUTHEAST_ASIAN
+  MIDDLE_EASTERN
+  PERSIAN
+  NORTH_AFRICAN
+  EAST_AND_WEST_AFRICAN
 }
 
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
+  emailVerified Boolean @default(false)
   username     String   @unique
   password     String
   userType     UserType @default(CLIENT)
@@ -69,12 +110,30 @@ model User {
   ratings        Rating[]
   savedRecipes   SavedRecipe[]
   reportsMade    Report[]        @relation("ReportsMade")
+  emailVerificationCodes EmailVerificationCode[]
 
   reportsResolved Report[]       @relation("ReportsResolved")
   approvedRecipes Recipe[]       @relation("ApprovedRecipes")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model EmailVerificationCode {
+  id           String                   @id @default(cuid())
+  email        String
+  codeHash     String
+  purpose      EmailVerificationPurpose
+  userId       String?
+  user         User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pendingEmail String?
+  expiresAt    DateTime
+  usedAt       DateTime?
+  createdAt    DateTime                 @default(now())
+
+  @@index([email, purpose])
+  @@index([expiresAt])
+  @@index([userId, purpose])
 }
 
 model Recipe {

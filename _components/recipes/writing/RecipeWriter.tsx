@@ -3,15 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ImagePlus, Plus, Save, Send, Trash2, X } from "lucide-react";
+import { ImagePlus, Save, Send, Trash2, X } from "lucide-react";
 
 import NavigationMenu from "@/_components/NavigationMenu";
 import IngredientsEditor, { emptyIngredient, type IngredientRow } from "@/_components/recipes/writing/IngredientsEditor";
 import InstructionsEditor, { emptyInstruction, type InstructionRow } from "@/_components/recipes/writing/InstructionsEditor";
+import RecipeTagPicker from "@/_components/recipes/writing/RecipeTagPicker";
 import { Button } from "@/_components/ui/button";
 import RecipeImagePlaceholder from "@/_components/ui/RecipeImagePlaceholder";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/_components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/_components/ui/dropdown-menu";
 import { Input } from "@/_components/ui/input";
 import { Label } from "@/_components/ui/label";
 import {
@@ -20,7 +20,6 @@ import {
   MAX_RECIPE_INGREDIENTS,
   MAX_RECIPE_STEPS,
   MAX_RECIPE_TAGS,
-  RECIPE_TAGS,
   type RecipeDraft,
   type RecipeTag,
 } from "@/lib/recipe-draft";
@@ -182,9 +181,8 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
     );
   }
 
-  function addTag(value: string) {
-    if (!draft || !RECIPE_TAGS.includes(value as RecipeTag)) return;
-    const tag = value as RecipeTag;
+  function addTag(tag: RecipeTag) {
+    if (!draft) return;
     if (draft.tags.includes(tag) || draft.tags.length >= MAX_RECIPE_TAGS) return;
     updateDraft("tags", [...draft.tags, tag]);
   }
@@ -304,7 +302,11 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
         throw new Error(data.error || "Could not delete the recipe draft.");
       }
 
-      router.replace("/profile");
+      if (window.history.length > 1) {
+        router.back();
+      } else {
+        router.replace("/profile");
+      }
     } catch (deleteError) {
       setError(
         deleteError instanceof Error
@@ -372,11 +374,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
                     <ImagePlus />
                     {isUploading ? "Uploading..." : draft.imageUrl ? "Replace image" : "Upload image"}
                   </Button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="sr-only"
+                  <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only"
                     onChange={(event) => {
                       const file = event.target.files?.[0];
                       if (file) void uploadImage(file);
@@ -388,10 +386,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
                 <Label htmlFor="recipe-description" className="font-indie-flower text-3xl font-bold">
                   Description
                 </Label>
-                <textarea
-                  id="recipe-description"
-                  value={draft.description}
-                  onChange={(event) => updateDraft("description", event.target.value)}
+                <textarea id="recipe-description" value={draft.description} onChange={(event) => updateDraft("description", event.target.value)}
                   placeholder="Recipe description"
                   rows={5}
                   className="mt-3 w-full resize-y rounded-lg border border-vegr-berry-soft bg-white px-4 py-3 text-base leading-6 outline-none focus:border-vegr-green focus:ring-2 focus:ring-vegr-green-soft"
@@ -403,15 +398,11 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
                   </p>
                   <div className="mt-3 flex min-h-9 flex-wrap items-center gap-2">
                     {draft.tags.map((tag) => (
-                      <span
-                        key={tag}
+                      <span key={tag}
                         className="inline-flex items-center gap-1 rounded-full border border-vegr-green/25 bg-vegr-green-soft px-3 py-1 text-xs font-semibold text-vegr-green-dark"
                       >
                         {formatRecipeEnum(tag)}
-                        <button
-                          type="button"
-                          onClick={() => removeTag(tag)}
-                          aria-label={`Remove ${formatRecipeEnum(tag)}`}
+                        <button type="button" onClick={() => removeTag(tag)} aria-label={`Remove ${formatRecipeEnum(tag)}`}
                           title={`Remove ${formatRecipeEnum(tag)}`}
                           className="rounded-full p-0.5 hover:bg-white"
                         >
@@ -420,43 +411,12 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
                       </span>
                     ))}
 
-                    {draft.tags.length < MAX_RECIPE_TAGS &&
-                      RECIPE_TAGS.some((tag) => !draft.tags.includes(tag)) && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button
-                              type="button"
-                              aria-label="Add a recipe tag"
-                              title="Add tag"
-                              className="flex size-8 items-center justify-center rounded-full border-2 border-vegr-green bg-white text-vegr-green-dark transition-colors hover:bg-vegr-green-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-green"
-                            >
-                              <Plus className="size-4" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start" className="min-w-48">
-                            {RECIPE_TAGS.filter(
-                              (tag) => !draft.tags.includes(tag)
-                            ).map((tag) => (
-                              <DropdownMenuItem
-                                key={tag}
-                                onSelect={() => addTag(tag)}
-                                className="focus:bg-vegr-green-soft focus:text-vegr-green-dark"
-                              >
-                                <Plus />
-                                {formatRecipeEnum(tag)}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
+                    <RecipeTagPicker selectedTags={draft.tags} onAddTag={addTag}/>
                   </div>
                 </div>
 
                 {!ingredientsAreExpanded && (
-                  <IngredientsEditor
-                    servings={draft.servings}
-                    ingredients={draft.ingredients}
-                    className="mt-12"
+                  <IngredientsEditor servings={draft.servings} ingredients={draft.ingredients} className="mt-12"
                     onServingsChange={(value) => updateDraft("servings", value)}
                     onIngredientChange={updateIngredient}
                     onIngredientAdd={addIngredient}
@@ -467,11 +427,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
             </div>
 
             {ingredientsAreExpanded && (
-              <IngredientsEditor
-                servings={draft.servings}
-                ingredients={draft.ingredients}
-                expanded
-                className="mt-12"
+              <IngredientsEditor servings={draft.servings} ingredients={draft.ingredients} expanded className="mt-12"
                 onServingsChange={(value) => updateDraft("servings", value)}
                 onIngredientChange={updateIngredient}
                 onIngredientAdd={addIngredient}
@@ -503,11 +459,8 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
             {(error || notice) && (
               <p
                 role="status"
-                className={cn(
-                  "mt-8 rounded-md border px-4 py-3 text-sm font-medium",
-                  error
-                    ? "border-red-200 bg-red-50 text-red-700"
-                    : "border-vegr-green/25 bg-vegr-green-soft text-vegr-green-dark"
+                className={cn( "mt-8 rounded-md border px-4 py-3 text-sm font-medium",
+                  error ? "border-red-200 bg-red-50 text-red-700" : "border-vegr-green/25 bg-vegr-green-soft text-vegr-green-dark"
                 )}
               >
                 {error || notice}
@@ -515,11 +468,8 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
             )}
 
             <div className="mt-10 flex flex-wrap gap-3">
-              <Button
-                type="button"
-                onClick={() => setSubmitDialogOpen(true)}
-                disabled={isSaving || isUploading}
-                className="h-11 bg-vegr-green px-5 text-white hover:bg-vegr-green-dark"
+              <Button type="button" onClick={() => setSubmitDialogOpen(true)} disabled={isSaving || isUploading}
+              className="h-11 bg-vegr-green px-5 text-white hover:bg-vegr-green-dark"
               >
                 <Send />
                 Submit
@@ -572,14 +522,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
   );
 }
 
-function NumberField({
-  id,
-  label,
-  value,
-  min,
-  suffix,
-  onChange,
-}: {
+function NumberField({ id, label, value, min, suffix, onChange }: {
   id: string;
   label: string;
   value: number | null;
@@ -604,16 +547,7 @@ function NumberField({
   );
 }
 
-function ConfirmDialog({
-  open,
-  onOpenChange,
-  title,
-  description,
-  confirmLabel,
-  destructive = false,
-  isPending,
-  onConfirm,
-}: {
+function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel, destructive = false, isPending, onConfirm }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;

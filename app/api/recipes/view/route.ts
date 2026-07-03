@@ -65,7 +65,7 @@ export async function GET(request: Request) {
   try {
     const searchParams = new URL(request.url).searchParams;
     const recipeId = searchParams.get("recipeId");
-    const userId = searchParams.get("userId");
+    const userId = searchParams.get("userId")?.trim() ?? "";
 
     if (!recipeId?.trim()) {
       return NextResponse.json(
@@ -77,14 +77,14 @@ export async function GET(request: Request) {
     const userRelations = {
       savedBy: {
         where: {
-          userId: userId ?? "",
+          userId,
         },
         take: 1,
         select: recipeSelect.savedBy.select,
       },
       ratings: {
         where: {
-          ownerId: userId ?? "",
+          ownerId: userId,
         },
         take: 1,
         select: recipeSelect.ratings.select,
@@ -100,6 +100,13 @@ export async function GET(request: Request) {
     });
 
     if (!recipe) {
+      return NextResponse.json(
+        { error: "Recipe not found." },
+        { status: 404 }
+      );
+    }
+
+    if (recipe.status !== "APPROVED" && recipe.authorId !== userId) {
       return NextResponse.json(
         { error: "Recipe not found." },
         { status: 404 }

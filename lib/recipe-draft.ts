@@ -1,27 +1,20 @@
+import {
+  Tag,
+  Unit,
+  type Tag as PrismaTag,
+  type Unit as PrismaUnit,
+} from "@/app/generated/prisma/enums";
+
 export const MAX_RECIPE_INGREDIENTS = 20;
 export const MAX_RECIPE_STEPS = 10;
 export const MAX_RECIPE_TAGS = 10;
 export const MAX_RECIPE_IMAGE_BYTES = 5 * 1024 * 1024;
 
-export const RECIPE_UNITS = [
-  "GRAM",
-  "KILOGRAM",
-  "MILLILITRE",
-  "LITRE",
-  "TEASPOON",
-  "TABLESPOON",
-  "CUP",
-  "PIECE",
-  "PINCH",
-  "POUNDS",
-  "OUNCES",
-  "NONE",
-] as const;
+export const RECIPE_UNITS = Object.values(Unit) as readonly PrismaUnit[];
+export const RECIPE_TAGS = Object.values(Tag) as readonly PrismaTag[];
 
-export const RECIPE_TAGS = ["PROTEIN_RICH", "GLUTEN_FREE"] as const;
-
-export type RecipeUnit = (typeof RECIPE_UNITS)[number];
-export type RecipeTag = (typeof RECIPE_TAGS)[number];
+export type RecipeUnit = PrismaUnit;
+export type RecipeTag = PrismaTag;
 export type EditableRecipeStatus = "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "REMOVED";
 
 export type DraftIngredient = {

@@ -74,13 +74,16 @@ export default function RecipesPage({
   const [error, setError] = useState("");
 
   const isMyRecipes = library === "my";
+  const showStatusFilter = isMyRecipes;
   const title = isMyRecipes ? "My Recipes" : "Saved Recipes";
   const remainingRecipeCount = Math.max(0, total - recipes.length);
   const loadMoreCount = Math.min(PAGE_SIZE, remainingRecipeCount);
   const activeFilterCount =
     Number(minRating > 0 || maxRating < 5) +
     selectedTags.length +
-    Number(selectedStatuses.length !== DEFAULT_STATUS_FILTERS.length);
+    (showStatusFilter
+      ? Number(selectedStatuses.length !== DEFAULT_STATUS_FILTERS.length)
+      : 0);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setSettledSearch(search.trim()), 300);
@@ -211,6 +214,18 @@ export default function RecipesPage({
     }
   }
 
+  function handleDeleted(recipeId: string) {
+    setRecipes((current) =>
+      current.filter((recipe) => recipe.recipeId !== recipeId)
+    );
+    setSavedStates((current) => {
+      const remaining = { ...current };
+      delete remaining[recipeId];
+      return remaining;
+    });
+    setTotal((current) => Math.max(0, current - 1));
+  }
+
   function changeRatingRange(minimum: number, maximum: number) {
     setMinRating(minimum);
     setMaxRating(maximum);
@@ -268,6 +283,7 @@ export default function RecipesPage({
               onTagModeChange={setTagMode}
               selectedStatuses={selectedStatuses}
               onSelectedStatusesChange={setSelectedStatuses}
+              showStatusFilter={showStatusFilter}
               onReset={resetFilters}
             />
           )}
@@ -299,6 +315,7 @@ export default function RecipesPage({
                   {...recipe}
                   savedState={savedStates[recipe.recipeId]}
                   onSavedChange={handleSavedChange}
+                  onDeleted={handleDeleted}
                   className="max-w-none"
                 />
               ))}

@@ -71,6 +71,12 @@ export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onS
     return () => controller.abort();
   }, [currentUser.id, currentUser.userType, refreshKey]);
 
+  function handleDeleted(recipeId: string) {
+    setSavedRecipes((current) =>
+      current.filter((recipe) => recipe.recipeId !== recipeId)
+    );
+  }
+
   return (
     <section className="w-full py-8">
       <h2 className="font-indie-flower text-5xl font-bold text-vegr-ink">
@@ -106,6 +112,7 @@ export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onS
               {...recipe}
               savedState={savedRecipeStates[recipe.recipeId]}
               onSavedChange={onSavedChange}
+              onDeleted={handleDeleted}
             />
           ))}
           {hasMoreRecipes && (

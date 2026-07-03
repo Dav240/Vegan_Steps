@@ -67,6 +67,12 @@ export default function MyRecipesProfile({ savedRecipeStates, onSavedChange }: {
     return () => controller.abort();
   }, [currentUser.id, currentUser.userType]);
 
+  function handleDeleted(recipeId: string) {
+    setRecentRecipes((current) =>
+      current.filter((recipe) => recipe.recipeId !== recipeId)
+    );
+  }
+
   return (
     <section className="w-full py-8">
       <h2 className="font-indie-flower text-5xl font-bold text-vegr-ink">
@@ -102,7 +108,9 @@ export default function MyRecipesProfile({ savedRecipeStates, onSavedChange }: {
                 key={recipe.recipeId}
                 {...recipe}
                 savedState={savedRecipeStates[recipe.recipeId]}
-                onSavedChange={onSavedChange}/>
+                onSavedChange={onSavedChange}
+                onDeleted={handleDeleted}
+              />
             ))}
             <AddSeeMoreCard />
           </div>

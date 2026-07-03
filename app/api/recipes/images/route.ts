@@ -8,6 +8,7 @@ import {
   moderateRecipeImage,
 } from "@/lib/image-moderation";
 import { prisma } from "@/lib/prisma";
+import { deleteRecipeImageIfUnused } from "@/lib/recipe-image-cleanup";
 import { MAX_RECIPE_IMAGE_BYTES } from "@/lib/recipe-draft";
 
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -134,10 +135,7 @@ export async function POST(request: Request) {
 
     if (recipe.imageKey && recipe.imageKey !== uploadedImage.public_id) {
       try {
-        await cloudinary.uploader.destroy(recipe.imageKey, {
-          resource_type: "image",
-          invalidate: true,
-        });
+        await deleteRecipeImageIfUnused(recipe.imageKey, recipe.id);
       } catch (cleanupError) {
         console.error("The previous Cloudinary image could not be removed.", cleanupError);
       }
