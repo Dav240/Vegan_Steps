@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     }
 
     const recipe = await prisma.recipe.findFirst({
-      where: { id: recipeId, authorId: userId },
+      where: { id: recipeId, authorId: userId, isDeleted: false },
       select: {
         id: true,
         name: true,
@@ -49,6 +49,7 @@ export async function GET(request: Request) {
         imageKey: true,
         tags: true,
         status: true,
+        rejectionReason: true,
         ingredients: {
           orderBy: { order: "asc" },
           select: {
@@ -76,7 +77,7 @@ export async function GET(request: Request) {
       );
     }
 
-    if (recipe.status !== "DRAFT") {
+    if (recipe.status !== "DRAFT" && recipe.status !== "REJECTED") {
       return NextResponse.json(
         { error: "Submitted recipes can no longer be edited." },
         { status: 409 }
@@ -108,10 +109,10 @@ export async function POST(request: Request) {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true },
+      select: { id: true, isDeleted: true },
     });
 
-    if (!user) {
+    if (!user || user.isDeleted) {
       return NextResponse.json(
         { error: "User account not found." },
         { status: 404 }
@@ -122,6 +123,7 @@ export async function POST(request: Request) {
       ? await prisma.recipe.findFirst({
           where: {
             id: sourceRecipeId,
+            isDeleted: false,
             OR: [{ status: "APPROVED" }, { authorId: userId }],
           },
           select: {
@@ -241,7 +243,7 @@ export async function PUT(request: Request) {
     }
 
     const ownedRecipe = await prisma.recipe.findFirst({
-      where: { id: recipeId, authorId: userId },
+      where: { id: recipeId, authorId: userId, isDeleted: false },
       select: { id: true, status: true },
     });
 
@@ -252,7 +254,7 @@ export async function PUT(request: Request) {
       );
     }
 
-    if (ownedRecipe.status !== "DRAFT") {
+    if (ownedRecipe.status !== "DRAFT" && ownedRecipe.status !== "REJECTED") {
       return NextResponse.json(
         { error: "Submitted recipes can no longer be edited." },
         { status: 409 }
@@ -278,8 +280,15 @@ export async function PUT(request: Request) {
           prepTimeMinutes: draft.prepTimeMinutes,
           cookTimeMinutes: draft.cookTimeMinutes,
           tags: draft.tags,
-          status: action === "submit" ? "PENDING" : "DRAFT",
+          status:
+            action === "submit"
+              ? "PENDING"
+              : ownedRecipe.status === "REJECTED"
+                ? "REJECTED"
+                : "DRAFT",
           submittedAt: action === "submit" ? new Date() : null,
+          rejectionReason:
+            action === "submit" ? null : draft.rejectionReason ?? null,
         },
       });
 
@@ -318,7 +327,12 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({
       recipeId,
-      status: action === "submit" ? "PENDING" : "DRAFT",
+      status:
+        action === "submit"
+          ? "PENDING"
+          : ownedRecipe.status === "REJECTED"
+            ? "REJECTED"
+            : "DRAFT",
     });
   } catch (error) {
     console.error(error);
@@ -343,7 +357,7 @@ export async function DELETE(request: Request) {
     }
 
     const recipe = await prisma.recipe.findFirst({
-      where: { id: recipeId, authorId: userId },
+      where: { id: recipeId, authorId: userId, isDeleted: false },
       select: { id: true, imageKey: true },
     });
 
@@ -354,7 +368,22 @@ export async function DELETE(request: Request) {
       );
     }
 
-    await prisma.recipe.delete({ where: { id: recipeId } });
+    await prisma.$transaction([
+      prisma.recipe.update({
+        where: { id: recipeId },
+        data: {
+          isDeleted: true,
+          status: "REMOVED",
+        },
+      }),
+      prisma.report.updateMany({
+        where: { recipeId, isDeleted: false },
+        data: {
+          isDeleted: true,
+          status: "ACTION_TAKEN",
+        },
+      }),
+    ]);
 
     if (recipe.imageKey) {
       try {
@@ -385,6 +414,7 @@ function toDraftResponse(recipe: {
   imageKey: string | null;
   tags: RecipeTag[];
   status: RecipeDraft["status"];
+  rejectionReason: string | null;
   ingredients: Array<{
     id: string;
     name: string;
@@ -405,6 +435,7 @@ function toDraftResponse(recipe: {
     imageKey: recipe.imageKey,
     tags: recipe.tags,
     status: recipe.status,
+    rejectionReason: recipe.rejectionReason,
     ingredients: recipe.ingredients.map((ingredient) => ({
       ...ingredient,
       unit: ingredient.unit ?? "NONE",
@@ -499,6 +530,7 @@ function parseDraft(value: unknown): { draft: RecipeDraft } | { error: string } 
       stepsPrep: prepSteps.steps,
       stepsCook: cookSteps.steps,
       status: "DRAFT",
+      rejectionReason: typeof draft.rejectionReason === "string" ? draft.rejectionReason : null,
     },
   };
 }

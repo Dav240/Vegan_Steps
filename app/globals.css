@@ -88,3 +88,147 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer base {
+  :where(
+      button,
+      a[href],
+      [role="button"],
+      [role="link"],
+      [data-slot="button"],
+      [data-slot="dropdown-menu-item"]
+    ):where(:not(:disabled), :not([aria-disabled="true"])) {
+    --vegr-hover-bg: var(--color-vegr-berry);
+    --vegr-hover-fg: #ffffff;
+    --vegr-hover-border: var(--color-vegr-berry);
+  }
+
+  :where(button, a[href], [role="button"], [data-slot="button"]):where(
+      [class*="bg-vegr-green"],
+      [class*="text-vegr-green"],
+      [class*="border-vegr-green"]
+    ) {
+    --vegr-hover-bg: #ffffff;
+    --vegr-hover-fg: var(--color-vegr-green);
+    --vegr-hover-border: var(--color-vegr-green);
+  }
+
+  :where(button, a[href], [role="button"], [data-slot="button"]):where(
+      [class*="bg-white"][class*="text-vegr-green"],
+      [class*="bg-vegr-cream"][class*="text-vegr-green"]
+    ) {
+    --vegr-hover-bg: var(--color-vegr-green);
+    --vegr-hover-fg: #ffffff;
+    --vegr-hover-border: var(--color-vegr-green);
+  }
+
+  :where(button, a[href], [role="button"], [data-slot="button"]):where(
+      [class*="bg-vegr-berry"],
+      [class*="text-vegr-berry"],
+      [class*="border-vegr-berry"]
+    ) {
+    --vegr-hover-bg: #ffffff;
+    --vegr-hover-fg: var(--color-vegr-berry);
+    --vegr-hover-border: var(--color-vegr-berry);
+  }
+
+  :where(button, a[href], [role="button"], [data-slot="button"]):where(
+      [class*="bg-white"][class*="text-vegr-berry"],
+      [class*="bg-vegr-cream"][class*="text-vegr-berry"]
+    ) {
+    --vegr-hover-bg: var(--color-vegr-berry);
+    --vegr-hover-fg: #ffffff;
+    --vegr-hover-border: var(--color-vegr-berry);
+  }
+
+  :where(button, a[href], [role="button"], [data-slot="button"]):where(
+      [class*="bg-deep-crimson"],
+      [class*="text-deep-crimson"],
+      [class*="text-red"],
+      [class*="border-deep-crimson"]
+    ) {
+    --vegr-hover-bg: #ffffff;
+    --vegr-hover-fg: var(--color-deep-crimson-600);
+    --vegr-hover-border: var(--color-deep-crimson-600);
+  }
+
+  :where(button, a[href], [role="button"], [data-slot="button"]):where(
+      [class*="bg-white"][class*="text-deep-crimson"],
+      [class*="bg-white"][class*="text-red"]
+    ) {
+    --vegr-hover-bg: var(--color-deep-crimson-600);
+    --vegr-hover-fg: #ffffff;
+    --vegr-hover-border: var(--color-deep-crimson-600);
+  }
+
+  :where(button, a[href], [role="button"], [data-slot="button"]):where(
+      [class*="bg-vegr-gold"],
+      [class*="text-vegr-gold"],
+      [class*="border-vegr-gold"]
+    ) {
+    --vegr-hover-bg: #ffffff;
+    --vegr-hover-fg: var(--color-vegr-gold-dark);
+    --vegr-hover-border: var(--color-vegr-gold-dark);
+  }
+
+  :where(
+      button,
+      a[href],
+      [role="button"],
+      [role="link"],
+      [data-slot="button"],
+      [data-slot="dropdown-menu-item"]
+    ):where(:not(:disabled), :not([aria-disabled="true"])):hover {
+    background-color: var(--vegr-hover-bg) !important;
+    border-color: var(--vegr-hover-border) !important;
+    color: var(--vegr-hover-fg) !important;
+  }
+
+  :where(.grid) > :where(
+      button,
+      a[href],
+      article[role="link"],
+      [role="button"],
+      [role="link"]
+    ):where(:not(:disabled), :not([aria-disabled="true"])):hover {
+    background-color: var(--color-vegr-green-soft) !important;
+    border-color: var(--color-vegr-green) !important;
+    color: var(--color-vegr-green-dark) !important;
+  }
+
+  :where(
+      button,
+      a[href],
+      [role="button"],
+      [role="link"],
+      [data-slot="button"],
+      [data-slot="dropdown-menu-item"]
+    ):where(:not(:disabled), :not([aria-disabled="true"])):hover
+    :where(svg, span, p, h1, h2, h3, h4, h5, h6),
+  :where(.grid) > :where(
+      button,
+      a[href],
+      article[role="link"],
+      [role="button"],
+      [role="link"]
+    ):where(:not(:disabled), :not([aria-disabled="true"])):hover
+    :where(svg, span, p, h1, h2, h3, h4, h5, h6) {
+    color: inherit !important;
+  }
+
+  :where(.vegr-extra-card-action) .vegr-extra-card-icon-badge {
+    background-color: var(--color-vegr-berry) !important;
+    border-color: var(--color-vegr-berry) !important;
+    color: #ffffff !important;
+  }
+
+  :where(.vegr-extra-card-action:hover) .vegr-extra-card-icon-badge {
+    background-color: var(--color-vegr-cream) !important;
+    border-color: var(--color-vegr-cream) !important;
+    color: var(--color-vegr-berry) !important;
+  }
+
+  :where(.vegr-extra-card-action) .vegr-extra-card-icon {
+    color: currentColor !important;
+  }
+}

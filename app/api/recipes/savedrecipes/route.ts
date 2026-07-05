@@ -34,6 +34,12 @@ export async function GET(request: Request) {
     const savedRecipes = await prisma.savedRecipe.findMany({
       where: {
         userId,
+        recipe: {
+          isDeleted: false,
+          author: {
+            isDeleted: false,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -74,19 +80,26 @@ export async function PUT(request: Request) {
 
     const { userId, recipeId } = saveRequest;
     const [user, recipe] = await Promise.all([
-      prisma.user.findUnique({ where: { id: userId }, select: { id: true } }),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, isDeleted: true },
+      }),
       prisma.recipe.findFirst({
         where: {
           id: recipeId,
+          isDeleted: false,
+          author: {
+            isDeleted: false,
+          },
           OR: [{ status: "APPROVED" }, { authorId: userId }],
         },
         select: { id: true },
       }),
     ]);
 
-    if (!user || !recipe) {
+    if (!user || user.isDeleted || !recipe) {
       return NextResponse.json(
-        { error: !user ? "User account not found." : "Recipe not found." },
+        { error: !user || user.isDeleted ? "User account not found." : "Recipe not found." },
         { status: 404 }
       );
     }

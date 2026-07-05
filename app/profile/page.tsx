@@ -29,10 +29,15 @@ export default function ProfilePage() {
   useEffect(() => {
     if (currentUser.userType === "VISITOR" || !currentUser.id) {
       router.replace("/");
+      return;
+    }
+
+    if (currentUser.userType === "MODERATOR") {
+      router.replace("/moderator");
     }
   }, [currentUser.id, currentUser.userType, router]);
 
-  if (currentUser.userType === "VISITOR" || !currentUser.id) {
+  if (currentUser.userType !== "CLIENT" || !currentUser.id) {
     return null;
   }
 

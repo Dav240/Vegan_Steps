@@ -93,11 +93,16 @@ export default function RecipesPage({
   useEffect(() => {
     if (currentUser.userType === "VISITOR" || !currentUser.id) {
       router.replace("/");
+      return;
+    }
+
+    if (currentUser.userType === "MODERATOR") {
+      router.replace("/moderator");
     }
   }, [currentUser.id, currentUser.userType, router]);
 
   useEffect(() => {
-    if (!currentUser.id || currentUser.userType === "VISITOR") return;
+    if (!currentUser.id || currentUser.userType !== "CLIENT") return;
 
     const controller = new AbortController();
     const params = createLibraryParams({
@@ -157,7 +162,7 @@ export default function RecipesPage({
   async function loadMore() {
     if (
       !currentUser.id ||
-      currentUser.userType === "VISITOR" ||
+      currentUser.userType !== "CLIENT" ||
       !hasMore ||
       isLoadingMore
     ) {
@@ -239,7 +244,7 @@ export default function RecipesPage({
     setSelectedStatuses(DEFAULT_STATUS_FILTERS);
   }
 
-  if (currentUser.userType === "VISITOR" || !currentUser.id) return null;
+  if (currentUser.userType !== "CLIENT" || !currentUser.id) return null;
 
   return (
     <main className="flex min-h-screen bg-vegr-cream text-vegr-ink">

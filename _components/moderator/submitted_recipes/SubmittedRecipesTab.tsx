@@ -1,0 +1,179 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowDown } from "lucide-react";
+
+import { Button } from "@/_components/ui/button";
+
+const PAGE_SIZE = 20;
+
+type SubmissionEntry = {
+  recipeId: string;
+  recipeName: string;
+  submittedAt: string | null;
+  authorUsername: string;
+};
+
+type SubmissionsResponse = {
+  entries: SubmissionEntry[];
+  hasMore: boolean;
+  total: number;
+  error?: string;
+};
+
+export default function SubmittedRecipesTab({
+  moderatorId,
+}: {
+  moderatorId: string;
+}) {
+  const router = useRouter();
+  const [entries, setEntries] = useState<SubmissionEntry[]>([]);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [error, setError] = useState("");
+
+  const fetchSubmissions = useCallback(async (offset: number, signal?: AbortSignal) => {
+    const params = new URLSearchParams({
+      moderatorId,
+      offset: String(offset),
+      limit: String(PAGE_SIZE),
+    });
+    const response = await fetch(
+      `/api/moderator/submitted-recipes?${params.toString()}`,
+      { signal }
+    );
+    const data = (await response.json()) as SubmissionsResponse;
+
+    if (!response.ok) {
+      throw new Error(data.error || "Could not load submitted recipes.");
+    }
+
+    return data;
+  }, [moderatorId]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetchSubmissions(0, controller.signal)
+      .then((data) => {
+        setEntries(data.entries);
+        setHasMore(data.hasMore);
+        setTotal(data.total);
+        setError("");
+      })
+      .catch((requestError: unknown) => {
+        if (requestError instanceof Error && requestError.name !== "AbortError") {
+          setError(requestError.message);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [fetchSubmissions]);
+
+  async function loadMore() {
+    setIsLoadingMore(true);
+    setError("");
+
+    try {
+      const data = await fetchSubmissions(entries.length);
+      setEntries((current) => [...current, ...data.entries]);
+      setHasMore(data.hasMore);
+      setTotal(data.total);
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Could not load more submissions."
+      );
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }
+
+  return (
+    <section className="p-5">
+      {error && <p className="mb-4 text-sm font-semibold text-red-700">{error}</p>}
+      {isLoading ? (
+        <ModerationTableLoading />
+      ) : (
+        <>
+          <div className="overflow-hidden rounded-md border border-vegr-berry-soft">
+            <div className="grid grid-cols-[190px_minmax(0,1fr)_220px] bg-vegr-green-soft px-4 py-3 text-sm font-bold uppercase text-vegr-berry-dark">
+              <span>Submission date</span>
+              <span>Recipe name</span>
+              <span>Submitting user</span>
+            </div>
+            {entries.length === 0 ? (
+              <p className="px-4 py-6 text-sm text-zinc-600">
+                No submitted recipes are waiting for review.
+              </p>
+            ) : (
+              entries.map((entry) => (
+                <button
+                  key={entry.recipeId}
+                  type="button"
+                  onClick={() =>
+                    router.push(`/recipes?recipeId=${encodeURIComponent(entry.recipeId)}`)
+                  }
+                  className="group grid w-full grid-cols-[190px_minmax(0,1fr)_220px] border-t border-vegr-berry-soft px-4 py-3 text-left text-sm transition-colors hover:bg-vegr-green-soft/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-vegr-green"
+                >
+                  <span className="font-semibold text-zinc-700 transition-colors group-hover:text-vegr-green-dark">
+                    {entry.submittedAt ? formatDateTime(entry.submittedAt) : "Unknown"}
+                  </span>
+                  <span className="truncate font-bold text-vegr-ink transition-colors group-hover:text-vegr-green-dark">
+                    {entry.recipeName || "Untitled recipe"}
+                  </span>
+                  <span className="transition-colors group-hover:text-vegr-green-dark">
+                    {entry.authorUsername}
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+
+          {hasMore && (
+            <div className="mt-6 flex justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => void loadMore()}
+                disabled={isLoadingMore}
+                className="border-vegr-green bg-white text-vegr-green-dark hover:bg-vegr-green-soft"
+              >
+                <ArrowDown className={isLoadingMore ? "animate-bounce" : ""} />
+                {isLoadingMore
+                  ? "Loading..."
+                  : `Load ${Math.min(PAGE_SIZE, total - entries.length)} more`}
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
+function ModerationTableLoading() {
+  return (
+    <div className="space-y-3 p-4">
+      {Array.from({ length: 6 }, (_, index) => (
+        <div key={index} className="h-11 animate-pulse rounded bg-vegr-green-soft" />
+      ))}
+    </div>
+  );
+}
+
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+}

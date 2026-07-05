@@ -44,6 +44,7 @@ export type RecipeDraft = {
   stepsPrep: DraftInstruction[];
   stepsCook: DraftInstruction[];
   status: EditableRecipeStatus;
+  rejectionReason?: string | null;
 };
 
 export async function createRecipeDraft(userId: string, sourceRecipeId?: string) {

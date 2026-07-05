@@ -95,7 +95,7 @@ export async function GET(request: Request) {
 
 async function getMyRecipeCandidates(userId: string): Promise<LibraryCandidate[]> {
   const recipes = await prisma.recipe.findMany({
-    where: { authorId: userId },
+    where: { authorId: userId, isDeleted: false },
     select: {
       ...recipeCardSelect,
       updatedAt: true,
@@ -119,7 +119,15 @@ async function getSavedRecipeCandidates(
   userId: string
 ): Promise<LibraryCandidate[]> {
   const savedRecipes = await prisma.savedRecipe.findMany({
-    where: { userId },
+    where: {
+      userId,
+      recipe: {
+        isDeleted: false,
+        author: {
+          isDeleted: false,
+        },
+      },
+    },
     select: {
       createdAt: true,
       recipe: {

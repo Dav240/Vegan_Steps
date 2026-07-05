@@ -5,12 +5,36 @@ import { recipeCardSelect } from "@/lib/recipe-card-data";
 
 const recipeSelect = {
   ...recipeCardSelect,
+  isDeleted: true,
   description: true,
   servings: true,
   updatedAt: true,
+  rejectionReason: true,
   author: {
     select: {
       username: true,
+      isDeleted: true,
+    },
+  },
+  reports: {
+    where: {
+      isDeleted: false,
+    },
+    orderBy: {
+      createdAt: "desc" as const,
+    },
+    select: {
+      id: true,
+      title: true,
+      reason: true,
+      details: true,
+      status: true,
+      createdAt: true,
+      reporter: {
+        select: {
+          username: true,
+        },
+      },
     },
   },
   ingredients: {
@@ -66,6 +90,15 @@ export async function GET(request: Request) {
     const searchParams = new URL(request.url).searchParams;
     const recipeId = searchParams.get("recipeId");
     const userId = searchParams.get("userId")?.trim() ?? "";
+    const viewer = userId
+      ? await prisma.user.findUnique({
+          where: { id: userId },
+          select: { id: true, userType: true, isDeleted: true },
+        })
+      : null;
+    const activeUserId = viewer && !viewer.isDeleted ? viewer.id : "";
+    const isModerator =
+      viewer?.userType === "MODERATOR" && viewer.isDeleted === false;
 
     if (!recipeId?.trim()) {
       return NextResponse.json(
@@ -77,14 +110,14 @@ export async function GET(request: Request) {
     const userRelations = {
       savedBy: {
         where: {
-          userId,
+          userId: activeUserId,
         },
         take: 1,
         select: recipeSelect.savedBy.select,
       },
       ratings: {
         where: {
-          ownerId: userId,
+          ownerId: activeUserId,
         },
         take: 1,
         select: recipeSelect.ratings.select,
@@ -99,14 +132,20 @@ export async function GET(request: Request) {
       },
     });
 
-    if (!recipe) {
+    if (!recipe || recipe.isDeleted || recipe.author.isDeleted) {
       return NextResponse.json(
         { error: "Recipe not found." },
         { status: 404 }
       );
     }
 
-    if (recipe.status !== "APPROVED" && recipe.authorId !== userId) {
+    const isAuthor = Boolean(activeUserId) && recipe.authorId === activeUserId;
+
+    if (
+      recipe.status !== "APPROVED" &&
+      !isAuthor &&
+      !isModerator
+    ) {
       return NextResponse.json(
         { error: "Recipe not found." },
         { status: 404 }
@@ -126,6 +165,7 @@ export async function GET(request: Request) {
         tags: recipe.tags,
         averageRating: Number(recipe.averageRating),
         status: recipe.status,
+        rejectionReason: recipe.rejectionReason,
         ratingCount: recipe._count.ratings,
         userRating: recipe.ratings[0]?.stars ?? 0,
         initiallySaved: recipe.savedBy.length > 0,
@@ -134,6 +174,17 @@ export async function GET(request: Request) {
         stepsPrep: recipe.stepsPrep,
         stepsCook: recipe.stepsCook,
         updatedAt: recipe.updatedAt,
+        reports: isModerator
+          ? recipe.reports.map((report) => ({
+              id: report.id,
+              title: report.title,
+              reason: report.reason,
+              details: report.details,
+              status: report.status,
+              createdAt: report.createdAt,
+              reporterUsername: report.reporter.username,
+            }))
+          : [],
       },
     });
   } catch (error) {
@@ -162,6 +213,7 @@ export async function POST(request: Request) {
       where: {
         id: recipeId,
         status: "APPROVED",
+        isDeleted: false,
       },
       data: {
         viewCount: { increment: 1 },

@@ -23,19 +23,26 @@ export async function PUT(request: Request) {
     }
 
     const [user, recipe] = await Promise.all([
-      prisma.user.findUnique({ where: { id: userId }, select: { id: true } }),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, isDeleted: true },
+      }),
       prisma.recipe.findFirst({
         where: {
           id: recipeId,
+          isDeleted: false,
+          author: {
+            isDeleted: false,
+          },
           OR: [{ status: "APPROVED" }, { authorId: userId }],
         },
         select: { id: true },
       }),
     ]);
 
-    if (!user || !recipe) {
+    if (!user || user.isDeleted || !recipe) {
       return NextResponse.json(
-        { error: !user ? "User account not found." : "Recipe not found." },
+        { error: !user || user.isDeleted ? "User account not found." : "Recipe not found." },
         { status: 404 }
       );
     }

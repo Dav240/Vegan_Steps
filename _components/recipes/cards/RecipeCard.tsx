@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Ellipsis, Flag, Pencil, Trash2 } from "lucide-react";
 
 import SaveButton from "@/_components/recipes/viewing/SaveButton";
+import ReportRecipeDialog from "@/_components/recipes/report/ReportRecipeDialog";
 import StarsRating from "@/_components/recipes/viewing/StarsRating";
 import TagBubble from "@/_components/recipes/viewing/TagBubble";
 import TimeBubble from "@/_components/recipes/viewing/TimeBubble";
@@ -73,6 +74,7 @@ export default function RecipeCard({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [isDeleted, setIsDeleted] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const visibleTags = tags.slice(0, 3);
   const recipeHref = `/recipes?recipeId=${encodeURIComponent(recipeId)}`;
   const isOwner = Boolean(currentUser.id) && currentUser.id === authorId;
@@ -85,7 +87,7 @@ export default function RecipeCard({
     setIsOpeningEditor(true);
     try {
       const draftId =
-        status === "DRAFT"
+        status === "DRAFT" || status === "REJECTED"
           ? recipeId
           : await createRecipeDraft(currentUser.id, recipeId);
       router.push(`/recipes/write?recipeId=${encodeURIComponent(draftId)}`);
@@ -256,7 +258,13 @@ export default function RecipeCard({
                     </>
                   ) : (
                     <DropdownMenuItem
-                      onSelect={onReport}
+                      onSelect={() => {
+                        if (onReport) {
+                          onReport();
+                        } else {
+                          setReportDialogOpen(true);
+                        }
+                      }}
                       className="text-red-700 hover:bg-red-50 hover:text-red-800 focus:bg-red-50 focus:text-red-800"
                     >
                       <Flag />
@@ -318,6 +326,13 @@ export default function RecipeCard({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ReportRecipeDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        recipeId={recipeId}
+        recipeName={name}
+      />
     </>
   );
 }

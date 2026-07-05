@@ -33,6 +33,13 @@ export async function POST(request: Request) {
             );
         }
 
+        if (user.isDeleted) {
+            return NextResponse.json(
+                { error: "This account is no longer active." },
+                { status: 403 }
+            );
+        }
+
         const isValidPassword = await bcrypt.compare(password, user.password);
 
         if (!isValidPassword) {

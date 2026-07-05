@@ -57,6 +57,11 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
       return;
     }
 
+    if (currentUser.userType === "MODERATOR") {
+      router.replace("/moderator");
+      return;
+    }
+
     const controller = new AbortController();
     const params = new URLSearchParams({
       userId: currentUser.id,
@@ -318,7 +323,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
     }
   }
 
-  if (!currentUser.id || currentUser.userType === "VISITOR") {
+  if (!currentUser.id || currentUser.userType !== "CLIENT") {
     return null;
   }
 
@@ -360,6 +365,16 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
                     onChange={(value) => updateDraft("cookTimeMinutes", value)}
                   />
                 </div>
+                {draft.rejectionReason && (
+                  <div className="mt-6 rounded-lg border border-vegr-berry-soft bg-vegr-berry-soft/50 px-4 py-3 shadow-sm">
+                    <p className="text-xs font-bold uppercase text-vegr-berry-dark">
+                      Moderator comment
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-vegr-ink">
+                      {draft.rejectionReason}
+                    </p>
+                  </div>
+                )}
               </section>
 
               <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-vegr-berry-soft bg-white lg:col-start-1 lg:row-start-2">

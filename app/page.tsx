@@ -12,7 +12,7 @@ export default function HomeRouter() {
 
   useEffect(() => {
     if (currentUser.userType !== "VISITOR") {
-      router.replace("/profile");
+      router.replace(currentUser.userType === "MODERATOR" ? "/moderator" : "/profile");
     }
   }, [currentUser.userType, router]);
 

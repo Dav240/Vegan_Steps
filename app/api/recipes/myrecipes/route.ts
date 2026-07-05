@@ -17,6 +17,7 @@ export async function GET(request: Request) {
     const recipes = await prisma.recipe.findMany({
       where: {
         authorId: userId,
+        isDeleted: false,
       },
       orderBy: {
         updatedAt: "desc",

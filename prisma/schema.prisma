@@ -99,24 +99,27 @@ enum Tag {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  emailVerified Boolean @default(false)
-  username     String   @unique
-  password     String
-  userType     UserType @default(CLIENT)
+  id                     String         @id @default(cuid())
+  email                  String         @unique
+  emailVerified          Boolean        @default(false)
+  username               String         @unique
+  password               String
+  userType               UserType       @default(CLIENT)
+  isDeleted              Boolean        @default(false)
 
-  recipes        Recipe[]        @relation("UserRecipes")
-  ratings        Rating[]
-  savedRecipes   SavedRecipe[]
-  reportsMade    Report[]        @relation("ReportsMade")
+  recipes                Recipe[]       @relation("UserRecipes")
+  ratings                Rating[]
+  savedRecipes           SavedRecipe[]
+  reportsMade            Report[]       @relation("ReportsMade")
   emailVerificationCodes EmailVerificationCode[]
 
-  reportsResolved Report[]       @relation("ReportsResolved")
-  approvedRecipes Recipe[]       @relation("ApprovedRecipes")
+  reportsResolved        Report[]       @relation("ReportsResolved")
+  approvedRecipes        Recipe[]       @relation("ApprovedRecipes")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  recipeViews            RecipeView[]
 }
 
 model EmailVerificationCode {
@@ -137,42 +140,45 @@ model EmailVerificationCode {
 }
 
 model Recipe {
-  id            String       @id @default(cuid())
-  name          String
-  description   String
-  servings      Int
-  viewCount     Int          @default(0)
-  averageRating Decimal      @db.Decimal(2, 1)
+  id              String       @id @default(cuid())
+  name            String
+  description     String
+  servings        Int
+  viewCount       Int          @default(0)
+  averageRating   Decimal      @db.Decimal(2, 1)
+  isDeleted       Boolean      @default(false)
 
   prepTimeMinutes Int?
   cookTimeMinutes Int?
 
-  status RecipeStatus @default(DRAFT)
+  status          RecipeStatus @default(DRAFT)
 
-  imageUrl String?
-  imageKey String?
+  imageUrl        String?
+  imageKey        String?
 
-  authorId String
-  author   User   @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        String
+  author          User   @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
 
-  approvedById String?
-  approvedBy   User?   @relation("ApprovedRecipes", fields: [approvedById], references: [id])
+  approvedById    String?
+  approvedBy      User?   @relation("ApprovedRecipes", fields: [approvedById], references: [id])
 
-  ingredients Ingredient[]
-  stepsPrep   InstructionStep[] @relation("RecipePrepSteps")
-  stepsCook   InstructionStep[] @relation("RecipeCookSteps")
-  tags        Tag[]
-  ratings     Rating[]
-  savedBy     SavedRecipe[]
-  reports     Report[]
+  ingredients     Ingredient[]
+  stepsPrep       InstructionStep[] @relation("RecipePrepSteps")
+  stepsCook       InstructionStep[] @relation("RecipeCookSteps")
+  tags            Tag[]
+  ratings         Rating[]
+  savedBy         SavedRecipe[]
+  reports         Report[]
 
   submittedAt     DateTime?
   approvedAt      DateTime?
   rejectedAt      DateTime?
   rejectionReason String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  views           RecipeView[]
 
   @@index([status])
   @@index([authorId])
@@ -241,9 +247,11 @@ model SavedRecipe {
 
 model Report {
   id      String       @id @default(cuid())
+  title   String
   reason  ReportReason
   details String?
   status  ReportStatus @default(OPEN)
+  isDeleted Boolean     @default(false)
 
   reporterId String
   reporter   User @relation("ReportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
@@ -260,4 +268,20 @@ model Report {
   @@index([status])
   @@index([recipeId])
   @@index([reporterId])
+}
+
+model RecipeView {
+  id       String @id @default(cuid())
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  viewedAt DateTime @default(now())
+
+  @@index([userId, viewedAt])
+  @@index([recipeId, viewedAt])
+  @@index([viewedAt])
 }

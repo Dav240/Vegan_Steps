@@ -61,6 +61,7 @@ export async function POST(request: Request) {
       where: {
         id: recipeId.trim(),
         authorId: userId.trim(),
+        isDeleted: false,
       },
       select: {
         id: true,
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (recipe.status !== "DRAFT") {
+    if (recipe.status !== "DRAFT" && recipe.status !== "REJECTED") {
       return NextResponse.json(
         { error: "Submitted recipes can no longer be edited." },
         { status: 409 }

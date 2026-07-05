@@ -55,7 +55,9 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
     setError("");
     updateOpen(false);
 
-    if (redirectAfterAuth) {
+    if (user.userType === "MODERATOR") {
+      router.replace("/moderator");
+    } else if (redirectAfterAuth) {
       router.replace(redirectAfterAuth);
     }
   }
