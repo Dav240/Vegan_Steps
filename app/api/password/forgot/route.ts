@@ -7,6 +7,7 @@ import {
 } from "@/lib/email-verification";
 import { sendPasswordResetEmail } from "@/lib/mail";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import { validateEmailFormat } from "@/lib/user-validation";
 
 type ForgotPasswordBody = {
@@ -15,6 +16,16 @@ type ForgotPasswordBody = {
 
 export async function POST(request: Request) {
   try {
+    const limited = rateLimit(request, {
+      key: "password-forgot",
+      limit: 5,
+      windowMs: 15 * 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
     const body = (await request.json()) as ForgotPasswordBody;
     const email = typeof body.email === "string" ? body.email : "";
     const emailValidation = validateEmailFormat(email);

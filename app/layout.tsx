@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SessionProvider } from "@/lib/session";
+import CookiePreferencesBanner from "@/_components/legal/CookiePreferencesBanner";
 import "./globals.css";
 
 import { Indie_Flower } from "next/font/google";
@@ -23,7 +24,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={indieFlower.variable}>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          {children}
+          <CookiePreferencesBanner />
+        </SessionProvider>
       </body>
     </html>
   );

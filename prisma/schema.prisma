@@ -106,6 +106,16 @@ model User {
   password               String
   userType               UserType       @default(CLIENT)
   isDeleted              Boolean        @default(false)
+  deletedAt              DateTime?
+  optionalDataDeletedAt  DateTime?
+  termsAcceptedAt        DateTime?
+  termsVersion           String?
+  privacyNoticeSeenAt    DateTime?
+  allergenDisclaimerAcceptedAt DateTime?
+  communityGuidelinesVersion   String?
+  personalisedRecommendationsEnabled Boolean @default(false)
+  analyticsEnabled       Boolean        @default(false)
+  productEmailsEnabled   Boolean        @default(false)
 
   recipes                Recipe[]       @relation("UserRecipes")
   ratings                Rating[]
@@ -120,6 +130,8 @@ model User {
   updatedAt              DateTime       @updatedAt
 
   recipeViews            RecipeView[]
+
+  @@index([isDeleted, deletedAt])
 }
 
 model EmailVerificationCode {
@@ -140,27 +152,27 @@ model EmailVerificationCode {
 }
 
 model Recipe {
-  id              String       @id @default(cuid())
+  id              String            @id @default(cuid())
   name            String
   description     String
   servings        Int
-  viewCount       Int          @default(0)
-  averageRating   Decimal      @db.Decimal(2, 1)
-  isDeleted       Boolean      @default(false)
+  viewCount       Int               @default(0)
+  averageRating   Decimal           @db.Decimal(2, 1)
+  isDeleted       Boolean           @default(false)
 
   prepTimeMinutes Int?
   cookTimeMinutes Int?
 
-  status          RecipeStatus @default(DRAFT)
+  status          RecipeStatus  @default(DRAFT)
 
   imageUrl        String?
   imageKey        String?
 
   authorId        String
-  author          User   @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
+  author          User              @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
 
   approvedById    String?
-  approvedBy      User?   @relation("ApprovedRecipes", fields: [approvedById], references: [id])
+  approvedBy      User?             @relation("ApprovedRecipes", fields: [approvedById], references: [id])
 
   ingredients     Ingredient[]
   stepsPrep       InstructionStep[] @relation("RecipePrepSteps")
@@ -175,8 +187,8 @@ model Recipe {
   rejectedAt      DateTime?
   rejectionReason String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
   views           RecipeView[]
 
@@ -191,18 +203,18 @@ model Ingredient {
   quantity Float?
   unit     Unit?
 
-  order Int
+  order    Int
 
   recipeId String
-  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@index([recipeId])
 }
 
 model InstructionStep {
-  id     String @id @default(cuid())
-  number Int
-  text   String
+  id           String  @id @default(cuid())
+  number       Int
+  text         String
 
   prepRecipeId String?
   prepRecipe   Recipe? @relation("RecipePrepSteps", fields: [prepRecipeId], references: [id], onDelete: Cascade)
@@ -217,14 +229,14 @@ model InstructionStep {
 }
 
 model Rating {
-  id    String @id @default(cuid())
-  stars Int
+  id        String   @id @default(cuid())
+  stars     Int
 
-  ownerId String
-  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  recipeId String
-  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -234,11 +246,11 @@ model Rating {
 }
 
 model SavedRecipe {
-  userId   String
-  recipeId String
+  userId    String
+  recipeId  String
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -246,24 +258,24 @@ model SavedRecipe {
 }
 
 model Report {
-  id      String       @id @default(cuid())
-  title   String
-  reason  ReportReason
-  details String?
-  status  ReportStatus @default(OPEN)
-  isDeleted Boolean     @default(false)
+  id           String        @id @default(cuid())
+  title        String
+  reason       ReportReason
+  details      String?
+  status       ReportStatus  @default(OPEN)
+  isDeleted    Boolean       @default(false)
 
-  reporterId String
-  reporter   User @relation("ReportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+  reporterId   String
+  reporter     User          @relation("ReportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
 
-  recipeId String
-  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId     String
+  recipe       Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   resolvedById String?
-  resolvedBy   User? @relation("ReportsResolved", fields: [resolvedById], references: [id])
+  resolvedBy   User?         @relation("ReportsResolved", fields: [resolvedById], references: [id])
 
-  createdAt  DateTime  @default(now())
-  resolvedAt DateTime?
+  createdAt    DateTime      @default(now())
+  resolvedAt   DateTime?
 
   @@index([status])
   @@index([recipeId])
@@ -271,13 +283,13 @@ model Report {
 }
 
 model RecipeView {
-  id       String @id @default(cuid())
+  id       String   @id @default(cuid())
 
   userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   recipeId String
-  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   viewedAt DateTime @default(now())
 

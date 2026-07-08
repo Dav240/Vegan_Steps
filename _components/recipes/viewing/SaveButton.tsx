@@ -43,7 +43,6 @@ export default function SaveButton({ recipeId, recipeName, initiallySaved = fals
         method: nextSavedState ? "PUT" : "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: currentUser.id,
           recipeId,
         }),
       });

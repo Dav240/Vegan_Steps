@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 
+import { requireUser } from "@/lib/auth-session";
 import {
   createEmailVerificationCode,
   deleteExpiredEmailVerificationCodes,
 } from "@/lib/email-verification";
 import { sendVerificationEmail } from "@/lib/mail";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import { validateEmail } from "@/lib/user-validation";
 
 type SendVerificationBody = {
@@ -17,6 +19,16 @@ type SendVerificationBody = {
 
 export async function POST(request: Request) {
   try {
+    const limited = rateLimit(request, {
+      key: "email-code",
+      limit: 5,
+      windowMs: 15 * 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
     await deleteExpiredEmailVerificationCodes();
 
     const body = (await request.json()) as SendVerificationBody;
@@ -27,7 +39,7 @@ export async function POST(request: Request) {
     }
 
     if (purpose === "CHANGE_EMAIL") {
-      return await sendChangeEmailCodes(body);
+      return await sendChangeEmailCodes(request, body);
     }
 
     return NextResponse.json(
@@ -73,16 +85,15 @@ async function sendRegisterCode(body: SendVerificationBody) {
   });
 }
 
-async function sendChangeEmailCodes(body: SendVerificationBody) {
-  const userId = typeof body.userId === "string" ? body.userId : "";
+async function sendChangeEmailCodes(request: Request, body: SendVerificationBody) {
+  const auth = await requireUser(request);
   const newEmail = typeof body.newEmail === "string" ? body.newEmail : "";
 
-  if (!userId) {
-    return NextResponse.json(
-      { error: "A user ID is required." },
-      { status: 400 }
-    );
+  if (auth.response) {
+    return auth.response;
   }
+
+  const userId = auth.user.id;
 
   const user = await prisma.user.findUnique({
     where: { id: userId },

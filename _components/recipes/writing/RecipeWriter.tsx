@@ -34,7 +34,7 @@ type EditorDraft = Omit<RecipeDraft, "ingredients" | "stepsPrep" | "stepsCook"> 
 
 export default function RecipeWriter({ recipeId }: { recipeId: string }) {
   const router = useRouter();
-  const { currentUser } = useSession();
+  const { currentUser, isSessionLoading } = useSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const rowCounter = useRef(0);
   const [draft, setDraft] = useState<EditorDraft | null>(null);
@@ -52,6 +52,10 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
   }
 
   useEffect(() => {
+    if (isSessionLoading) {
+      return;
+    }
+
     if (!currentUser.id || currentUser.userType === "VISITOR") {
       router.replace("/");
       return;
@@ -115,7 +119,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
       });
 
     return () => controller.abort();
-  }, [currentUser.id, currentUser.userType, recipeId, router]);
+  }, [currentUser.id, currentUser.userType, isSessionLoading, recipeId, router]);
 
   function updateDraft<K extends keyof EditorDraft>(key: K, value: EditorDraft[K]) {
     setDraft((current) => (current ? { ...current, [key]: value } : current));
@@ -219,7 +223,6 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
 
     try {
       const formData = new FormData();
-      formData.set("userId", currentUser.id);
       formData.set("recipeId", recipeId);
       formData.set("file", file);
 
@@ -250,6 +253,12 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
   async function saveDraft(action: "save" | "submit") {
     if (!draft || !currentUser.id || isSaving) return false;
 
+    if (!draft.name.trim()) {
+      setError("Recipe name is required before saving a draft.");
+      setNotice("");
+      return false;
+    }
+
     setIsSaving(true);
     setError("");
     setNotice("");
@@ -259,7 +268,6 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: currentUser.id,
           recipeId,
           action,
           draft,
@@ -299,7 +307,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
       const response = await fetch("/api/recipes/drafts", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: currentUser.id, recipeId }),
+        body: JSON.stringify({ recipeId }),
       });
       const data = await response.json();
 
@@ -323,7 +331,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
     }
   }
 
-  if (!currentUser.id || currentUser.userType !== "CLIENT") {
+  if (isSessionLoading || !currentUser.id || currentUser.userType !== "CLIENT") {
     return null;
   }
 

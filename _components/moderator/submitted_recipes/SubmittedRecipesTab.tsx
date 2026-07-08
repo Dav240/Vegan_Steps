@@ -22,11 +22,7 @@ type SubmissionsResponse = {
   error?: string;
 };
 
-export default function SubmittedRecipesTab({
-  moderatorId,
-}: {
-  moderatorId: string;
-}) {
+export default function SubmittedRecipesTab() {
   const router = useRouter();
   const [entries, setEntries] = useState<SubmissionEntry[]>([]);
   const [hasMore, setHasMore] = useState(false);
@@ -37,7 +33,6 @@ export default function SubmittedRecipesTab({
 
   const fetchSubmissions = useCallback(async (offset: number, signal?: AbortSignal) => {
     const params = new URLSearchParams({
-      moderatorId,
       offset: String(offset),
       limit: String(PAGE_SIZE),
     });
@@ -52,7 +47,7 @@ export default function SubmittedRecipesTab({
     }
 
     return data;
-  }, [moderatorId]);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import type { RecipeStatus, Tag } from "@/app/generated/prisma/enums";
+import { requireUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { recipeCardSelect, toRecipeCard } from "@/lib/recipe-card-data";
 import { RECIPE_TAGS } from "@/lib/recipe-draft";
@@ -30,7 +31,6 @@ type LibraryCandidate = {
 export async function GET(request: Request) {
   try {
     const searchParams = new URL(request.url).searchParams;
-    const userId = searchParams.get("userId")?.trim();
     const library = parseLibraryKind(searchParams.get("library"));
     const sort = parseSort(searchParams.get("sort"));
     const tagMode = parseTagMode(searchParams.get("tagMode"));
@@ -45,12 +45,13 @@ export async function GET(request: Request) {
     const tags = parseTags(searchParams.get("tags"));
     const statuses = parseStatuses(searchParams.get("statuses"));
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "A user ID is required." },
-        { status: 400 }
-      );
+    const auth = await requireUser(request);
+
+    if (auth.response) {
+      return auth.response;
     }
+
+    const userId = auth.user.id;
 
     if (minRating > maxRating) {
       return NextResponse.json(

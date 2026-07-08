@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
+import { setSessionCookie } from "@/lib/auth-session";
 
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -10,6 +12,16 @@ type LoginBody = {
 
 export async function POST(request: Request) {
     try {
+        const limited = rateLimit(request, {
+            key: "login",
+            limit: 10,
+            windowMs: 15 * 60 * 1000,
+        });
+
+        if (limited) {
+            return limited;
+        }
+
         const body = (await request.json()) as LoginBody;
 
         const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
@@ -49,7 +61,7 @@ export async function POST(request: Request) {
             );
         }
 
-        return NextResponse.json({
+        const response = NextResponse.json({
             message: "Logged in successfully.",
             user: {
                 id: user.id,
@@ -58,6 +70,9 @@ export async function POST(request: Request) {
                 userType: user.userType,
             },
         });
+        setSessionCookie(response, user);
+
+        return response;
     } catch (error) {
         console.error(error);
 

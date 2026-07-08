@@ -7,6 +7,8 @@ import { Button } from "@/_components/ui/button";
 import { Input } from "@/_components/ui/input";
 import { Label } from "@/_components/ui/label";
 import PasswordResetRequestDialog from "@/_components/login/PasswordResetRequestDialog";
+import ProfileDangerZone from "@/_components/profile/ProfileDangerZone";
+import PrivacyPreferences from "@/_components/profile/PrivacyPreferences";
 import { useSession, type CurrentUser } from "@/lib/session";
 
 type EditableField = "username" | "email";
@@ -36,7 +38,7 @@ export default function ProfileDetails() {
 
     const controller = new AbortController();
 
-    fetch(`/api/profile?userId=${encodeURIComponent(currentUser.id)}`, {
+    fetch("/api/profile", {
       signal: controller.signal,
     })
       .then(async (response) => {
@@ -85,7 +87,6 @@ export default function ProfileDetails() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: currentUser.id,
           field,
           value,
           ...(field === "email"
@@ -148,7 +149,6 @@ export default function ProfileDetails() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           purpose: "CHANGE_EMAIL",
-          userId: currentUser.id,
           newEmail: email,
         }),
       });
@@ -178,8 +178,6 @@ export default function ProfileDetails() {
     }
   }
 
-  const initial = (username || currentUser.username || "U").charAt(0).toUpperCase();
-
   return (
     <>
       <section className="w-full pb-8">
@@ -187,9 +185,9 @@ export default function ProfileDetails() {
           Profile
         </h1>
 
-        <div className="mt-8 grid grid-cols-[72px_minmax(0,1fr)] items-start gap-4 sm:grid-cols-[96px_minmax(0,1fr)] sm:gap-7">
-          <div className="flex size-[72px] shrink-0 items-center justify-center rounded-full border-2 border-vegr-green bg-vegr-green-soft font-indie-flower text-4xl font-bold text-vegr-green-dark shadow-sm ring-4 ring-vegr-gold-soft sm:size-24 sm:text-5xl">
-            {initial}
+        <div className="mt-8 grid items-start gap-7 md:grid-cols-[96px_minmax(0,1fr)]">
+          <div className="hidden size-24 shrink-0 items-center justify-center rounded-full border-2 border-vegr-green bg-vegr-green-soft font-indie-flower text-5xl font-bold text-vegr-green-dark shadow-sm ring-4 ring-vegr-gold-soft md:flex">
+            {(username || currentUser.username || "U").charAt(0).toUpperCase()}
           </div>
 
           <div className="max-w-2xl space-y-6">
@@ -230,6 +228,9 @@ export default function ProfileDetails() {
             >
               Change Password
             </Button>
+
+            <PrivacyPreferences />
+            <ProfileDangerZone />
           </div>
         </div>
       </section>
@@ -273,7 +274,7 @@ function ProfileEmailField({ email, oldEmailCode, newEmailCode, pending, sending
         <Label htmlFor="profile-email" className="font-semibold text-vegr-berry-dark">
           Email
         </Label>
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
           <Input id="profile-email" type="email" value={email} onChange={(event) => onEmailChange(event.target.value)}
             className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
           />

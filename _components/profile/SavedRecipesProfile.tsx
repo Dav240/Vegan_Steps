@@ -19,10 +19,11 @@ type SavedRecipe = {
   status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "REMOVED";
 };
 
-export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onSavedChange }: {
+export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onSavedChange, onRecipeDeleted }: {
   refreshKey: number;
   savedRecipeStates: Record<string, boolean>;
   onSavedChange: (recipeId: string, saved: boolean) => void;
+  onRecipeDeleted: () => void;
 }) {
   const { currentUser } = useSession();
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
@@ -37,9 +38,7 @@ export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onS
 
     const controller = new AbortController();
 
-    fetch( `/api/recipes/savedrecipes?userId=${encodeURIComponent(currentUser.id)}`,
-      { signal: controller.signal }
-    )
+    fetch("/api/recipes/savedrecipes", { signal: controller.signal })
       .then(async (response) => {
         const data = await response.json();
 
@@ -75,6 +74,7 @@ export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onS
     setSavedRecipes((current) =>
       current.filter((recipe) => recipe.recipeId !== recipeId)
     );
+    onRecipeDeleted();
   }
 
   return (

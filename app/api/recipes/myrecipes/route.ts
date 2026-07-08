@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 
+import { requireUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { recipeCardSelect, toRecipeCard } from "@/lib/recipe-card-data";
 
 export async function GET(request: Request) {
   try {
-    const userId = new URL(request.url).searchParams.get("userId");
+    const auth = await requireUser(request);
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "A user ID is required." },
-        { status: 400 }
-      );
+    if (auth.response) {
+      return auth.response;
     }
+
+    const userId = auth.user.id;
 
     const recipes = await prisma.recipe.findMany({
       where: {

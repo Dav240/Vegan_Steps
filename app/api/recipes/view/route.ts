@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { getCurrentUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import { recipeCardSelect } from "@/lib/recipe-card-data";
 
 const recipeSelect = {
@@ -89,16 +91,10 @@ export async function GET(request: Request) {
   try {
     const searchParams = new URL(request.url).searchParams;
     const recipeId = searchParams.get("recipeId");
-    const userId = searchParams.get("userId")?.trim() ?? "";
-    const viewer = userId
-      ? await prisma.user.findUnique({
-          where: { id: userId },
-          select: { id: true, userType: true, isDeleted: true },
-        })
-      : null;
-    const activeUserId = viewer && !viewer.isDeleted ? viewer.id : "";
+    const viewer = await getCurrentUser(request);
+    const activeUserId = viewer?.id ?? "";
     const isModerator =
-      viewer?.userType === "MODERATOR" && viewer.isDeleted === false;
+      viewer?.userType === "MODERATOR";
 
     if (!recipeId?.trim()) {
       return NextResponse.json(
@@ -198,7 +194,17 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { recipeId?: unknown };
+    const limited = rateLimit(request, {
+      key: "recipe-view",
+      limit: 120,
+      windowMs: 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
+    const body = (await request.json()) as { recipeId?: unknown; userId?: unknown };
     const recipeId =
       typeof body.recipeId === "string" ? body.recipeId.trim() : "";
 
@@ -209,18 +215,60 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await prisma.recipe.updateMany({
+    const recipe = await prisma.recipe.findFirst({
       where: {
         id: recipeId,
         status: "APPROVED",
         isDeleted: false,
+        author: {
+          isDeleted: false,
+        },
       },
-      data: {
-        viewCount: { increment: 1 },
+      select: {
+        id: true,
+        authorId: true,
       },
     });
 
-    return NextResponse.json({ counted: result.count === 1 });
+    if (!recipe) {
+      return NextResponse.json({ counted: false });
+    }
+
+    const currentUser = await getCurrentUser(request);
+    const allowsViewTracking = await hasViewTrackingConsent(
+      request,
+      currentUser?.id ?? ""
+    );
+
+    if (!allowsViewTracking) {
+      return NextResponse.json({ counted: false });
+    }
+
+    const viewer =
+      currentUser && currentUser.id !== recipe.authorId ? currentUser : null;
+
+    await prisma.$transaction([
+      prisma.recipe.update({
+        where: {
+          id: recipe.id,
+        },
+        data: {
+          viewCount: { increment: 1 },
+        },
+      }),
+      ...(viewer
+        ? [
+            prisma.recipeView.create({
+              data: {
+                userId: viewer.id,
+                recipeId: recipe.id,
+              },
+            }),
+          ]
+        : []),
+    ]);
+
+    return NextResponse.json({ counted: true });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -228,4 +276,63 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+async function hasViewTrackingConsent(request: Request, userId: string) {
+  if (!userId) {
+    return visitorAllowsViewTracking(request);
+  }
+
+  try {
+    const rows = await prisma.$queryRawUnsafe<
+      Array<{ personalisedRecommendationsEnabled: boolean }>
+    >(
+      `SELECT "personalisedRecommendationsEnabled"
+       FROM "User"
+       WHERE id = $1 AND "isDeleted" = false
+       LIMIT 1`,
+      userId
+    );
+
+    return rows[0]?.personalisedRecommendationsEnabled === true;
+  } catch (error) {
+    console.error("Could not check recipe view tracking preference.", error);
+    return false;
+  }
+}
+
+function visitorAllowsViewTracking(request: Request) {
+  const preferences = getCookie(request, "vegr_cookie_preferences");
+
+  if (!preferences) {
+    return false;
+  }
+
+  try {
+    const parsed = JSON.parse(decodeURIComponent(preferences)) as {
+      personalisedRecommendations?: unknown;
+    };
+
+    return parsed.personalisedRecommendations === true;
+  } catch {
+    return false;
+  }
+}
+
+function getCookie(request: Request, name: string) {
+  const cookieHeader = request.headers.get("cookie");
+
+  if (!cookieHeader) {
+    return "";
+  }
+
+  for (const cookie of cookieHeader.split(";")) {
+    const [rawName, ...valueParts] = cookie.trim().split("=");
+
+    if (rawName === name) {
+      return valueParts.join("=");
+    }
+  }
+
+  return "";
 }

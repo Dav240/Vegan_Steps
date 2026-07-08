@@ -90,10 +90,6 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
     const params = new URLSearchParams();
 
     params.set("recipeId", recipeId);
-    if (currentUser.id) {
-      params.set("userId", currentUser.id);
-    }
-
     fetch(`/api/recipes/view?${params.toString()}`, {
       signal: controller.signal,
     })
@@ -183,7 +179,6 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          moderatorId: currentUser.id,
           recipeId: recipe.recipeId,
           action,
           rejectionReason: denyReason,
@@ -232,7 +227,6 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          moderatorId: currentUser.id,
           recipeId: recipe.recipeId,
           action,
         }),

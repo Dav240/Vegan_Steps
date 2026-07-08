@@ -11,8 +11,9 @@ import { useSession } from "@/lib/session";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { currentUser } = useSession();
+  const { currentUser, isSessionLoading } = useSession();
   const [savedRecipesVersion, setSavedRecipesVersion] = useState(0);
+  const [profileRecipesVersion, setProfileRecipesVersion] = useState(0);
   const [savedRecipeStates, setSavedRecipeStates] = useState< Record<string, boolean> >({});
 
   const handleSavedRecipeChange = useCallback(
@@ -26,7 +27,15 @@ export default function ProfilePage() {
     []
   );
 
+  const handleProfileRecipeDeleted = useCallback(() => {
+    setProfileRecipesVersion((version) => version + 1);
+  }, []);
+
   useEffect(() => {
+    if (isSessionLoading) {
+      return;
+    }
+
     if (currentUser.userType === "VISITOR" || !currentUser.id) {
       router.replace("/");
       return;
@@ -35,9 +44,9 @@ export default function ProfilePage() {
     if (currentUser.userType === "MODERATOR") {
       router.replace("/moderator");
     }
-  }, [currentUser.id, currentUser.userType, router]);
+  }, [currentUser.id, currentUser.userType, isSessionLoading, router]);
 
-  if (currentUser.userType !== "CLIENT" || !currentUser.id) {
+  if (isSessionLoading || currentUser.userType !== "CLIENT" || !currentUser.id) {
     return null;
   }
 
@@ -48,12 +57,15 @@ export default function ProfilePage() {
       <div className="min-w-0 flex-1 px-6 py-10 md:px-12 lg:px-16">
         <ProfileDetails />
         <SavedRecipesProfile
-          refreshKey={savedRecipesVersion}
+          refreshKey={savedRecipesVersion + profileRecipesVersion}
           savedRecipeStates={savedRecipeStates}
-          onSavedChange={handleSavedRecipeChange} />
+          onSavedChange={handleSavedRecipeChange}
+          onRecipeDeleted={handleProfileRecipeDeleted} />
         <MyRecipesProfile
+          refreshKey={profileRecipesVersion}
           savedRecipeStates={savedRecipeStates}
-          onSavedChange={handleSavedRecipeChange} />
+          onSavedChange={handleSavedRecipeChange}
+          onRecipeDeleted={handleProfileRecipeDeleted} />
       </div>
     </main>
   );

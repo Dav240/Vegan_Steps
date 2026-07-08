@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
+import { setSessionCookie } from "@/lib/auth-session";
 import { verifyEmailCode } from "@/lib/email-verification";
+import { LEGAL_VERSION } from "@/lib/legal";
 import { validatePassword } from "@/lib/password-validation";
 import { validateEmail, validateUsername } from "@/lib/user-validation";
 
@@ -12,10 +15,25 @@ type RegisterBody = {
     password?: unknown;
     confirmPassword?: unknown;
     emailCode?: unknown;
+    acceptsTerms?: unknown;
+    acceptsAllergenDisclaimer?: unknown;
+    personalisedRecommendations?: unknown;
+    analytics?: unknown;
+    productEmails?: unknown;
 };
 
 export async function POST(request: Request) {
     try {
+        const limited = rateLimit(request, {
+            key: "register",
+            limit: 5,
+            windowMs: 15 * 60 * 1000,
+        });
+
+        if (limited) {
+            return limited;
+        }
+
         const body = (await request.json()) as RegisterBody;
 
         const username = typeof body.username === "string" ? body.username : "";
@@ -23,6 +41,21 @@ export async function POST(request: Request) {
         const password = typeof body.password === "string" ? body.password : "";
         const confirmPassword = typeof body.confirmPassword === "string" ? body.confirmPassword : "";
         const emailCode = typeof body.emailCode === "string" ? body.emailCode : "";
+        const acceptsTerms = body.acceptsTerms === true;
+        const acceptsAllergenDisclaimer = body.acceptsAllergenDisclaimer === true;
+        const personalisedRecommendations = body.personalisedRecommendations === true;
+        const analytics = body.analytics === true;
+        const productEmails = body.productEmails === true;
+
+        if (!acceptsTerms || !acceptsAllergenDisclaimer) {
+            return NextResponse.json(
+                {
+                    error:
+                        "You need to accept the Terms, Community Guidelines, and allergen disclaimer before registering.",
+                },
+                { status: 400 }
+            );
+        }
 
         const usernameValidation = await validateUsername(username);
 
@@ -75,8 +108,14 @@ export async function POST(request: Request) {
                 userType: "CLIENT",
             },
         });
+        await storeLegalAcceptance({
+            userId: user.id,
+            personalisedRecommendations,
+            analytics,
+            productEmails,
+        });
 
-        return NextResponse.json(
+        const response = NextResponse.json(
             {
                 message: "Account created successfully.",
                 user: {
@@ -88,12 +127,53 @@ export async function POST(request: Request) {
             },
             { status: 201 }
         );
+        setSessionCookie(response, user);
+
+        return response;
     } catch (error) {
         console.error(error);
 
         return NextResponse.json(
             { error: "Something went wrong while creating your account." },
             { status: 500 }
+        );
+    }
+}
+
+async function storeLegalAcceptance({
+    userId,
+    personalisedRecommendations,
+    analytics,
+    productEmails,
+}: {
+    userId: string;
+    personalisedRecommendations: boolean;
+    analytics: boolean;
+    productEmails: boolean;
+}) {
+    try {
+        await prisma.$executeRawUnsafe(
+            `UPDATE "User"
+             SET "termsAcceptedAt" = NOW(),
+                 "termsVersion" = $1,
+                 "privacyNoticeSeenAt" = NOW(),
+                 "allergenDisclaimerAcceptedAt" = NOW(),
+                 "communityGuidelinesVersion" = $1,
+                 "personalisedRecommendationsEnabled" = $2,
+                 "analyticsEnabled" = $3,
+                 "productEmailsEnabled" = $4,
+                 "updatedAt" = NOW()
+             WHERE id = $5`,
+            LEGAL_VERSION,
+            personalisedRecommendations,
+            analytics,
+            productEmails,
+            userId
+        );
+    } catch (error) {
+        console.warn(
+            "Legal acceptance fields are not stored yet. Run the Prisma migration when ready.",
+            error
         );
     }
 }

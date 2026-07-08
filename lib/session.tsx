@@ -19,6 +19,7 @@ export type CurrentUser = {
 
 type SessionContextType = {
   currentUser: CurrentUser;
+  isSessionLoading: boolean;
   setCurrentUser: (user: CurrentUser) => void;
 };
 
@@ -31,42 +32,53 @@ const visitorUser: CurrentUser = {
 
 const SessionContext = createContext<SessionContextType | null>(null);
 
-function getStoredUser() {
-  if (typeof window === "undefined") {
-    return visitorUser;
-  }
-
-  const storedUser = sessionStorage.getItem("currentUser");
-
-  if (!storedUser) {
-    sessionStorage.setItem("currentUser", JSON.stringify(visitorUser));
-    return visitorUser;
-  }
-
-  try {
-    return {
-      ...visitorUser,
-      ...(JSON.parse(storedUser) as Partial<CurrentUser>),
-    };
-  } catch {
-    sessionStorage.setItem("currentUser", JSON.stringify(visitorUser));
-    return visitorUser;
-  }
-}
-
 export function SessionProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUserState] = useState<CurrentUser>(getStoredUser);
+  const [currentUser, setCurrentUserState] = useState<CurrentUser>(visitorUser);
+  const [isSessionLoading, setIsSessionLoading] = useState(true);
 
   useEffect(() => {
-    sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
-  }, [currentUser]);
+    let isActive = true;
+
+    fetch("/api/session", {
+      cache: "no-store",
+    })
+      .then(async (response) => {
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Could not load your session.");
+        }
+
+        return data.user as CurrentUser;
+      })
+      .then((user) => {
+        if (isActive) {
+          setCurrentUserState({ ...visitorUser, ...user });
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setCurrentUserState(visitorUser);
+        }
+      })
+      .finally(() => {
+        if (isActive) {
+          setIsSessionLoading(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   const setCurrentUser = useCallback((user: CurrentUser) => {
     setCurrentUserState(user);
+    setIsSessionLoading(false);
   }, []);
 
   return (
-    <SessionContext.Provider value={{ currentUser, setCurrentUser }}>
+    <SessionContext.Provider value={{ currentUser, isSessionLoading, setCurrentUser }}>
       {children}
     </SessionContext.Provider>
   );

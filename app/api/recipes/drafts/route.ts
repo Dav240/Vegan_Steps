@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { requireUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import { deleteRecipeImageIfUnused } from "@/lib/recipe-image-cleanup";
 import {
   MAX_RECIPE_INGREDIENTS,
@@ -25,13 +27,19 @@ type DraftRequestBody = {
 
 export async function GET(request: Request) {
   try {
-    const searchParams = new URL(request.url).searchParams;
-    const userId = searchParams.get("userId")?.trim();
-    const recipeId = searchParams.get("recipeId")?.trim();
+    const auth = await requireUser(request);
 
-    if (!userId || !recipeId) {
+    if (auth.response) {
+      return auth.response;
+    }
+
+    const searchParams = new URL(request.url).searchParams;
+    const recipeId = searchParams.get("recipeId")?.trim();
+    const userId = auth.user.id;
+
+    if (!recipeId) {
       return NextResponse.json(
-        { error: "A user ID and recipe ID are required." },
+        { error: "A recipe ID is required." },
         { status: 400 }
       );
     }
@@ -96,16 +104,25 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as DraftRequestBody;
-    const userId = asString(body.userId);
-    const sourceRecipeId = asString(body.sourceRecipeId);
+    const limited = rateLimit(request, {
+      key: "create-draft",
+      limit: 30,
+      windowMs: 60 * 60 * 1000,
+    });
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "A user ID is required." },
-        { status: 400 }
-      );
+    if (limited) {
+      return limited;
     }
+
+    const auth = await requireUser(request);
+
+    if (auth.response) {
+      return auth.response;
+    }
+
+    const body = (await request.json()) as DraftRequestBody;
+    const sourceRecipeId = asString(body.sourceRecipeId);
+    const userId = auth.user.id;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -217,14 +234,30 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const limited = rateLimit(request, {
+      key: "save-draft",
+      limit: 60,
+      windowMs: 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
+    const auth = await requireUser(request);
+
+    if (auth.response) {
+      return auth.response;
+    }
+
     const body = (await request.json()) as DraftRequestBody;
-    const userId = asString(body.userId);
     const recipeId = asString(body.recipeId);
     const action = body.action === "submit" ? "submit" : "save";
+    const userId = auth.user.id;
 
-    if (!userId || !recipeId) {
+    if (!recipeId) {
       return NextResponse.json(
-        { error: "A user ID and recipe ID are required." },
+        { error: "A recipe ID is required." },
         { status: 400 }
       );
     }
@@ -233,6 +266,13 @@ export async function PUT(request: Request) {
 
     if ("error" in parsedDraft) {
       return NextResponse.json({ error: parsedDraft.error }, { status: 400 });
+    }
+
+    if (!parsedDraft.draft.name.trim()) {
+      return NextResponse.json(
+        { error: "Recipe name is required before saving a draft." },
+        { status: 400 }
+      );
     }
 
     if (action === "submit") {
@@ -345,13 +385,29 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const body = (await request.json()) as DraftRequestBody;
-    const userId = asString(body.userId);
-    const recipeId = asString(body.recipeId);
+    const limited = rateLimit(request, {
+      key: "delete-draft",
+      limit: 30,
+      windowMs: 60 * 60 * 1000,
+    });
 
-    if (!userId || !recipeId) {
+    if (limited) {
+      return limited;
+    }
+
+    const auth = await requireUser(request);
+
+    if (auth.response) {
+      return auth.response;
+    }
+
+    const body = (await request.json()) as DraftRequestBody;
+    const recipeId = asString(body.recipeId);
+    const userId = auth.user.id;
+
+    if (!recipeId) {
       return NextResponse.json(
-        { error: "A user ID and recipe ID are required." },
+        { error: "A recipe ID is required." },
         { status: 400 }
       );
     }

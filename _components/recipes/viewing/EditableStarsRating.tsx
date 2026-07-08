@@ -50,7 +50,6 @@ export default function EditableStarsRating({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: currentUser.id,
           recipeId,
           stars,
         }),

@@ -9,7 +9,7 @@ export type EmailVerificationPurpose =
   | "CHANGE_EMAIL_NEW"
   | "PASSWORD_RESET";
 
-const CODE_TTL_MINUTES = 10;
+const CODE_TTL_MINUTES = 30;
 const CODE_LENGTH = 6;
 const PASSWORD_RESET_TTL_MINUTES = 30;
 

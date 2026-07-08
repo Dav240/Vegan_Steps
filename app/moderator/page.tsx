@@ -21,10 +21,14 @@ const visitorUser = {
 
 export default function ModeratorPage() {
   const router = useRouter();
-  const { currentUser, setCurrentUser } = useSession();
+  const { currentUser, isSessionLoading, setCurrentUser } = useSession();
   const [activeTab, setActiveTab] = useState<ModeratorTab>("reports");
 
   useEffect(() => {
+    if (isSessionLoading) {
+      return;
+    }
+
     if (currentUser.userType === "VISITOR") {
       router.replace("/");
       return;
@@ -33,14 +37,22 @@ export default function ModeratorPage() {
     if (currentUser.userType !== "MODERATOR") {
       router.replace("/profile");
     }
-  }, [currentUser.userType, router]);
+  }, [currentUser.userType, isSessionLoading, router]);
 
-  function logout() {
+  async function logout() {
+    try {
+      await fetch("/api/session", {
+        method: "DELETE",
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
     setCurrentUser(visitorUser);
     router.replace("/");
   }
 
-  if (currentUser.userType !== "MODERATOR" || !currentUser.id) {
+  if (isSessionLoading || currentUser.userType !== "MODERATOR" || !currentUser.id) {
     return null;
   }
 
@@ -58,7 +70,7 @@ export default function ModeratorPage() {
           </div>
           <Button
             type="button"
-            onClick={logout}
+            onClick={() => void logout()}
             className="bg-vegr-berry text-white hover:bg-vegr-berry-dark"
           >
             <LogOut />
@@ -85,9 +97,9 @@ export default function ModeratorPage() {
           </div>
 
           {activeTab === "reports" ? (
-            <SubmittedReportsTab moderatorId={currentUser.id} />
+            <SubmittedReportsTab />
           ) : (
-            <SubmittedRecipesTab moderatorId={currentUser.id} />
+            <SubmittedRecipesTab />
           )}
         </div>
       </div>

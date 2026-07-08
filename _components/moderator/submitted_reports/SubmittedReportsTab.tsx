@@ -23,11 +23,7 @@ type ReportsResponse = {
   error?: string;
 };
 
-export default function SubmittedReportsTab({
-  moderatorId,
-}: {
-  moderatorId: string;
-}) {
+export default function SubmittedReportsTab() {
   const router = useRouter();
   const [entries, setEntries] = useState<ReportEntry[]>([]);
   const [hasMore, setHasMore] = useState(false);
@@ -38,7 +34,6 @@ export default function SubmittedReportsTab({
 
   const fetchReports = useCallback(async (offset: number, signal?: AbortSignal) => {
     const params = new URLSearchParams({
-      moderatorId,
       offset: String(offset),
       limit: String(PAGE_SIZE),
     });
@@ -52,7 +47,7 @@ export default function SubmittedReportsTab({
     }
 
     return data;
-  }, [moderatorId]);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();

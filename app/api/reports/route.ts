@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { ReportReason } from "@/app/generated/prisma/enums";
+import { requireUser } from "@/lib/auth-session";
 import { asString } from "@/lib/moderation";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 
 type ReportBody = {
   userId?: unknown;
@@ -16,16 +18,32 @@ const REPORT_REASONS = Object.values(ReportReason);
 
 export async function POST(request: Request) {
   try {
+    const limited = rateLimit(request, {
+      key: "report-recipe",
+      limit: 10,
+      windowMs: 60 * 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
+    const auth = await requireUser(request);
+
+    if (auth.response) {
+      return auth.response;
+    }
+
     const body = (await request.json()) as ReportBody;
-    const userId = asString(body.userId);
+    const userId = auth.user.id;
     const recipeId = asString(body.recipeId);
     const title = asString(body.title);
     const reason = asString(body.reason);
     const details = asString(body.details);
 
-    if (!userId || !recipeId) {
+    if (!recipeId) {
       return NextResponse.json(
-        { error: "A user ID and recipe ID are required." },
+        { error: "A recipe ID is required." },
         { status: 400 }
       );
     }

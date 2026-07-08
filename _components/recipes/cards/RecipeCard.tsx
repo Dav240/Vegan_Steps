@@ -46,6 +46,9 @@ export type RecipeCardProps = {
   onReport?: () => void;
   onSavedChange?: (recipeId: string, saved: boolean) => void;
   onDeleted?: (recipeId: string) => void;
+  actionsMode?: "full" | "readonly";
+  tagPresentation?: "compact" | "explore";
+  showOwnerStatus?: boolean;
   className?: string;
 };
 
@@ -65,6 +68,9 @@ export default function RecipeCard({
   onReport,
   onSavedChange,
   onDeleted,
+  actionsMode = "full",
+  tagPresentation = "compact",
+  showOwnerStatus = true,
   className,
 }: RecipeCardProps) {
   const router = useRouter();
@@ -76,8 +82,10 @@ export default function RecipeCard({
   const [isDeleted, setIsDeleted] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const visibleTags = tags.slice(0, 3);
+  const displayedTags = tagPresentation === "explore" ? tags : visibleTags;
   const recipeHref = `/recipes?recipeId=${encodeURIComponent(recipeId)}`;
   const isOwner = Boolean(currentUser.id) && currentUser.id === authorId;
+  const showActions = actionsMode === "full";
 
   if (isDeleted) return null;
 
@@ -136,7 +144,7 @@ export default function RecipeCard({
       const response = await fetch("/api/recipes/drafts", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: currentUser.id, recipeId }),
+        body: JSON.stringify({ recipeId }),
       });
       const data = await response.json();
 
@@ -167,6 +175,7 @@ export default function RecipeCard({
         onKeyDown={handleKeyDown}
         className={cn(
           "w-full max-w-[370px] cursor-pointer self-stretch overflow-hidden rounded-lg border border-vegr-berry-soft bg-vegr-paper shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry",
+          "vegr-recipe-card",
           className
         )}
       >
@@ -195,13 +204,24 @@ export default function RecipeCard({
               {name}
             </h3>
 
-            <div className="mt-3 flex flex-wrap items-center gap-1.5">
-              {visibleTags.map((tag) => (
-                <TagBubble key={tag} tag={tag} />
+            <div
+              className={cn(
+                "mt-3 flex max-w-full gap-1.5",
+                tagPresentation === "explore"
+                  ? "flex-col items-start"
+                  : "flex-nowrap items-center overflow-hidden"
+              )}
+            >
+              {displayedTags.map((tag) => (
+                <TagBubble
+                  key={tag}
+                  tag={tag}
+                  className="max-w-full shrink-0 whitespace-nowrap"
+                />
               ))}
-              {tags.length > 3 && (
+              {tagPresentation !== "explore" && tags.length > 3 && (
                 <span
-                  className="px-1 text-sm font-bold text-vegr-berry"
+                  className="shrink-0 px-1 text-sm font-bold text-vegr-berry"
                   aria-label={`${tags.length - 3} more tags`}
                 >
                   ...
@@ -209,7 +229,7 @@ export default function RecipeCard({
               )}
             </div>
 
-            {isOwner && status && (
+            {showOwnerStatus && isOwner && status && (
               <p className="mt-3 text-xs font-bold uppercase text-vegr-berry-dark">
                 Status: {formatStatus(status)}
               </p>
@@ -217,63 +237,65 @@ export default function RecipeCard({
           </div>
 
           <div className="flex min-w-[104px] flex-col items-end">
-            <div className="flex items-center gap-1">
-              <SaveButton
-                recipeId={recipeId}
-                recipeName={name}
-                initiallySaved={initiallySaved}
-                savedState={savedState}
-                onSavedChange={onSavedChange}
-              />
+            {showActions && (
+              <div className="flex items-center gap-1">
+                <SaveButton
+                  recipeId={recipeId}
+                  recipeName={name}
+                  initiallySaved={initiallySaved}
+                  savedState={savedState}
+                  onSavedChange={onSavedChange}
+                />
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label={`More options for ${name}`}
-                    className="flex size-10 items-center justify-center rounded-md text-vegr-berry transition-colors hover:bg-vegr-berry-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry"
-                  >
-                    <Ellipsis className="size-6" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-40">
-                  {isOwner ? (
-                    <>
-                      <DropdownMenuItem
-                        onSelect={() => void openEditor()}
-                        disabled={isOpeningEditor || isDeleting}
-                        className="text-vegr-green-dark focus:bg-vegr-green-soft focus:text-vegr-green-dark"
-                      >
-                        <Pencil />
-                        {status === "APPROVED" ? "Make New Recipe" : "Edit"}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onSelect={() => setDeleteDialogOpen(true)}
-                        disabled={isDeleting}
-                        className="text-red-700 focus:bg-red-50 focus:text-red-800"
-                      >
-                        <Trash2 />
-                        Delete
-                      </DropdownMenuItem>
-                    </>
-                  ) : (
-                    <DropdownMenuItem
-                      onSelect={() => {
-                        if (onReport) {
-                          onReport();
-                        } else {
-                          setReportDialogOpen(true);
-                        }
-                      }}
-                      className="text-red-700 hover:bg-red-50 hover:text-red-800 focus:bg-red-50 focus:text-red-800"
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label={`More options for ${name}`}
+                      className="flex size-10 items-center justify-center rounded-md text-vegr-berry transition-colors hover:bg-vegr-berry-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry"
                     >
-                      <Flag />
-                      Report
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                      <Ellipsis className="size-6" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="min-w-40">
+                    {isOwner ? (
+                      <>
+                        <DropdownMenuItem
+                          onSelect={() => void openEditor()}
+                          disabled={isOpeningEditor || isDeleting}
+                          className="text-vegr-green-dark focus:bg-vegr-green-soft focus:text-vegr-green-dark"
+                        >
+                          <Pencil />
+                          {status === "APPROVED" ? "Make New Recipe" : "Edit"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() => setDeleteDialogOpen(true)}
+                          disabled={isDeleting}
+                          className="text-red-700 focus:bg-red-50 focus:text-red-800"
+                        >
+                          <Trash2 />
+                          Delete
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          if (onReport) {
+                            onReport();
+                          } else {
+                            setReportDialogOpen(true);
+                          }
+                        }}
+                        className="text-red-700 hover:bg-red-50 hover:text-red-800 focus:bg-red-50 focus:text-red-800"
+                      >
+                        <Flag />
+                        Report
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
 
             <StarsRating rating={rating} className="mt-2" />
           </div>

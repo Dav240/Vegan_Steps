@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { requireUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 
 type RatingBody = {
   userId?: unknown;
@@ -10,14 +12,30 @@ type RatingBody = {
 
 export async function PUT(request: Request) {
   try {
+    const limited = rateLimit(request, {
+      key: "rate-recipe",
+      limit: 40,
+      windowMs: 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
+    const auth = await requireUser(request);
+
+    if (auth.response) {
+      return auth.response;
+    }
+
     const body = (await request.json()) as RatingBody;
-    const userId = typeof body.userId === "string" ? body.userId : "";
     const recipeId = typeof body.recipeId === "string" ? body.recipeId : "";
     const stars = typeof body.stars === "number" ? body.stars : 0;
+    const userId = auth.user.id;
 
-    if (!userId || !recipeId || !Number.isInteger(stars) || stars < 1 || stars > 5) {
+    if (!recipeId || !Number.isInteger(stars) || stars < 1 || stars > 5) {
       return NextResponse.json(
-        { error: "A user, recipe, and rating from 1 to 5 are required." },
+        { error: "A recipe and rating from 1 to 5 are required." },
         { status: 400 }
       );
     }

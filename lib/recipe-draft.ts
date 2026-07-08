@@ -47,11 +47,11 @@ export type RecipeDraft = {
   rejectionReason?: string | null;
 };
 
-export async function createRecipeDraft(userId: string, sourceRecipeId?: string) {
+export async function createRecipeDraft(_userId: string, sourceRecipeId?: string) {
   const response = await fetch("/api/recipes/drafts", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId, sourceRecipeId }),
+    body: JSON.stringify({ sourceRecipeId }),
   });
   const data = await response.json();
 

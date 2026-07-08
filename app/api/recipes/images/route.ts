@@ -1,6 +1,7 @@
 import { Buffer } from "node:buffer";
 import { NextResponse } from "next/server";
 
+import { requireUser } from "@/lib/auth-session";
 import cloudinary, { hasCloudinaryConfig } from "@/lib/cloudinary";
 import {
   hasSightengineConfig,
@@ -8,6 +9,7 @@ import {
   moderateRecipeImage,
 } from "@/lib/image-moderation";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import { deleteRecipeImageIfUnused } from "@/lib/recipe-image-cleanup";
 import { MAX_RECIPE_IMAGE_BYTES } from "@/lib/recipe-draft";
 
@@ -17,6 +19,22 @@ export async function POST(request: Request) {
   let uploadedImageKey = "";
 
   try {
+    const limited = rateLimit(request, {
+      key: "recipe-image",
+      limit: 20,
+      windowMs: 60 * 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
+    const auth = await requireUser(request);
+
+    if (auth.response) {
+      return auth.response;
+    }
+
     if (!hasCloudinaryConfig()) {
       return NextResponse.json(
         { error: "Cloudinary is not configured on the server." },
@@ -32,13 +50,12 @@ export async function POST(request: Request) {
     }
 
     const formData = await request.formData();
-    const userId = formData.get("userId");
     const recipeId = formData.get("recipeId");
     const file = formData.get("file");
 
-    if (typeof userId !== "string" || typeof recipeId !== "string" || !(file instanceof File)) {
+    if (typeof recipeId !== "string" || !(file instanceof File)) {
       return NextResponse.json(
-        { error: "A user, recipe, and image file are required." },
+        { error: "A recipe and image file are required." },
         { status: 400 }
       );
     }
@@ -60,7 +77,7 @@ export async function POST(request: Request) {
     const recipe = await prisma.recipe.findFirst({
       where: {
         id: recipeId.trim(),
-        authorId: userId.trim(),
+        authorId: auth.user.id,
         isDeleted: false,
       },
       select: {

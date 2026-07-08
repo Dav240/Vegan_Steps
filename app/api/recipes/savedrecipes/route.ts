@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { requireUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import { recipeCardSelect, toRecipeCard } from "@/lib/recipe-card-data";
 
 type SaveRecipeBody = {
@@ -10,26 +12,24 @@ type SaveRecipeBody = {
 
 async function getSaveRequest(request: Request) {
   const body = (await request.json()) as SaveRecipeBody;
-  const userId = typeof body.userId === "string" ? body.userId : "";
   const recipeId = typeof body.recipeId === "string" ? body.recipeId : "";
 
-  if (!userId || !recipeId) {
+  if (!recipeId) {
     return null;
   }
 
-  return { userId, recipeId };
+  return { recipeId };
 }
 
 export async function GET(request: Request) {
   try {
-    const userId = new URL(request.url).searchParams.get("userId");
+    const auth = await requireUser(request);
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "A user ID is required." },
-        { status: 400 }
-      );
+    if (auth.response) {
+      return auth.response;
     }
+
+    const userId = auth.user.id;
 
     const savedRecipes = await prisma.savedRecipe.findMany({
       where: {
@@ -69,16 +69,33 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const limited = rateLimit(request, {
+      key: "save-recipe",
+      limit: 60,
+      windowMs: 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
+    const auth = await requireUser(request);
+
+    if (auth.response) {
+      return auth.response;
+    }
+
     const saveRequest = await getSaveRequest(request);
 
     if (!saveRequest) {
       return NextResponse.json(
-        { error: "A user ID and recipe ID are required." },
+        { error: "A recipe ID is required." },
         { status: 400 }
       );
     }
 
-    const { userId, recipeId } = saveRequest;
+    const { recipeId } = saveRequest;
+    const userId = auth.user.id;
     const [user, recipe] = await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
@@ -130,17 +147,36 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const limited = rateLimit(request, {
+      key: "unsave-recipe",
+      limit: 60,
+      windowMs: 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
+    const auth = await requireUser(request);
+
+    if (auth.response) {
+      return auth.response;
+    }
+
     const saveRequest = await getSaveRequest(request);
 
     if (!saveRequest) {
       return NextResponse.json(
-        { error: "A user ID and recipe ID are required." },
+        { error: "A recipe ID is required." },
         { status: 400 }
       );
     }
 
     await prisma.savedRecipe.deleteMany({
-      where: saveRequest,
+      where: {
+        userId: auth.user.id,
+        recipeId: saveRequest.recipeId,
+      },
     });
 
     return NextResponse.json({ saved: false });

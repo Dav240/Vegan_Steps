@@ -83,6 +83,10 @@
   --foreground: #241b22;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -94,7 +98,7 @@ body {
       button,
       a[href],
       [role="button"],
-      [role="link"],
+      [role="link"]:not(.vegr-recipe-card),
       [data-slot="button"],
       [data-slot="dropdown-menu-item"]
     ):where(:not(:disabled), :not([aria-disabled="true"])) {
@@ -175,7 +179,7 @@ body {
       button,
       a[href],
       [role="button"],
-      [role="link"],
+      [role="link"]:not(.vegr-recipe-card),
       [data-slot="button"],
       [data-slot="dropdown-menu-item"]
     ):where(:not(:disabled), :not([aria-disabled="true"])):hover {
@@ -187,9 +191,9 @@ body {
   :where(.grid) > :where(
       button,
       a[href],
-      article[role="link"],
+      article[role="link"]:not(.vegr-recipe-card),
       [role="button"],
-      [role="link"]
+      [role="link"]:not(.vegr-recipe-card)
     ):where(:not(:disabled), :not([aria-disabled="true"])):hover {
     background-color: var(--color-vegr-green-soft) !important;
     border-color: var(--color-vegr-green) !important;
@@ -200,7 +204,7 @@ body {
       button,
       a[href],
       [role="button"],
-      [role="link"],
+      [role="link"]:not(.vegr-recipe-card),
       [data-slot="button"],
       [data-slot="dropdown-menu-item"]
     ):where(:not(:disabled), :not([aria-disabled="true"])):hover
@@ -208,9 +212,9 @@ body {
   :where(.grid) > :where(
       button,
       a[href],
-      article[role="link"],
+      article[role="link"]:not(.vegr-recipe-card),
       [role="button"],
-      [role="link"]
+      [role="link"]:not(.vegr-recipe-card)
     ):where(:not(:disabled), :not([aria-disabled="true"])):hover
     :where(svg, span, p, h1, h2, h3, h4, h5, h6) {
     color: inherit !important;
@@ -230,5 +234,33 @@ body {
 
   :where(.vegr-extra-card-action) .vegr-extra-card-icon {
     color: currentColor !important;
+  }
+
+  :where(.vegr-logo-link):hover {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: inherit !important;
+  }
+
+  :where(.vegr-no-hover[data-state="checked"]):hover {
+    background-color: var(--color-vegr-berry) !important;
+    border-color: var(--color-vegr-berry) !important;
+    color: inherit !important;
+  }
+
+  :where(.vegr-no-hover[data-state="unchecked"]):hover {
+    background-color: #ffffff !important;
+    border-color: var(--color-vegr-berry) !important;
+    color: inherit !important;
+  }
+
+  :where(.vegr-recipe-card):hover {
+    background-color: var(--color-vegr-paper) !important;
+    border-color: var(--color-vegr-berry-soft) !important;
+    color: var(--color-vegr-ink) !important;
+  }
+
+  :where(.vegr-recipe-card):hover :where(p, h1, h2, h3, h4, h5, h6) {
+    color: inherit;
   }
 }

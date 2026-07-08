@@ -1,60 +1,66 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import { ArrowDown } from "lucide-react";
 
 import VisitorHeader from "@/_components/home/VisitorHeader";
-import { Button } from "@/_components/ui/button";
+import ExplorePage from "@/_components/recipes/explore/ExplorePage";
 
 export default function VisitorHome() {
-  const bannerUrl ="https://res.cloudinary.com/diqefvh29/image/upload/banner_plbcgv";
+  const bannerUrl =
+    "https://res.cloudinary.com/diqefvh29/image/upload/banner_plbcgv";
 
   return (
     <main className="min-h-screen bg-vegr-cream text-vegr-ink">
       <VisitorHeader />
 
-      <section className="relative flex min-h-[520px] items-center justify-center overflow-hidden">
-        <Image src={bannerUrl} alt="Vegan food banner" fill className="object-cover" priority/>
-
-        <div className="absolute inset-0 bg-vegr-berry-dark/55" />
-
-        <div className="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
-          <h1 className="font-indie-flower text-7xl font-bold tracking-tight md:text-9xl">
-            VegR
-          </h1>
-
-          <p className="mt-15 text-xl font-medium md:text-2xl">
-            A place for your vegan recipes.
-          </p>
+      <section className="flex min-h-[calc(100dvh-5rem)] flex-col bg-white text-center">
+        <div className="relative min-h-[42dvh] overflow-hidden border-b-[10px] border-vegr-gold">
+          <Image
+            src={bannerUrl}
+            alt="Vegan food banner"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+          <div className="absolute inset-0 bg-vegr-berry-dark/45" />
+          <div className="relative z-10 flex h-full min-h-[45dvh] items-center justify-center px-6 py-12">
+            <div>
+              <h1 className="font-indie-flower text-7xl font-bold leading-none tracking-tight text-white drop-shadow-md md:text-9xl">
+                VegR
+              </h1>
+              <p className="mt-8 text-xl font-semibold text-white md:text-2xl">
+                A place for your vegan recipes.
+              </p>
+            </div>
+          </div>
         </div>
-      </section>
 
-      <section className="border-t-[10px] border-vegr-gold px-6 py-20 text-center">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="text-3xl font-bold text-vegr-ink md:text-4xl">
-            Cook, share, and discover vegan food.
-          </h2>
+        <div className="flex flex-1 items-center justify-center px-6 py-20">
+          <div className="relative z-10 mx-auto max-w-4xl">
+            <h2 className="text-3xl font-bold text-vegr-ink md:text-5xl">
+              Cook, share, and discover vegan food.
+            </h2>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-700">
-            VegR is a simple space for finding and sharing vegan recipes, from
-            quick everyday meals to creative plant-based favourites. Browse
-            public recipes, save ideas, and share your own dishes with the
-            community.
-          </p>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-zinc-700">
+              VegR is a simple space for finding and sharing vegan recipes, from
+              quick everyday meals to creative plant-based favourites. Browse
+              public recipes, save ideas, and share your own dishes with the
+              community.
+            </p>
 
-          <div className="mt-10 flex justify-center gap-4">
-            <Button asChild className="bg-vegr-green text-white hover:bg-vegr-green-dark">
-              <Link href="/recipes">Browse Recipes</Link>
-            </Button>
-
-            <Button asChild variant="outline"
-              className="border-vegr-berry bg-white text-vegr-berry hover:bg-vegr-berry-soft hover:text-vegr-berry-dark"
+            <a
+              href="#explore"
+              className="mx-auto mt-10 flex size-14 animate-bounce items-center justify-center rounded-full border border-vegr-green bg-white text-vegr-green shadow-sm transition-colors hover:bg-vegr-green hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-green"
+              aria-label="Jump to Explore recipes"
             >
-              <Link href="/login">Get Started</Link>
-            </Button>
+              <ArrowDown className="size-7" />
+            </a>
           </div>
         </div>
       </section>
+
+      <ExplorePage variant="visitor" />
     </main>
   );
 }

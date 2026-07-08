@@ -19,9 +19,11 @@ type RecentRecipe = {
   status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "REMOVED";
 };
 
-export default function MyRecipesProfile({ savedRecipeStates, onSavedChange }: {
+export default function MyRecipesProfile({ refreshKey, savedRecipeStates, onSavedChange, onRecipeDeleted }: {
+  refreshKey: number;
   savedRecipeStates: Record<string, boolean>;
   onSavedChange: (recipeId: string, saved: boolean) => void;
+  onRecipeDeleted: () => void;
 }) {
   const { currentUser } = useSession();
   const [recentRecipes, setRecentRecipes] = useState<RecentRecipe[]>([]);
@@ -35,7 +37,7 @@ export default function MyRecipesProfile({ savedRecipeStates, onSavedChange }: {
 
     const controller = new AbortController();
 
-    fetch(`/api/recipes/myrecipes?userId=${encodeURIComponent(currentUser.id)}`, {
+    fetch("/api/recipes/myrecipes", {
       signal: controller.signal,
     })
       .then(async (response) => {
@@ -52,6 +54,7 @@ export default function MyRecipesProfile({ savedRecipeStates, onSavedChange }: {
       })
       .then((data) => {
         setRecentRecipes(data.recipes);
+        setRecipesError("");
       })
       .catch((error: unknown) => {
         if (error instanceof Error && error.name !== "AbortError") {
@@ -62,15 +65,16 @@ export default function MyRecipesProfile({ savedRecipeStates, onSavedChange }: {
         if (!controller.signal.aborted) {
           setRecipesLoading(false);
         }
-      });
+    });
 
     return () => controller.abort();
-  }, [currentUser.id, currentUser.userType]);
+  }, [currentUser.id, currentUser.userType, refreshKey]);
 
   function handleDeleted(recipeId: string) {
     setRecentRecipes((current) =>
       current.filter((recipe) => recipe.recipeId !== recipeId)
     );
+    onRecipeDeleted();
   }
 
   return (

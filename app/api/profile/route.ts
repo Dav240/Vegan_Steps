@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { requireUser } from "@/lib/auth-session";
 import { verifyEmailCode } from "@/lib/email-verification";
 import { prisma } from "@/lib/prisma";
 import { validateEmail, validateUsername } from "@/lib/user-validation";
@@ -27,18 +28,15 @@ function userResponse(user: {
 }
 
 export async function GET(request: Request) {
-  const userId = new URL(request.url).searchParams.get("userId");
+  const auth = await requireUser(request);
 
-  if (!userId) {
-    return NextResponse.json(
-      { error: "A user ID is required." },
-      { status: 400 }
-    );
+  if (auth.response) {
+    return auth.response;
   }
 
   const user = await prisma.user.findUnique({
     where: {
-      id: userId,
+      id: auth.user.id,
     },
   });
 
@@ -58,15 +56,21 @@ export async function PATCH(request: Request) {
   try {
     const body = (await request.json()) as ProfileUpdateBody;
 
-    const userId = typeof body.userId === "string" ? body.userId : "";
+    const auth = await requireUser(request);
     const field = body.field === "username" || body.field === "email" ? body.field : null;
     const value = typeof body.value === "string" ? body.value : "";
     const oldEmailCode = typeof body.oldEmailCode === "string" ? body.oldEmailCode : "";
     const newEmailCode = typeof body.newEmailCode === "string" ? body.newEmailCode : "";
 
-    if (!userId || !field) {
+    if (auth.response) {
+      return auth.response;
+    }
+
+    const userId = auth.user.id;
+
+    if (!field) {
       return NextResponse.json(
-        { error: "A user ID and editable field are required." },
+        { error: "An editable field is required." },
         { status: 400 }
       );
     }

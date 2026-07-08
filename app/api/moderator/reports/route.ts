@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { getActiveModerator, parsePagination, asString } from "@/lib/moderation";
+import { requireModerator } from "@/lib/auth-session";
+import { parsePagination, asString } from "@/lib/moderation";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import { deleteRecipeImageIfUnused } from "@/lib/recipe-image-cleanup";
 
 type ReportActionBody = {
@@ -13,15 +15,11 @@ type ReportActionBody = {
 export async function GET(request: Request) {
   try {
     const searchParams = new URL(request.url).searchParams;
-    const moderatorId = searchParams.get("moderatorId")?.trim() ?? "";
     const { offset, limit } = parsePagination(searchParams);
-    const moderator = await getActiveModerator(moderatorId);
+    const auth = await requireModerator(request);
 
-    if (!moderator) {
-      return NextResponse.json(
-        { error: "Moderator access is required." },
-        { status: 403 }
-      );
+    if (auth.response) {
+      return auth.response;
     }
 
     const where = {
@@ -96,18 +94,26 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
+    const limited = rateLimit(request, {
+      key: "moderate-reports",
+      limit: 60,
+      windowMs: 60 * 1000,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
     const body = (await request.json()) as ReportActionBody;
-    const moderatorId = asString(body.moderatorId);
     const recipeId = asString(body.recipeId);
     const action = asString(body.action);
-    const moderator = await getActiveModerator(moderatorId);
+    const auth = await requireModerator(request);
 
-    if (!moderator) {
-      return NextResponse.json(
-        { error: "Moderator access is required." },
-        { status: 403 }
-      );
+    if (auth.response) {
+      return auth.response;
     }
+
+    const moderator = auth.user;
 
     if (!recipeId) {
       return NextResponse.json(

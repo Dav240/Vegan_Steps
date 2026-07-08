@@ -2,12 +2,14 @@
 
 import { useState, type ReactNode } from "react";
 import { LoaderCircle, Mail, X } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/_components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/_components/ui/dialog";
 import { Input } from "@/_components/ui/input";
 import { Label } from "@/_components/ui/label";
+import { Switch } from "@/_components/ui/switch";
 
 import PasswordResetRequestDialog from "@/_components/login/PasswordResetRequestDialog";
 
@@ -15,7 +17,7 @@ import { useSession, type CurrentUser } from "@/lib/session";
 
 type AuthMode = "login" | "register";
 
-export default function LoginWindow({ open, onOpenChange, showTrigger = true, redirectAfterAuth = "/profile" }: {
+export default function LoginWindow({ open, onOpenChange, showTrigger = true, redirectAfterAuth = "/explore" }: {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   showTrigger?: boolean;
@@ -30,6 +32,11 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [emailCode, setEmailCode] = useState("");
+  const [acceptsTerms, setAcceptsTerms] = useState(false);
+  const [acceptsAllergenDisclaimer, setAcceptsAllergenDisclaimer] = useState(false);
+  const [personalisedRecommendations, setPersonalisedRecommendations] = useState(false);
+  const [analytics, setAnalytics] = useState(false);
+  const [productEmails, setProductEmails] = useState(false);
   const [isSendingEmailCode, setIsSendingEmailCode] = useState(false);
   const [emailCodeMessage, setEmailCodeMessage] = useState("");
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
@@ -51,6 +58,11 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
     setPassword("");
     setConfirmPassword("");
     setEmailCode("");
+    setAcceptsTerms(false);
+    setAcceptsAllergenDisclaimer(false);
+    setPersonalisedRecommendations(false);
+    setAnalytics(false);
+    setProductEmails(false);
     setEmailCodeMessage("");
     setError("");
     updateOpen(false);
@@ -89,11 +101,27 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
   async function handleRegister() {
     setError("");
 
+    if (!acceptsTerms || !acceptsAllergenDisclaimer) {
+      setError("Please accept the required legal acknowledgements before registering.");
+      return;
+    }
+
     try {
       const response = await fetch("/api/login/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password, confirmPassword, emailCode }),
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          confirmPassword,
+          emailCode,
+          acceptsTerms,
+          acceptsAllergenDisclaimer,
+          personalisedRecommendations,
+          analytics,
+          productEmails,
+        }),
       });
       const contentType = response.headers.get("content-type") ?? "";
       const data = contentType.includes("application/json")
@@ -202,7 +230,7 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
               action={
                 !isLogin ? (
                   <Button type="button" variant="outline" onClick={() => void sendRegisterEmailCode()} disabled={isSendingEmailCode}
-                    className="h-10 border-vegr-green bg-white px-3 text-vegr-green-dark hover:bg-vegr-green-soft">
+                    className="h-10 min-h-10 self-end whitespace-nowrap border-vegr-green bg-white px-3 py-0 text-vegr-green-dark hover:bg-vegr-green-soft">
                     {isSendingEmailCode ? (
                       <LoaderCircle className="size-4 animate-spin" />
                     ) : (
@@ -228,6 +256,66 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
               <AuthField id="confirmPassword" label="Confirm Password" type="password" value={confirmPassword} placeholder="Confirm your password" 
               onChange={setConfirmPassword}
               />
+            )}
+
+            {!isLogin && (
+              <div className="space-y-3 rounded-lg border border-vegr-berry-soft bg-white/70 p-3">
+                <p className="text-sm font-bold uppercase tracking-wide text-vegr-berry">
+                  Required
+                </p>
+                <LegalCheckbox
+                  checked={acceptsTerms}
+                  onCheckedChange={setAcceptsTerms}
+                >
+                  I agree to the{" "}
+                  <LegalLink href="/legal#terms">Terms of Service</LegalLink>{" "}
+                  and{" "}
+                  <LegalLink href="/legal#community">
+                    Community Guidelines
+                  </LegalLink>
+                  .
+                </LegalCheckbox>
+                <LegalCheckbox
+                  checked={acceptsAllergenDisclaimer}
+                  onCheckedChange={setAcceptsAllergenDisclaimer}
+                >
+                  I understand VegR contains user-submitted recipes and allergen
+                  information is not guaranteed.{" "}
+                  <LegalLink href="/legal#allergen-safety">
+                    Read the disclaimer
+                  </LegalLink>
+                  .
+                </LegalCheckbox>
+
+                <div className="border-t border-vegr-berry-soft pt-3">
+                  <p className="text-sm font-bold uppercase tracking-wide text-vegr-green-dark">
+                    Optional
+                  </p>
+                  <div className="mt-3 space-y-3">
+                    <OptionalConsent
+                      label="Personalised recommendations"
+                      checked={personalisedRecommendations}
+                      onCheckedChange={setPersonalisedRecommendations}
+                    />
+                    <OptionalConsent
+                      label="Analytics"
+                      checked={analytics}
+                      onCheckedChange={setAnalytics}
+                    />
+                    <OptionalConsent
+                      label="Product emails"
+                      checked={productEmails}
+                      onCheckedChange={setProductEmails}
+                    />
+                  </div>
+                  <Link
+                    href="/legal#privacy"
+                    className="mt-3 inline-flex text-xs font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline"
+                  >
+                    Read the Privacy Policy
+                  </Link>
+                </div>
+              </div>
             )}
 
             {error && (
@@ -269,6 +357,60 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
   );
 }
 
+function LegalCheckbox({
+  checked,
+  onCheckedChange,
+  children,
+}: {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  children: ReactNode;
+}) {
+  return (
+    <label className="flex items-start gap-3 text-sm leading-6 text-zinc-700">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onCheckedChange(event.target.checked)}
+        className="mt-1 size-4 accent-vegr-green"
+      />
+      <span>{children}</span>
+    </label>
+  );
+}
+
+function OptionalConsent({
+  label,
+  checked,
+  onCheckedChange,
+}: {
+  label: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="flex items-center justify-between gap-3 text-sm text-zinc-700">
+      <span>{label}</span>
+      <Switch
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+      />
+    </label>
+  );
+}
+
+function LegalLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      className="font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline"
+    >
+      {children}
+    </Link>
+  );
+}
+
 function AuthField({ id, label, type, value, placeholder, onChange, action }: {
   id: string;
   label: string;
@@ -283,7 +425,7 @@ function AuthField({ id, label, type, value, placeholder, onChange, action }: {
       <Label htmlFor={id} className="text-zinc-700">
         {label}
       </Label>
-      <div className={action ? "grid grid-cols-[minmax(0,1fr)_auto] gap-2" : undefined}>
+      <div className={action ? "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2" : undefined}>
         <Input id={id} type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder}
           className="border-vegr-berry-soft bg-white text-vegr-ink placeholder:text-zinc-400 focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
         />

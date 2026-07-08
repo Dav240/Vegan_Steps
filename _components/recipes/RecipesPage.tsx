@@ -53,7 +53,7 @@ export default function RecipesPage({
   library: RecipeLibraryKind;
 }) {
   const router = useRouter();
-  const { currentUser } = useSession();
+  const { currentUser, isSessionLoading } = useSession();
   const [recipes, setRecipes] = useState<LibraryRecipe[]>([]);
   const [savedStates, setSavedStates] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState("");
@@ -91,6 +91,10 @@ export default function RecipesPage({
   }, [search]);
 
   useEffect(() => {
+    if (isSessionLoading) {
+      return;
+    }
+
     if (currentUser.userType === "VISITOR" || !currentUser.id) {
       router.replace("/");
       return;
@@ -99,14 +103,13 @@ export default function RecipesPage({
     if (currentUser.userType === "MODERATOR") {
       router.replace("/moderator");
     }
-  }, [currentUser.id, currentUser.userType, router]);
+  }, [currentUser.id, currentUser.userType, isSessionLoading, router]);
 
   useEffect(() => {
-    if (!currentUser.id || currentUser.userType !== "CLIENT") return;
+    if (isSessionLoading || !currentUser.id || currentUser.userType !== "CLIENT") return;
 
     const controller = new AbortController();
     const params = createLibraryParams({
-      userId: currentUser.id,
       library,
       sort,
       search: settledSearch,
@@ -149,6 +152,7 @@ export default function RecipesPage({
   }, [
     currentUser.id,
     currentUser.userType,
+    isSessionLoading,
     library,
     maxRating,
     minRating,
@@ -161,6 +165,7 @@ export default function RecipesPage({
 
   async function loadMore() {
     if (
+      isSessionLoading ||
       !currentUser.id ||
       currentUser.userType !== "CLIENT" ||
       !hasMore ||
@@ -174,7 +179,6 @@ export default function RecipesPage({
 
     try {
       const params = createLibraryParams({
-        userId: currentUser.id,
         library,
         sort,
         search: settledSearch,
@@ -244,7 +248,7 @@ export default function RecipesPage({
     setSelectedStatuses(DEFAULT_STATUS_FILTERS);
   }
 
-  if (currentUser.userType !== "CLIENT" || !currentUser.id) return null;
+  if (isSessionLoading || currentUser.userType !== "CLIENT" || !currentUser.id) return null;
 
   return (
     <main className="flex min-h-screen bg-vegr-cream text-vegr-ink">
@@ -350,7 +354,6 @@ export default function RecipesPage({
 }
 
 function createLibraryParams({
-  userId,
   library,
   sort,
   search,
@@ -361,7 +364,6 @@ function createLibraryParams({
   selectedStatuses,
   offset,
 }: {
-  userId: string;
   library: RecipeLibraryKind;
   sort: RecipeLibrarySort;
   search: string;
@@ -373,7 +375,6 @@ function createLibraryParams({
   offset: number;
 }) {
   const params = new URLSearchParams({
-    userId,
     library,
     sort,
     query: search,

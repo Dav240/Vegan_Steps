@@ -8,15 +8,19 @@ import VisitorHome from "@/_components/home/VisitorHome";
 
 export default function HomeRouter() {
   const router = useRouter();
-  const { currentUser } = useSession();
+  const { currentUser, isSessionLoading } = useSession();
 
   useEffect(() => {
-    if (currentUser.userType !== "VISITOR") {
-      router.replace(currentUser.userType === "MODERATOR" ? "/moderator" : "/profile");
+    if (isSessionLoading) {
+      return;
     }
-  }, [currentUser.userType, router]);
 
-  if (currentUser.userType !== "VISITOR") {
+    if (currentUser.userType !== "VISITOR") {
+      router.replace(currentUser.userType === "MODERATOR" ? "/moderator" : "/explore");
+    }
+  }, [currentUser.userType, isSessionLoading, router]);
+
+  if (isSessionLoading || currentUser.userType !== "VISITOR") {
     return null;
   }
 
