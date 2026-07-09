@@ -53,13 +53,28 @@ export async function createRecipeDraft(_userId: string, sourceRecipeId?: string
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sourceRecipeId }),
   });
-  const data = await response.json();
+  const data = await readJsonResponse(response);
 
   if (!response.ok) {
     throw new Error(data.error || "Could not create a recipe draft.");
   }
 
   return data.recipeId as string;
+}
+
+async function readJsonResponse(response: Response) {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.includes("application/json")) {
+    return {
+      error: `Expected JSON but received ${response.status} ${response.statusText}. If you are using a Cloudflare tunnel, check that the tunnel can reach your running app.`,
+    };
+  }
+
+  return (await response.json()) as {
+    error?: string;
+    recipeId?: string;
+  };
 }
 
 export function formatRecipeEnum(value: string) {

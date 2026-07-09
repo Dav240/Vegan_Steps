@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { Button } from "@/_components/ui/button";
-import { Switch } from "@/_components/ui/switch";
-import {
-  defaultPrivacyPreferences,
-  type PrivacyPreferences,
-} from "@/lib/legal";
+import { defaultPrivacyPreferences, type PrivacyPreferences } from "@/lib/legal";
+import { useSession } from "@/lib/session";
+
+import PreferenceToggle from "@/_components/legal/PreferenceToggle";
 
 const COOKIE_NAME = "vegr_cookie_preferences";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 180;
 
 export default function CookiePreferencesBanner() {
+  const { currentUser } = useSession();
   const [isReady, setIsReady] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -38,6 +38,15 @@ export default function CookiePreferencesBanner() {
     document.cookie = `${COOKIE_NAME}=${encodeURIComponent(JSON.stringify(nextPreferences))}; max-age=${COOKIE_MAX_AGE}; path=/; samesite=lax`;
     setPreferences(nextPreferences);
     setIsOpen(false);
+    window.dispatchEvent(
+      new CustomEvent("vegr-cookie-preferences-saved", {
+        detail: nextPreferences,
+      })
+    );
+
+    if (currentUser.id && currentUser.userType !== "VISITOR") {
+      void syncProfilePreferences(nextPreferences);
+    }
   }
 
   return (
@@ -52,40 +61,23 @@ export default function CookiePreferencesBanner() {
             Essential cookies keep login and security working. Optional analytics
             and visitor recommendations stay off unless you allow them.
           </p>
-          <Link
-            href="/legal#cookies"
-            className="mt-2 inline-flex text-sm font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline"
-          >
+          <Link href="/legal#cookies" className="mt-2 inline-flex text-sm font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline">
             Read the cookie policy
           </Link>
         </div>
 
         <div className="flex flex-wrap gap-2 md:justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => savePreferences(defaultPrivacyPreferences)}
+          <Button type="button" variant="outline" onClick={() => savePreferences(defaultPrivacyPreferences)}
             className="border-vegr-berry bg-white text-vegr-berry hover:bg-vegr-berry-soft"
           >
             Reject optional
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setShowDetails((current) => !current)}
+          <Button type="button" variant="outline" onClick={() => setShowDetails((current) => !current)}
             className="border-vegr-green bg-white text-vegr-green-dark hover:bg-vegr-green-soft"
           >
             Manage
           </Button>
-          <Button
-            type="button"
-            onClick={() =>
-              savePreferences({
-                personalisedRecommendations: true,
-                analytics: true,
-                productEmails: false,
-              })
-            }
+          <Button type="button" onClick={() => savePreferences({ personalisedRecommendations: true, analytics: true, productEmails: false })}
             className="bg-vegr-green text-white hover:bg-vegr-green-dark"
           >
             Accept optional
@@ -95,9 +87,7 @@ export default function CookiePreferencesBanner() {
 
       {showDetails && (
         <div className="mt-4 grid gap-3 border-t border-vegr-berry-soft pt-4 md:grid-cols-3">
-          <PreferenceToggle
-            label="Visitor recommendations"
-            description="Use browsing signals to improve recipe suggestions before login."
+          <PreferenceToggle label="Visitor recommendations" description="Use browsing signals to improve recipe suggestions before login."
             checked={preferences.personalisedRecommendations}
             onCheckedChange={(checked) =>
               setPreferences((current) => ({
@@ -106,18 +96,12 @@ export default function CookiePreferencesBanner() {
               }))
             }
           />
-          <PreferenceToggle
-            label="Analytics"
-            description="Help measure which pages and flows are working."
-            checked={preferences.analytics}
+          <PreferenceToggle label="Analytics" description="Help measure which pages and flows are working." checked={preferences.analytics}
             onCheckedChange={(checked) =>
               setPreferences((current) => ({ ...current, analytics: checked }))
             }
           />
-          <PreferenceToggle
-            label="Product emails"
-            description="Optional announcements later; not used for security emails."
-            checked={preferences.productEmails}
+          <PreferenceToggle label="Product emails" description="Optional announcements later; not used for security emails." checked={preferences.productEmails}
             onCheckedChange={(checked) =>
               setPreferences((current) => ({
                 ...current,
@@ -126,11 +110,7 @@ export default function CookiePreferencesBanner() {
             }
           />
           <div className="md:col-span-3">
-            <Button
-              type="button"
-              onClick={() => savePreferences(preferences)}
-              className="bg-vegr-berry text-white hover:bg-vegr-berry-dark"
-            >
+            <Button type="button" onClick={() => savePreferences(preferences)} className="bg-vegr-berry text-white hover:bg-vegr-berry-dark">
               Save preferences
             </Button>
           </div>
@@ -140,37 +120,22 @@ export default function CookiePreferencesBanner() {
   );
 }
 
-function PreferenceToggle({
-  label,
-  description,
-  checked,
-  onCheckedChange,
-}: {
-  label: string;
-  description: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-}) {
-  return (
-    <label className="flex gap-3 rounded-md border border-vegr-green-soft bg-vegr-cream p-3">
-      <Switch
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-      />
-      <span>
-        <span className="block text-sm font-bold">{label}</span>
-        <span className="mt-1 block text-xs leading-5 text-zinc-600">
-          {description}
-        </span>
-      </span>
-    </label>
-  );
+async function syncProfilePreferences(preferences: PrivacyPreferences) {
+  try {
+    await fetch("/api/profile/preferences", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(preferences),
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
+
+
 function readCookiePreferences() {
-  const match = document.cookie
-    .split("; ")
-    .find((cookie) => cookie.startsWith(`${COOKIE_NAME}=`));
+  const match = document.cookie.split("; ").find((cookie) => cookie.startsWith(`${COOKIE_NAME}=`));
 
   if (!match) {
     return null;

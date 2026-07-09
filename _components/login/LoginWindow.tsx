@@ -1,21 +1,25 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { LoaderCircle, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/_components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/_components/ui/dialog";
-import { Input } from "@/_components/ui/input";
-import { Label } from "@/_components/ui/label";
+
 import { Switch } from "@/_components/ui/switch";
 
+import AuthField from "@/_components/login/AuthField";
 import PasswordResetRequestDialog from "@/_components/login/PasswordResetRequestDialog";
+import LegalLink from "@/_components/legal/LegalLink";
 
+import { defaultPrivacyPreferences, type PrivacyPreferences } from "@/lib/legal";
 import { useSession, type CurrentUser } from "@/lib/session";
 
 type AuthMode = "login" | "register";
+
+const COOKIE_PREFERENCES_NAME = "vegr_cookie_preferences";
 
 export default function LoginWindow({ open, onOpenChange, showTrigger = true, redirectAfterAuth = "/explore" }: {
   open?: boolean;
@@ -54,6 +58,9 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
 
   function handleSuccessfulAuth(user: CurrentUser) {
     setCurrentUser(user);
+    if (isLogin) {
+      void syncStoredCookiePreferences();
+    }
     setEmail("");
     setPassword("");
     setConfirmPassword("");
@@ -174,6 +181,26 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
   function changeMode(nextMode: AuthMode) {
     setMode(nextMode);
     setError("");
+
+    if (nextMode === "register") {
+      const storedPreferences = readStoredCookiePreferences();
+
+      if (storedPreferences) {
+        setPersonalisedRecommendations( storedPreferences.personalisedRecommendations );
+        setAnalytics(storedPreferences.analytics);
+        setProductEmails(storedPreferences.productEmails);
+      }
+    }
+  }
+
+  function handleAuthSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (isLogin) {
+      void handleLogin();
+    } else {
+      void handleRegister();
+    }
   }
 
   return (
@@ -187,9 +214,8 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
           </DialogTrigger>
         )}
 
-        <DialogContent
-          showCloseButton={false}
-          className="border-vegr-berry-soft bg-vegr-cream text-vegr-ink sm:max-w-md"
+        <DialogContent showCloseButton={false}
+          className="max-h-[calc(100dvh-2rem)] grid-rows-[auto_auto_minmax(0,1fr)] gap-3 overflow-hidden border-vegr-berry-soft bg-vegr-cream p-4 text-vegr-ink sm:max-w-md sm:p-5"
         >
           <DialogClose asChild>
             <Button variant="ghost" size="icon" className="absolute right-4 top-4 text-vegr-berry hover:bg-vegr-berry-soft hover:text-vegr-berry-dark">
@@ -198,16 +224,14 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
           </DialogClose>
 
           <DialogHeader>
-            <DialogTitle className="font-indie-flower text-4xl font-bold text-vegr-ink">
+            <DialogTitle className="font-indie-flower text-3xl font-bold text-vegr-ink sm:text-4xl">
               {isLogin ? "Login" : "Register"}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="mt-4 grid grid-cols-2 rounded-lg border border-vegr-berry-soft bg-vegr-berry-soft p-1">
-            <Button type="button" variant="ghost" onClick={() => changeMode("login")}
-              className={
-                isLogin ? "bg-vegr-berry text-white hover:bg-vegr-berry-dark" : "text-vegr-berry-dark hover:bg-white/70"
-              }
+          <div className="grid grid-cols-2 rounded-lg border border-vegr-berry-soft bg-vegr-berry-soft p-1">
+            <Button type="button" variant="ghost" onClick={() => changeMode("login")} 
+              className={ isLogin ? "bg-vegr-berry text-white hover:bg-vegr-berry-dark" : "text-vegr-berry-dark hover:bg-white/70" }
             >
               Login
             </Button>
@@ -218,7 +242,7 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
             </Button>
           </div>
 
-          <div className="mt-4 space-y-5">
+          <form onSubmit={handleAuthSubmit} className="min-h-0 space-y-3 overflow-y-auto pr-1 sm:space-y-4">
             {!isLogin && (
               <AuthField id="username" label="Username" type="text" value={username} placeholder="Enter username" onChange={setUsername}/>
             )}
@@ -231,12 +255,8 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
                 !isLogin ? (
                   <Button type="button" variant="outline" onClick={() => void sendRegisterEmailCode()} disabled={isSendingEmailCode}
                     className="h-10 min-h-10 self-end whitespace-nowrap border-vegr-green bg-white px-3 py-0 text-vegr-green-dark hover:bg-vegr-green-soft">
-                    {isSendingEmailCode ? (
-                      <LoaderCircle className="size-4 animate-spin" />
-                    ) : (
-                      <Mail className="size-4" />
-                    )}
-                    Send code
+                    {isSendingEmailCode ? ( <LoaderCircle className="size-4 animate-spin" /> ) : ( <Mail className="size-4" /> )}
+                      Send code
                   </Button>
                 ) : null
               }
@@ -259,14 +279,11 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
             )}
 
             {!isLogin && (
-              <div className="space-y-3 rounded-lg border border-vegr-berry-soft bg-white/70 p-3">
+              <div className="space-y-2 rounded-lg border border-vegr-berry-soft bg-white/70 p-3">
                 <p className="text-sm font-bold uppercase tracking-wide text-vegr-berry">
                   Required
                 </p>
-                <LegalCheckbox
-                  checked={acceptsTerms}
-                  onCheckedChange={setAcceptsTerms}
-                >
+                <LegalCheckbox checked={acceptsTerms} onCheckedChange={setAcceptsTerms}>
                   I agree to the{" "}
                   <LegalLink href="/legal#terms">Terms of Service</LegalLink>{" "}
                   and{" "}
@@ -275,10 +292,7 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
                   </LegalLink>
                   .
                 </LegalCheckbox>
-                <LegalCheckbox
-                  checked={acceptsAllergenDisclaimer}
-                  onCheckedChange={setAcceptsAllergenDisclaimer}
-                >
+                <LegalCheckbox checked={acceptsAllergenDisclaimer} onCheckedChange={setAcceptsAllergenDisclaimer}>
                   I understand VegR contains user-submitted recipes and allergen
                   information is not guaranteed.{" "}
                   <LegalLink href="/legal#allergen-safety">
@@ -291,27 +305,12 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
                   <p className="text-sm font-bold uppercase tracking-wide text-vegr-green-dark">
                     Optional
                   </p>
-                  <div className="mt-3 space-y-3">
-                    <OptionalConsent
-                      label="Personalised recommendations"
-                      checked={personalisedRecommendations}
-                      onCheckedChange={setPersonalisedRecommendations}
-                    />
-                    <OptionalConsent
-                      label="Analytics"
-                      checked={analytics}
-                      onCheckedChange={setAnalytics}
-                    />
-                    <OptionalConsent
-                      label="Product emails"
-                      checked={productEmails}
-                      onCheckedChange={setProductEmails}
-                    />
+                  <div className="mt-2 space-y-2">
+                    <OptionalConsent label="Personalised recommendations" checked={personalisedRecommendations} onCheckedChange={setPersonalisedRecommendations}/>
+                    <OptionalConsent label="Analytics" checked={analytics} onCheckedChange={setAnalytics}/>
+                    <OptionalConsent label="Product emails" checked={productEmails} onCheckedChange={setProductEmails}/>
                   </div>
-                  <Link
-                    href="/legal#privacy"
-                    className="mt-3 inline-flex text-xs font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline"
-                  >
+                  <Link href="/legal#privacy" className="mt-3 inline-flex text-xs font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline">
                     Read the Privacy Policy
                   </Link>
                 </div>
@@ -324,8 +323,8 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <Button type="button" onClick={isLogin ? handleLogin : handleRegister} className="w-full bg-vegr-green text-white hover:bg-vegr-green-dark">
+            <div className="sticky bottom-0 -mx-1 grid grid-cols-2 gap-3 bg-vegr-cream px-1 pt-2">
+              <Button type="submit" className="w-full bg-vegr-green text-white hover:bg-vegr-green-dark">
                 {isLogin ? "Login" : "Register"}
               </Button>
               <DialogClose asChild>
@@ -339,16 +338,14 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
 
             {isLogin && (
               <div className="flex justify-start pl-1 pt-1">
-                <button
-                  type="button"
-                  onClick={openForgotPassword}
+                <button type="button" onClick={openForgotPassword}
                   className="text-sm font-medium text-vegr-berry hover:text-vegr-berry-dark hover:underline"
                 >
                   Forgot password?
                 </button>
               </div>
             )}
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -357,80 +354,62 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
   );
 }
 
-function LegalCheckbox({
-  checked,
-  onCheckedChange,
-  children,
-}: {
+function readStoredCookiePreferences() {
+  const match = document.cookie.split("; ").find((cookie) => cookie.startsWith(`${COOKIE_PREFERENCES_NAME}=`));
+
+  if (!match) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(
+      decodeURIComponent(match.split("=").slice(1).join("="))
+    ) as PrivacyPreferences;
+  } catch {
+    return defaultPrivacyPreferences;
+  }
+}
+
+async function syncStoredCookiePreferences() {
+  const preferences = readStoredCookiePreferences();
+
+  if (!preferences) {
+    return;
+  }
+
+  try {
+    await fetch("/api/profile/preferences", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(preferences),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function LegalCheckbox({ checked, onCheckedChange, children }: {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   children: ReactNode;
 }) {
   return (
-    <label className="flex items-start gap-3 text-sm leading-6 text-zinc-700">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(event) => onCheckedChange(event.target.checked)}
-        className="mt-1 size-4 accent-vegr-green"
-      />
+    <label className="flex items-start gap-2 text-sm leading-5 text-zinc-700">
+      <input type="checkbox" checked={checked} onChange={(event) => onCheckedChange(event.target.checked)} className="mt-1 size-4 accent-vegr-green"/>
       <span>{children}</span>
     </label>
   );
 }
 
-function OptionalConsent({
-  label,
-  checked,
-  onCheckedChange,
-}: {
+function OptionalConsent({ label, checked, onCheckedChange }: {
   label: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="flex items-center justify-between gap-3 text-sm text-zinc-700">
+    <label className="flex items-center justify-between gap-3 text-sm leading-5 text-zinc-700">
       <span>{label}</span>
-      <Switch
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-      />
+      <Switch checked={checked} onCheckedChange={onCheckedChange}/>
     </label>
-  );
-}
-
-function LegalLink({ href, children }: { href: string; children: ReactNode }) {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      className="font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline"
-    >
-      {children}
-    </Link>
-  );
-}
-
-function AuthField({ id, label, type, value, placeholder, onChange, action }: {
-  id: string;
-  label: string;
-  type: "text" | "email" | "password";
-  value: string;
-  placeholder: string;
-  onChange: (value: string) => void;
-  action?: ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id} className="text-zinc-700">
-        {label}
-      </Label>
-      <div className={action ? "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2" : undefined}>
-        <Input id={id} type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder}
-          className="border-vegr-berry-soft bg-white text-vegr-ink placeholder:text-zinc-400 focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
-        />
-        {action}
-      </div>
-    </div>
   );
 }

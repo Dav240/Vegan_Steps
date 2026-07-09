@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
-import { setSessionCookie } from "@/lib/auth-session";
+import { assertSessionCookieConfig, setSessionCookie } from "@/lib/auth-session";
 
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -31,6 +31,18 @@ export async function POST(request: Request) {
             return NextResponse.json(
                 { error: "Email and password are required." },
                 { status: 400 }
+            );
+        }
+
+        try {
+            assertSessionCookieConfig();
+        } catch {
+            return NextResponse.json(
+                {
+                    error:
+                        "Session cookies are not configured. Set SESSION_SECRET before logging in production mode.",
+                },
+                { status: 500 }
             );
         }
 

@@ -5,14 +5,7 @@ import { LoaderCircle, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/_components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/_components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/_components/ui/dialog";
 import { useSession } from "@/lib/session";
 
 type DialogMode = "optional-data" | "account" | null;
@@ -45,9 +38,7 @@ export default function ProfileDangerZone() {
       window.dispatchEvent(new Event("vegr-optional-data-deleted"));
     } catch (requestError) {
       setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Could not delete optional data."
+        requestError instanceof Error ? requestError.message : "Could not delete optional data."
       );
     } finally {
       setIsDeleting(false);
@@ -74,9 +65,7 @@ export default function ProfileDangerZone() {
       router.replace("/");
     } catch (requestError) {
       setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Could not delete your account."
+        requestError instanceof Error ? requestError.message : "Could not delete your account."
       );
       setIsDeleting(false);
     }
@@ -85,7 +74,7 @@ export default function ProfileDangerZone() {
   const isAccountDelete = dialogMode === "account";
 
   return (
-    <section className="mt-8 max-w-2xl rounded-lg border border-deep-crimson-200 bg-deep-crimson-50 p-5 shadow-sm">
+    <section className="bg-deep-crimson-50 p-5">
       <p className="text-sm font-bold uppercase tracking-wide text-deep-crimson-700">
         Account controls
       </p>
@@ -96,17 +85,12 @@ export default function ProfileDangerZone() {
       </p>
 
       <div className="mt-5 flex flex-wrap gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setDialogMode("optional-data")}
+        <Button type="button" variant="outline" onClick={() => setDialogMode("optional-data")}
           className="border-vegr-berry bg-white text-vegr-berry hover:bg-vegr-berry-soft"
         >
           Delete Optional Data
         </Button>
-        <Button
-          type="button"
-          onClick={() => setDialogMode("account")}
+        <Button type="button" onClick={() => setDialogMode("account")}
           className="bg-deep-crimson-600 font-bold text-white hover:bg-deep-crimson-700"
         >
           <Trash2 className="size-4" />
@@ -140,22 +124,14 @@ export default function ProfileDangerZone() {
           </DialogHeader>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setDialogMode(null)}
-              disabled={isDeleting}
+            <Button type="button" variant="outline" onClick={() => setDialogMode(null)} disabled={isDeleting}
               className="border-vegr-berry-soft bg-white text-vegr-ink hover:bg-vegr-berry-soft"
             >
               Cancel
             </Button>
-            <Button
-              type="button"
-              disabled={isDeleting}
+            <Button type="button" disabled={isDeleting}
               onClick={() =>
-                isAccountDelete
-                  ? void deleteAccount()
-                  : void deleteOptionalData()
+                isAccountDelete ? void deleteAccount() : void deleteOptionalData()
               }
               className="bg-deep-crimson-600 font-bold text-white hover:bg-deep-crimson-700"
             >

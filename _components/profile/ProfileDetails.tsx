@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, LoaderCircle, Mail } from "lucide-react";
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/_components/ui/accordion";
 import { Button } from "@/_components/ui/button";
-import { Input } from "@/_components/ui/input";
-import { Label } from "@/_components/ui/label";
+
+
+import ProfileField from "@/_components/profile/ProfileField";
+import ProfileEmailField from "@/_components/profile/ProfileEmailField";
 import PasswordResetRequestDialog from "@/_components/login/PasswordResetRequestDialog";
 import ProfileDangerZone from "@/_components/profile/ProfileDangerZone";
 import PrivacyPreferences from "@/_components/profile/PrivacyPreferences";
+
 import { useSession, type CurrentUser } from "@/lib/session";
 
 type EditableField = "username" | "email";
@@ -190,47 +193,71 @@ export default function ProfileDetails() {
             {(username || currentUser.username || "U").charAt(0).toUpperCase()}
           </div>
 
-          <div className="max-w-2xl space-y-6">
-            <ProfileField id="profile-username" label="Username" type="text" 
-              value={username} 
-              pending={pendingField === "username"} 
-              message={usernameMessage}
-              onChange={setUsername}
-              onSave={() => updateField("username")}
-            />
-
-            <ProfileEmailField
-              email={email}
-              oldEmailCode={oldEmailCode}
-              newEmailCode={newEmailCode}
-              pending={pendingField === "email"}
-              sending={isSendingEmailCodes}
-              codesSent={emailCodesSent}
-              message={emailMessage}
-              onEmailChange={(value) => {
-                setEmail(value);
-                setEmailMessage(null);
-                setEmailCodesSent(false);
-                setOldEmailCode("");
-                setNewEmailCode("");
-              }}
-              onOldEmailCodeChange={setOldEmailCode}
-              onNewEmailCodeChange={setNewEmailCode}
-              onSendCodes={() => void sendEmailChangeCodes()}
-              onConfirm={() => updateField("email")}
-            />
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setPasswordResetOpen(true)}
-              className="border-vegr-berry bg-white text-vegr-berry shadow-sm hover:bg-vegr-berry-soft hover:text-vegr-berry-dark"
+          <div className="max-w-2xl">
+            <Accordion
+              type="multiple"
+              defaultValue={["profile-details"]}
+              className="space-y-4"
             >
-              Change Password
-            </Button>
+              <AccordionItem value="profile-details">
+                <AccordionTrigger>Profile Details</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-6">
+                    <ProfileField id="profile-username" label="Username" type="text"
+                      value={username}
+                      pending={pendingField === "username"}
+                      message={usernameMessage}
+                      onChange={setUsername}
+                      onSave={() => updateField("username")}
+                    />
 
-            <PrivacyPreferences />
-            <ProfileDangerZone />
+                    <ProfileEmailField
+                      email={email}
+                      oldEmailCode={oldEmailCode}
+                      newEmailCode={newEmailCode}
+                      pending={pendingField === "email"}
+                      sending={isSendingEmailCodes}
+                      codesSent={emailCodesSent}
+                      message={emailMessage}
+                      onEmailChange={(value) => {
+                        setEmail(value);
+                        setEmailMessage(null);
+                        setEmailCodesSent(false);
+                        setOldEmailCode("");
+                        setNewEmailCode("");
+                      }}
+                      onOldEmailCodeChange={setOldEmailCode}
+                      onNewEmailCodeChange={setNewEmailCode}
+                      onSendCodes={() => void sendEmailChangeCodes()}
+                      onConfirm={() => updateField("email")}
+                    />
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setPasswordResetOpen(true)}
+                      className="border-vegr-berry bg-white text-vegr-berry shadow-sm hover:bg-vegr-berry-soft hover:text-vegr-berry-dark"
+                    >
+                      Change Password
+                    </Button>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="privacy-choices">
+                <AccordionTrigger>Privacy Choices</AccordionTrigger>
+                <AccordionContent className="p-0">
+                  <PrivacyPreferences />
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="account-controls">
+                <AccordionTrigger>Account Controls</AccordionTrigger>
+                <AccordionContent className="p-0">
+                  <ProfileDangerZone />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
       </section>
@@ -248,150 +275,3 @@ export default function ProfileDetails() {
   );
 }
 
-function ProfileEmailField({ email, oldEmailCode, newEmailCode, pending, sending, codesSent, message,
-  onEmailChange,
-  onOldEmailCodeChange,
-  onNewEmailCodeChange,
-  onSendCodes,
-  onConfirm,
-}: {
-  email: string;
-  oldEmailCode: string;
-  newEmailCode: string;
-  pending: boolean;
-  sending: boolean;
-  codesSent: boolean;
-  message: FieldMessage;
-  onEmailChange: (value: string) => void;
-  onOldEmailCodeChange: (value: string) => void;
-  onNewEmailCodeChange: (value: string) => void;
-  onSendCodes: () => void;
-  onConfirm: () => void;
-}) {
-  return (
-    <div>
-      <div className="space-y-2">
-        <Label htmlFor="profile-email" className="font-semibold text-vegr-berry-dark">
-          Email
-        </Label>
-        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-          <Input id="profile-email" type="email" value={email} onChange={(event) => onEmailChange(event.target.value)}
-            className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
-          />
-          <button type="button" onClick={onSendCodes} disabled={sending || pending}
-            className="flex h-10 items-center justify-center gap-2 rounded-md border border-vegr-green bg-white px-3 text-sm font-semibold text-vegr-green-dark shadow-sm transition-colors hover:bg-vegr-green-soft disabled:cursor-wait disabled:opacity-60"
-          >
-            {sending ? (
-              <LoaderCircle className="size-4 animate-spin" />
-            ) : (
-              <Mail className="size-4" />
-            )}
-            Send codes
-          </button>
-        </div>
-      </div>
-
-      {codesSent && (
-        <div className="mt-3 space-y-3">
-          <div className="space-y-2">
-            <Label htmlFor="profile-old-email-code" className="text-sm text-zinc-700">
-              Current email code
-            </Label>
-            <Input id="profile-old-email-code" type="text" value={oldEmailCode} onChange={(event) => onOldEmailCodeChange(event.target.value)}
-              placeholder="Code sent to current email"
-              className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
-            />
-          </div>
-
-          <div className="grid grid-cols-[minmax(0,1fr)_40px] items-end gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="profile-new-email-code" className="text-sm text-zinc-700">
-                New email code
-              </Label>
-              <Input id="profile-new-email-code" type="text" value={newEmailCode}
-                onChange={(event) => onNewEmailCodeChange(event.target.value)}
-                placeholder="Code sent to new email"
-                className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
-              />
-            </div>
-
-            <button type="button" onClick={onConfirm} disabled={pending || sending}
-              aria-label="Confirm email change"
-              className="flex size-10 items-center justify-center rounded-md border border-vegr-green-dark bg-vegr-green text-white shadow-sm transition-colors hover:bg-vegr-green-dark disabled:cursor-wait disabled:opacity-60"
-            >
-              {pending ? (
-                <LoaderCircle className="size-5 animate-spin" />
-              ) : (
-                <Check className="size-5" />
-              )}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {message && (
-        <p
-          className={
-            message.type === "error" ? "mt-2 text-sm text-red-700" : "mt-2 text-sm text-vegr-green-dark"
-          }
-        >
-          {message.text}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function ProfileField({ id, label, type, value, pending, message, onChange, onSave }: {
-  id: string;
-  label: string;
-  type: "text" | "email";
-  value: string;
-  pending: boolean;
-  message: FieldMessage;
-  onChange: (value: string) => void;
-  onSave: () => void;
-}) {
-  return (
-    <div>
-      <div className="grid grid-cols-[minmax(0,1fr)_40px] items-end gap-3">
-        <div className="space-y-2">
-          <Label htmlFor={id} className="font-semibold text-vegr-berry-dark">
-            {label}
-          </Label>
-          <Input
-            id={id}
-            type={type}
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
-          />
-        </div>
-
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={pending}
-          aria-label={`Save ${label.toLowerCase()}`}
-          className="flex size-10 items-center justify-center rounded-md border border-vegr-green-dark bg-vegr-green text-white shadow-sm transition-colors hover:bg-vegr-green-dark disabled:cursor-wait disabled:opacity-60"
-        >
-          {pending ? (
-            <LoaderCircle className="size-5 animate-spin" />
-          ) : (
-            <Check className="size-5" />
-          )}
-        </button>
-      </div>
-
-      {message && (
-        <p
-          className={
-            message.type === "error" ? "mt-2 text-sm text-red-700" : "mt-2 text-sm text-vegr-green-dark"
-          }
-        >
-          {message.text}
-        </p>
-      )}
-    </div>
-  );
-}

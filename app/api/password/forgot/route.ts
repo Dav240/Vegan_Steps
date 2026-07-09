@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         userId: user.id,
         code: token,
       });
-      const resetUrl = new URL("/forgot-password", request.url);
+      const resetUrl = new URL("/forgot-password", getRequestOrigin(request));
 
       resetUrl.searchParams.set("tokenId", resetCode.id);
       resetUrl.searchParams.set("token", token);
@@ -75,4 +75,36 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+function getRequestOrigin(request: Request) {
+  const configuredUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL;
+
+  if (configuredUrl) {
+    return normalizeOrigin(configuredUrl);
+  }
+
+  const forwardedProto = request.headers
+    .get("x-forwarded-proto")
+    ?.split(",")[0]
+    ?.trim();
+  const forwardedHost = request.headers
+    .get("x-forwarded-host")
+    ?.split(",")[0]
+    ?.trim();
+  const host = forwardedHost || request.headers.get("host");
+
+  if (!host) {
+    return new URL(request.url).origin;
+  }
+
+  const protocol =
+    forwardedProto ||
+    (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
+
+  return `${protocol}://${host}`;
+}
+
+function normalizeOrigin(url: string) {
+  return new URL(url).origin;
 }

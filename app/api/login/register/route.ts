@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
-import { setSessionCookie } from "@/lib/auth-session";
+import { assertSessionCookieConfig, setSessionCookie } from "@/lib/auth-session";
 import { verifyEmailCode } from "@/lib/email-verification";
 import { LEGAL_VERSION } from "@/lib/legal";
 import { validatePassword } from "@/lib/password-validation";
@@ -54,6 +54,18 @@ export async function POST(request: Request) {
                         "You need to accept the Terms, Community Guidelines, and allergen disclaimer before registering.",
                 },
                 { status: 400 }
+            );
+        }
+
+        try {
+            assertSessionCookieConfig();
+        } catch {
+            return NextResponse.json(
+                {
+                    error:
+                        "Session cookies are not configured. Set SESSION_SECRET before registering accounts in production mode.",
+                },
+                { status: 500 }
             );
         }
 

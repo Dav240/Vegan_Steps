@@ -48,11 +48,22 @@ export function clearSessionCookie(response: NextResponse) {
   });
 }
 
+export function assertSessionCookieConfig() {
+  getSessionSecret();
+}
+
 export async function getCurrentUser(
   request: Request
 ): Promise<AuthenticatedUser | null> {
   const cookie = getCookie(request, SESSION_COOKIE_NAME);
-  const payload = cookie ? verifySessionCookie(cookie) : null;
+  let payload: SessionPayload | null = null;
+
+  try {
+    payload = cookie ? verifySessionCookie(cookie) : null;
+  } catch (error) {
+    console.error("Session cookie could not be verified.", error);
+    return null;
+  }
 
   if (!payload || payload.expiresAt <= Date.now()) {
     return null;

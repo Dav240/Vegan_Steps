@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import AddCard from "@/_components/recipes/cards/AddCard";
 import AddSeeMoreCard from "@/_components/recipes/cards/AddSeeMoreCard";
 import RecipeCard from "@/_components/recipes/cards/RecipeCard";
 import { useSession } from "@/lib/session";
@@ -27,6 +28,7 @@ export default function MyRecipesProfile({ refreshKey, savedRecipeStates, onSave
 }) {
   const { currentUser } = useSession();
   const [recentRecipes, setRecentRecipes] = useState<RecentRecipe[]>([]);
+  const [hasMoreRecipes, setHasMoreRecipes] = useState(false);
   const [recipesLoading, setRecipesLoading] = useState(true);
   const [recipesError, setRecipesError] = useState("");
 
@@ -54,6 +56,7 @@ export default function MyRecipesProfile({ refreshKey, savedRecipeStates, onSave
       })
       .then((data) => {
         setRecentRecipes(data.recipes);
+        setHasMoreRecipes(data.hasMore);
         setRecipesError("");
       })
       .catch((error: unknown) => {
@@ -86,9 +89,7 @@ export default function MyRecipesProfile({ refreshKey, savedRecipeStates, onSave
       {recipesLoading ? (
         <div className="mt-8 grid max-w-[1576px] grid-cols-1 items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 3 }, (_, index) => (
-            <div key={index}
-              className="min-h-[380px] w-full max-w-[370px] animate-pulse rounded-lg border border-vegr-berry-soft bg-white"
-            >
+            <div key={index} className="min-h-[380px] w-full max-w-[370px] animate-pulse rounded-lg border border-vegr-berry-soft bg-white">
               <div className="aspect-[4/3] bg-vegr-green-soft" />
               <div className="space-y-3 p-4">
                 <div className="h-5 w-3/4 rounded bg-vegr-berry-soft" />
@@ -108,15 +109,14 @@ export default function MyRecipesProfile({ refreshKey, savedRecipeStates, onSave
           )}
           <div className="mt-8 grid max-w-[1576px] grid-cols-1 items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {recentRecipes.map((recipe) => (
-              <RecipeCard
-                key={recipe.recipeId}
-                {...recipe}
+              <RecipeCard key={recipe.recipeId} 
+                {...recipe} 
                 savedState={savedRecipeStates[recipe.recipeId]}
                 onSavedChange={onSavedChange}
                 onDeleted={handleDeleted}
               />
             ))}
-            <AddSeeMoreCard />
+            {hasMoreRecipes ? <AddSeeMoreCard /> : <AddCard />}
           </div>
         </>
       )}

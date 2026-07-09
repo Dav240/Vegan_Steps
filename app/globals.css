@@ -64,12 +64,16 @@
   --color-vegr-cream: #fbfaf6;
   --color-vegr-paper: #ffffff;
   --color-vegr-ink: #241b22;
-  --color-vegr-berry: #91446f;
-  --color-vegr-berry-dark: #713354;
-  --color-vegr-berry-soft: #f2e4ec;
-  --color-vegr-green: #3f7d48;
-  --color-vegr-green-dark: #2f6137;
-  --color-vegr-green-soft: #e5f0e5;
+  /* Previous VegR palette:
+     berry #91446f / #713354 / #f2e4ec
+     green #3f7d48 / #2f6137 / #e5f0e5
+  */
+  --color-vegr-berry: #3f7d48;
+  --color-vegr-berry-dark: #2f6137;
+  --color-vegr-berry-soft: #e5f0e5;
+  --color-vegr-green: #8b7ac8;
+  --color-vegr-green-dark: #6d5aa6;
+  --color-vegr-green-soft: #ede9fb;
   --color-vegr-gold: #f4ad4e;
   --color-vegr-gold-dark: #cf8126;
   --color-vegr-gold-soft: #fff0d9;

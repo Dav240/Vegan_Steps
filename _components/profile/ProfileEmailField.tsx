@@ -1,0 +1,110 @@
+import { Check, LoaderCircle, Mail } from "lucide-react";
+
+import { Input } from "@/_components/ui/input";
+import { Label } from "@/_components/ui/label";
+
+type FieldMessage = {
+  type: "error" | "success";
+  text: string;
+} | null;
+
+export default function ProfileEmailField({ 
+    email, 
+    oldEmailCode, 
+    newEmailCode, 
+    pending, 
+    sending, 
+    codesSent, 
+    message,
+    onEmailChange,
+    onOldEmailCodeChange,
+    onNewEmailCodeChange,
+    onSendCodes,
+    onConfirm,
+} : {
+    email: string;
+    oldEmailCode: string;
+    newEmailCode: string;
+    pending: boolean;
+    sending: boolean;
+    codesSent: boolean;
+    message: FieldMessage;
+    onEmailChange: (value: string) => void;
+    onOldEmailCodeChange: (value: string) => void;
+    onNewEmailCodeChange: (value: string) => void;
+    onSendCodes: () => void;
+    onConfirm: () => void;
+}) {
+  return (
+    <div>
+      <div className="space-y-2">
+        <Label htmlFor="profile-email" className="font-semibold text-vegr-berry-dark">
+          Email
+        </Label>
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+          <Input id="profile-email" type="email" value={email} onChange={(event) => onEmailChange(event.target.value)}
+            className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+          />
+          <button type="button" onClick={onSendCodes} disabled={sending || pending}
+            className="flex h-10 items-center justify-center gap-2 rounded-md border border-vegr-green bg-white px-3 text-sm font-semibold text-vegr-green-dark shadow-sm transition-colors hover:bg-vegr-green-soft disabled:cursor-wait disabled:opacity-60"
+          >
+            {sending ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <Mail className="size-4" />
+            )}
+            Send codes
+          </button>
+        </div>
+      </div>
+
+      {codesSent && (
+        <div className="mt-3 space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="profile-old-email-code" className="text-sm text-zinc-700">
+              Current email code
+            </Label>
+            <Input id="profile-old-email-code" type="text" value={oldEmailCode} onChange={(event) => onOldEmailCodeChange(event.target.value)}
+              placeholder="Code sent to current email"
+              className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+            />
+          </div>
+
+          <div className="grid grid-cols-[minmax(0,1fr)_40px] items-end gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="profile-new-email-code" className="text-sm text-zinc-700">
+                New email code
+              </Label>
+              <Input id="profile-new-email-code" type="text" value={newEmailCode}
+                onChange={(event) => onNewEmailCodeChange(event.target.value)}
+                placeholder="Code sent to new email"
+                className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+              />
+            </div>
+
+            <button type="button" onClick={onConfirm} disabled={pending || sending}
+              aria-label="Confirm email change"
+              className="flex size-10 items-center justify-center rounded-md border border-vegr-green-dark bg-vegr-green text-white shadow-sm transition-colors hover:bg-vegr-green-dark disabled:cursor-wait disabled:opacity-60"
+            >
+              {pending ? (
+                <LoaderCircle className="size-5 animate-spin" />
+              ) : (
+                <Check className="size-5" />
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {message && (
+        <p
+          className={
+            message.type === "error" ? "mt-2 text-sm text-red-700" : "mt-2 text-sm text-vegr-green-dark"
+          }
+        >
+          {message.text}
+        </p>
+      )}
+    </div>
+  );
+}

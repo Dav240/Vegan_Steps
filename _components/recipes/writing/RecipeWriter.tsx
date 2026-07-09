@@ -9,11 +9,15 @@ import NavigationMenu from "@/_components/NavigationMenu";
 import IngredientsEditor, { emptyIngredient, type IngredientRow } from "@/_components/recipes/writing/IngredientsEditor";
 import InstructionsEditor, { emptyInstruction, type InstructionRow } from "@/_components/recipes/writing/InstructionsEditor";
 import RecipeTagPicker from "@/_components/recipes/writing/RecipeTagPicker";
+import ConfirmDialog from "@/_components/recipes/writing/ConfirmDialog";
+import RecipeWriterLoading from "@/_components/recipes/writing/Loading";
+import NumberField from "@/_components/recipes/writing/NumberField";
+
 import { Button } from "@/_components/ui/button";
 import RecipeImagePlaceholder from "@/_components/ui/RecipeImagePlaceholder";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/_components/ui/dialog";
 import { Input } from "@/_components/ui/input";
 import { Label } from "@/_components/ui/label";
+
 import {
   formatRecipeEnum,
   MAX_RECIPE_IMAGE_BYTES,
@@ -75,7 +79,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
     fetch(`/api/recipes/drafts?${params.toString()}`, {
       signal: controller.signal,
     }).then(async (response) => {
-        const data = await response.json();
+        const data = await readJsonResponse(response);
         if (!response.ok) {
           throw new Error(data.error || "Could not load the recipe draft.");
         }
@@ -230,14 +234,21 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
         method: "POST",
         body: formData,
       });
-      const data = await response.json();
+      const data = await readJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || "Could not upload the recipe image.");
       }
 
+      if (!data.imageUrl || !data.imageKey) {
+        throw new Error("The uploaded image response was incomplete.");
+      }
+
+      const imageUrl = data.imageUrl;
+      const imageKey = data.imageKey;
+
       setDraft((current) =>
-        current ? { ...current, imageUrl: data.imageUrl, imageKey: data.imageKey } : current
+        current ? { ...current, imageUrl, imageKey } : current
       );
       setNotice("Image uploaded.");
     } catch (uploadError) {
@@ -273,7 +284,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
           draft,
         }),
       });
-      const data = await response.json();
+      const data = await readJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || "Could not save the recipe draft.");
@@ -309,7 +320,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipeId }),
       });
-      const data = await response.json();
+      const data = await readJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || "Could not delete the recipe draft.");
@@ -545,92 +556,21 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
   );
 }
 
-function NumberField({ id, label, value, min, suffix, onChange }: {
-  id: string;
-  label: string;
-  value: number | null;
-  min: number;
-  suffix: string;
-  onChange: (value: number | null) => void;
-}) {
-  return (
-    <div className="flex h-10 items-center gap-2 rounded-full border border-vegr-berry-soft bg-white px-4 text-sm font-bold shadow-sm">
-      <Label htmlFor={id}>{label}:</Label>
-      <Input
-        id={id}
-        type="number"
-        min={min}
-        step={1}
-        value={value ?? ""}
-        onChange={(event) => onChange(numberOrNull(event.target.value))}
-        className="h-7 w-16 rounded-none border-0 px-1 text-center shadow-none focus-visible:ring-0"
-      />
-      <span>{suffix}</span>
-    </div>
-  );
+async function readJsonResponse(response: Response) {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.includes("application/json")) {
+    return {
+      error: `Expected JSON but received ${response.status} ${response.statusText}. If you are using a tunnel, check that it can reach your running app.`,
+    };
+  }
+
+  return (await response.json()) as {
+    error?: string;
+    recipe?: RecipeDraft;
+    imageUrl?: string;
+    imageKey?: string;
+  };
 }
 
-function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel, destructive = false, isPending, onConfirm }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description: string;
-  confirmLabel: string;
-  destructive?: boolean;
-  isPending: boolean;
-  onConfirm: () => void;
-}) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="border-vegr-berry-soft bg-vegr-cream sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="font-indie-flower text-3xl font-bold text-vegr-ink">
-            {title}
-          </DialogTitle>
-          <DialogDescription className="leading-6 text-zinc-700">
-            {description}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isPending}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            variant={destructive ? "destructive" : "default"}
-            onClick={onConfirm}
-            disabled={isPending}
-            className={destructive ? undefined : "bg-vegr-green text-white hover:bg-vegr-green-dark"}
-          >
-            {confirmLabel}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
-function RecipeWriterLoading() {
-  return (
-    <div className="mx-auto grid w-full max-w-[1500px] animate-pulse gap-10 px-6 py-10 md:px-12 lg:grid-cols-2 lg:px-16">
-      <div>
-        <div className="h-14 w-2/3 rounded bg-vegr-berry-soft" />
-        <div className="mt-6 aspect-[16/10] rounded-lg bg-vegr-green-soft" />
-      </div>
-      <div className="space-y-5 pt-16">
-        <div className="h-9 w-1/3 rounded bg-vegr-berry-soft" />
-        <div className="h-28 w-full rounded bg-white" />
-        <div className="h-64 w-full rounded bg-vegr-green-soft" />
-      </div>
-    </div>
-  );
-}
-
-function numberOrNull(value: string) {
-  return value === "" ? null : Number(value);
-}

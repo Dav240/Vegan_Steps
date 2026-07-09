@@ -5,11 +5,9 @@ import { LoaderCircle, Save } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/_components/ui/button";
-import { Switch } from "@/_components/ui/switch";
-import {
-  defaultPrivacyPreferences,
-  type PrivacyPreferences,
-} from "@/lib/legal";
+import { defaultPrivacyPreferences, type PrivacyPreferences } from "@/lib/legal";
+
+import PreferenceRow from "@/_components/legal/PreferenceRow";
 
 export default function PrivacyPreferences() {
   const [preferences, setPreferences] = useState<PrivacyPreferences>(
@@ -28,16 +26,32 @@ export default function PrivacyPreferences() {
       setStorageReady(true);
     }
 
+    function handleCookiePreferencesSaved(event: Event) {
+      const preferencesEvent = event as CustomEvent<PrivacyPreferences>;
+
+      if (!preferencesEvent.detail) {
+        return;
+      }
+
+      setPreferences(preferencesEvent.detail);
+      setMessage("Privacy choices updated from your cookie preferences.");
+      setStorageReady(true);
+    }
+
     window.addEventListener(
       "vegr-optional-data-deleted",
       handleOptionalDataDeleted
+    );
+    window.addEventListener(
+      "vegr-cookie-preferences-saved",
+      handleCookiePreferencesSaved
     );
 
     fetch("/api/profile/preferences", {
       cache: "no-store",
     })
       .then(async (response) => {
-        const data = await response.json();
+        const data = await readJsonResponse(response);
 
         if (!response.ok) {
           throw new Error(data.error || "Could not load privacy preferences.");
@@ -51,8 +65,8 @@ export default function PrivacyPreferences() {
       })
       .then((data) => {
         if (!isActive) return;
-        setPreferences(data.preferences);
-        setStorageReady(data.storageReady);
+        setPreferences(data.preferences ?? defaultPrivacyPreferences);
+        setStorageReady(data.storageReady ?? false);
         setMessage(data.message ?? "");
       })
       .catch((error: unknown) => {
@@ -75,6 +89,10 @@ export default function PrivacyPreferences() {
         "vegr-optional-data-deleted",
         handleOptionalDataDeleted
       );
+      window.removeEventListener(
+        "vegr-cookie-preferences-saved",
+        handleCookiePreferencesSaved
+      );
     };
   }, []);
 
@@ -88,13 +106,13 @@ export default function PrivacyPreferences() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(preferences),
       });
-      const data = await response.json();
+      const data = await readJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || "Could not save privacy preferences.");
       }
 
-      setStorageReady(data.storageReady);
+      setStorageReady(data.storageReady ?? true);
       setMessage(data.message || "Privacy preferences saved.");
     } catch (error) {
       setMessage(
@@ -108,7 +126,7 @@ export default function PrivacyPreferences() {
   }
 
   return (
-    <section className="mt-8 max-w-2xl rounded-lg border border-vegr-berry-soft bg-white p-5 shadow-sm">
+    <section className="bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm font-bold uppercase tracking-wide text-vegr-berry">
@@ -131,9 +149,7 @@ export default function PrivacyPreferences() {
       </div>
 
       <div className="mt-5 space-y-3">
-        <PreferenceRow
-          title="Personalised recommendations"
-          description="Use your recipe views, saves, and ratings to tune Explore."
+        <PreferenceRow title="Personalised recommendations" description="Use your recipe views, saves, and ratings to tune Explore."
           checked={preferences.personalisedRecommendations}
           disabled={isLoading}
           onCheckedChange={(checked) =>
@@ -143,18 +159,14 @@ export default function PrivacyPreferences() {
             }))
           }
         />
-        <PreferenceRow
-          title="Analytics"
-          description="Help measure page usage and spot awkward flows."
+        <PreferenceRow title="Analytics" description="Help measure page usage and spot awkward flows."
           checked={preferences.analytics}
           disabled={isLoading}
           onCheckedChange={(checked) =>
             setPreferences((current) => ({ ...current, analytics: checked }))
           }
         />
-        <PreferenceRow
-          title="Product emails"
-          description="Optional product updates. Security and reset emails still work."
+        <PreferenceRow title="Product emails" description="Optional product updates. Security and reset emails still work."
           checked={preferences.productEmails}
           disabled={isLoading}
           onCheckedChange={(checked) =>
@@ -169,19 +181,14 @@ export default function PrivacyPreferences() {
       {message && (
         <p
           className={`mt-4 rounded-md px-3 py-2 text-sm font-medium ${
-            storageReady
-              ? "bg-vegr-green-soft text-vegr-green-dark"
-              : "bg-vegr-gold-soft text-vegr-berry-dark"
-          }`}
+            storageReady ? "bg-vegr-green-soft text-vegr-green-dark" : "bg-vegr-gold-soft text-vegr-berry-dark"}`
+          }
         >
           {message}
         </p>
       )}
 
-      <Button
-        type="button"
-        onClick={() => void savePreferences()}
-        disabled={isSaving || isLoading}
+      <Button type="button" onClick={() => void savePreferences()} disabled={isSaving || isLoading} 
         className="mt-5 bg-vegr-green text-white hover:bg-vegr-green-dark"
       >
         {isSaving ? (
@@ -195,32 +202,21 @@ export default function PrivacyPreferences() {
   );
 }
 
-function PreferenceRow({
-  title,
-  description,
-  checked,
-  disabled,
-  onCheckedChange,
-}: {
-  title: string;
-  description: string;
-  checked: boolean;
-  disabled: boolean;
-  onCheckedChange: (checked: boolean) => void;
-}) {
-  return (
-    <label className="flex items-center justify-between gap-4 rounded-md border border-vegr-green-soft bg-vegr-cream p-3">
-      <span>
-        <span className="block font-bold text-vegr-ink">{title}</span>
-        <span className="mt-1 block text-sm leading-5 text-zinc-600">
-          {description}
-        </span>
-      </span>
-      <Switch
-        checked={checked}
-        disabled={disabled}
-        onCheckedChange={onCheckedChange}
-      />
-    </label>
-  );
+async function readJsonResponse(response: Response) {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.includes("application/json")) {
+    return {
+      error: `Expected JSON but received ${response.status} ${response.statusText}. Check the server terminal for the API error.`,
+    };
+  }
+
+  return (await response.json()) as {
+    error?: string;
+    message?: string;
+    preferences?: PrivacyPreferences;
+    storageReady?: boolean;
+  };
 }
+
+
