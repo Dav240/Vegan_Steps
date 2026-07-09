@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import { LoaderCircle, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -45,9 +52,21 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
   const [emailCodeMessage, setEmailCodeMessage] = useState("");
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [error, setError] = useState("");
+  const [isEnterSubmitActive, setIsEnterSubmitActive] = useState(false);
+  const enterSubmitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   const isLogin = mode === "login";
   const isOpen = open ?? internalOpen;
+
+  useEffect(() => {
+    return () => {
+      if (enterSubmitTimeoutRef.current) {
+        clearTimeout(enterSubmitTimeoutRef.current);
+      }
+    };
+  }, []);
 
   function updateOpen(nextOpen: boolean) {
     if (open === undefined) {
@@ -203,6 +222,25 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
     }
   }
 
+  function handleAuthKeyDown(event: KeyboardEvent<HTMLFormElement>) {
+    if (event.key !== "Enter" || event.shiftKey) {
+      return;
+    }
+
+    showEnterSubmitFeedback();
+  }
+
+  function showEnterSubmitFeedback() {
+    if (enterSubmitTimeoutRef.current) {
+      clearTimeout(enterSubmitTimeoutRef.current);
+    }
+
+    setIsEnterSubmitActive(true);
+    enterSubmitTimeoutRef.current = setTimeout(() => {
+      setIsEnterSubmitActive(false);
+    }, 450);
+  }
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={updateOpen}>
@@ -242,7 +280,7 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
             </Button>
           </div>
 
-          <form onSubmit={handleAuthSubmit} className="min-h-0 space-y-3 overflow-y-auto pr-1 sm:space-y-4">
+          <form onSubmit={handleAuthSubmit} onKeyDown={handleAuthKeyDown} className="min-h-0 space-y-3 overflow-y-auto pr-1 sm:space-y-4">
             {!isLogin && (
               <AuthField id="username" label="Username" type="text" value={username} placeholder="Enter username" onChange={setUsername}/>
             )}
@@ -324,7 +362,14 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
             )}
 
             <div className="sticky bottom-0 -mx-1 grid grid-cols-2 gap-3 bg-vegr-cream px-1 pt-2">
-              <Button type="submit" className="w-full bg-vegr-green text-white hover:bg-vegr-green-dark">
+              <Button
+                type="submit"
+                className={`w-full text-white hover:bg-vegr-green-dark ${
+                  isEnterSubmitActive
+                    ? "bg-vegr-green-dark shadow-inner ring-2 ring-vegr-green-soft"
+                    : "bg-vegr-green"
+                }`}
+              >
                 {isLogin ? "Login" : "Register"}
               </Button>
               <DialogClose asChild>
