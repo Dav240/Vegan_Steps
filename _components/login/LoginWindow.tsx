@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type FormEvent,
-  type KeyboardEvent,
-  type ReactNode,
-} from "react";
-import { LoaderCircle, Mail, X } from "lucide-react";
+import { useState, type FormEvent, type ReactNode } from "react";
+import { Eye, EyeOff, LoaderCircle, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -19,6 +12,7 @@ import { Switch } from "@/_components/ui/switch";
 
 import AuthField from "@/_components/login/AuthField";
 import PasswordResetRequestDialog from "@/_components/login/PasswordResetRequestDialog";
+import PasswordRequirementsPanel from "@/_components/login/PasswordRequirementsPanel";
 import LegalLink from "@/_components/legal/LegalLink";
 
 import { defaultPrivacyPreferences, type PrivacyPreferences } from "@/lib/legal";
@@ -42,6 +36,8 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [emailCode, setEmailCode] = useState("");
   const [acceptsTerms, setAcceptsTerms] = useState(false);
   const [acceptsAllergenDisclaimer, setAcceptsAllergenDisclaimer] = useState(false);
@@ -52,21 +48,9 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
   const [emailCodeMessage, setEmailCodeMessage] = useState("");
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [error, setError] = useState("");
-  const [isEnterSubmitActive, setIsEnterSubmitActive] = useState(false);
-  const enterSubmitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
 
   const isLogin = mode === "login";
   const isOpen = open ?? internalOpen;
-
-  useEffect(() => {
-    return () => {
-      if (enterSubmitTimeoutRef.current) {
-        clearTimeout(enterSubmitTimeoutRef.current);
-      }
-    };
-  }, []);
 
   function updateOpen(nextOpen: boolean) {
     if (open === undefined) {
@@ -83,6 +67,8 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
     setEmail("");
     setPassword("");
     setConfirmPassword("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     setEmailCode("");
     setAcceptsTerms(false);
     setAcceptsAllergenDisclaimer(false);
@@ -150,9 +136,7 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
         }),
       });
       const contentType = response.headers.get("content-type") ?? "";
-      const data = contentType.includes("application/json")
-        ? await response.json()
-        : null;
+      const data = contentType.includes("application/json") ? await response.json() : null;
 
       if (!response.ok) {
         setError(data?.error || `Registration failed (${response.status}).`);
@@ -222,25 +206,6 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
     }
   }
 
-  function handleAuthKeyDown(event: KeyboardEvent<HTMLFormElement>) {
-    if (event.key !== "Enter" || event.shiftKey) {
-      return;
-    }
-
-    showEnterSubmitFeedback();
-  }
-
-  function showEnterSubmitFeedback() {
-    if (enterSubmitTimeoutRef.current) {
-      clearTimeout(enterSubmitTimeoutRef.current);
-    }
-
-    setIsEnterSubmitActive(true);
-    enterSubmitTimeoutRef.current = setTimeout(() => {
-      setIsEnterSubmitActive(false);
-    }, 450);
-  }
-
   return (
     <>
       <Dialog open={isOpen} onOpenChange={updateOpen}>
@@ -280,7 +245,7 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
             </Button>
           </div>
 
-          <form onSubmit={handleAuthSubmit} onKeyDown={handleAuthKeyDown} className="min-h-0 space-y-3 overflow-y-auto pr-1 sm:space-y-4">
+          <form onSubmit={handleAuthSubmit} className="min-h-0 space-y-3 overflow-y-auto pr-1 sm:space-y-4">
             {!isLogin && (
               <AuthField id="username" label="Username" type="text" value={username} placeholder="Enter username" onChange={setUsername}/>
             )}
@@ -301,7 +266,12 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
             />
             {!isLogin && (
               <>
-                <AuthField id="emailCode" label="Email code" type="text" value={emailCode} placeholder="Enter 6-digit code" onChange={setEmailCode}/>
+                <AuthField id="register-verification-code" label="Email code" type="text" value={emailCode} placeholder="Enter 6-digit code"
+                  onChange={setEmailCode}
+                  autoComplete="off"
+                  inputMode="numeric"
+                  spellCheck={false}
+                />
                 {emailCodeMessage && (
                   <p className="text-sm font-medium text-vegr-green-dark">
                     {emailCodeMessage}
@@ -309,15 +279,43 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
                 )}
               </>
             )}
-            <AuthField id="password" label="Password" type="password" value={password} placeholder="Enter your password" onChange={setPassword}/>
+            <AuthField id="password" label="Password" type={showPassword ? "text" : "password"} value={password} placeholder="Enter your password"
+              onChange={setPassword}
+              autoComplete={isLogin ? "current-password" : "new-password"}
+              action={
+                <PasswordVisibilityButton pressed={showPassword} label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword((visible) => !visible)}
+                />
+              }
+            />
             {!isLogin && (
-              <AuthField id="confirmPassword" label="Confirm Password" type="password" value={confirmPassword} placeholder="Confirm your password" 
-              onChange={setConfirmPassword}
+              <AuthField id="confirmPassword" label="Confirm Password" type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                placeholder="Confirm your password"
+                onChange={setConfirmPassword}
+                autoComplete="new-password"
+                action={
+                  <PasswordVisibilityButton
+                    pressed={showConfirmPassword}
+                    label={
+                      showConfirmPassword
+                        ? "Hide confirmed password"
+                        : "Show confirmed password"
+                    }
+                    onClick={() =>
+                      setShowConfirmPassword((visible) => !visible)
+                    }
+                  />
+                }
               />
             )}
 
             {!isLogin && (
-              <div className="space-y-2 rounded-lg border border-vegr-berry-soft bg-white/70 p-3">
+              <PasswordRequirementsPanel password={password} confirmPassword={confirmPassword}/>
+            )}
+
+            {!isLogin && (
+              <div className="space-y-3 rounded-lg border border-vegr-green/25 bg-vegr-green-soft/45 p-3">
                 <p className="text-sm font-bold uppercase tracking-wide text-vegr-berry">
                   Required
                 </p>
@@ -339,7 +337,7 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
                   .
                 </LegalCheckbox>
 
-                <div className="border-t border-vegr-berry-soft pt-3">
+                <div className="rounded-lg border border-vegr-gold/40 bg-vegr-gold-soft/60 p-3">
                   <p className="text-sm font-bold uppercase tracking-wide text-vegr-green-dark">
                     Optional
                   </p>
@@ -349,7 +347,7 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
                     <OptionalConsent label="Product emails" checked={productEmails} onCheckedChange={setProductEmails}/>
                   </div>
                   <Link href="/legal#privacy" className="mt-3 inline-flex text-xs font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline">
-                    Read the Privacy Policy
+                    Read the FAQ
                   </Link>
                 </div>
               </div>
@@ -362,14 +360,7 @@ export default function LoginWindow({ open, onOpenChange, showTrigger = true, re
             )}
 
             <div className="sticky bottom-0 -mx-1 grid grid-cols-2 gap-3 bg-vegr-cream px-1 pt-2">
-              <Button
-                type="submit"
-                className={`w-full text-white hover:bg-vegr-green-dark ${
-                  isEnterSubmitActive
-                    ? "bg-vegr-green-dark shadow-inner ring-2 ring-vegr-green-soft"
-                    : "bg-vegr-green"
-                }`}
-              >
+              <Button type="submit" className="w-full bg-vegr-green text-white hover:bg-vegr-green-dark">
                 {isLogin ? "Login" : "Register"}
               </Button>
               <DialogClose asChild>
@@ -431,6 +422,26 @@ async function syncStoredCookiePreferences() {
   } catch (error) {
     console.error(error);
   }
+}
+
+function PasswordVisibilityButton({
+  pressed,
+  label,
+  onClick,
+}: {
+  pressed: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  const Icon = pressed ? EyeOff : Eye;
+
+  return (
+    <button type="button" aria-label={label} aria-pressed={pressed} onClick={onClick}
+      className="flex size-10 items-center justify-center rounded-md border border-vegr-berry-soft bg-white text-vegr-berry shadow-sm transition-colors hover:bg-vegr-berry-soft hover:text-vegr-berry-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry"
+    >
+      <Icon className="size-4" />
+    </button>
+  );
 }
 
 function LegalCheckbox({ checked, onCheckedChange, children }: {

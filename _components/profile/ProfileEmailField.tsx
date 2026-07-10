@@ -61,23 +61,36 @@ export default function ProfileEmailField({
       {codesSent && (
         <div className="mt-3 space-y-3">
           <div className="space-y-2">
-            <Label htmlFor="profile-old-email-code" className="text-sm text-zinc-700">
+            <Label htmlFor="profile-current-verification-code" className="text-sm text-zinc-700">
               Current email code
             </Label>
-            <Input id="profile-old-email-code" type="text" value={oldEmailCode} onChange={(event) => onOldEmailCodeChange(event.target.value)}
+            <Input
+              id="profile-current-verification-code"
+              type="text"
+              value={oldEmailCode}
+              onChange={(event) => onOldEmailCodeChange(event.target.value)}
               placeholder="Code sent to current email"
+              autoComplete="off"
+              inputMode="numeric"
+              spellCheck={false}
               className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
             />
           </div>
 
           <div className="grid grid-cols-[minmax(0,1fr)_40px] items-end gap-3">
             <div className="space-y-2">
-              <Label htmlFor="profile-new-email-code" className="text-sm text-zinc-700">
+              <Label htmlFor="profile-new-verification-code" className="text-sm text-zinc-700">
                 New email code
               </Label>
-              <Input id="profile-new-email-code" type="text" value={newEmailCode}
+              <Input
+                id="profile-new-verification-code"
+                type="text"
+                value={newEmailCode}
                 onChange={(event) => onNewEmailCodeChange(event.target.value)}
                 placeholder="Code sent to new email"
+                autoComplete="off"
+                inputMode="numeric"
+                spellCheck={false}
                 className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
               />
             </div>

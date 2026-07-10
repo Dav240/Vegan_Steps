@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowDown } from "lucide-react";
 
+import AdSlot from "@/_components/ads/AdSlot";
 import NavigationMenu from "@/_components/NavigationMenu";
 import RecipeCard from "@/_components/recipes/cards/RecipeCard";
 import RecommendationRow, {
@@ -267,60 +268,77 @@ export default function ExplorePage({
   const content = (
     <div className={isVisitorVariant ? "mx-auto w-full max-w-7xl px-5 py-16 md:px-8" : "min-w-0 flex-1"}>
       {!isVisitorVariant && <ExploreBanner />}
-      <div className={isVisitorVariant ? "" : "px-5 py-9 md:px-8 xl:px-10"}>
-        <ExploreHeader isVisitor={isVisitorVariant} />
-        <div className="mt-7">
-          <RecipeLibraryToolbar
-            search={search}
-            onSearchChange={setSearch}
-            sort={sort}
-            onSortChange={setSort}
-            filtersOpen={filtersOpen}
-            onFiltersOpenChange={setFiltersOpen}
-            activeFilterCount={activeFilterCount}
-          />
-          {filtersOpen && (
-            <RecipeFilterPanel
-              minRating={minRating}
-              maxRating={maxRating}
-              onRatingChange={changeRatingRange}
-              selectedTags={selectedTags}
-              onSelectedTagsChange={setSelectedTags}
-              tagMode={tagMode}
-              onTagModeChange={setTagMode}
-              selectedStatuses={EMPTY_STATUS_FILTERS}
-              onSelectedStatusesChange={() => undefined}
-              showStatusFilter={false}
-              onReset={resetFilters}
+      <div
+        className={
+          isVisitorVariant
+            ? ""
+            : "grid gap-8 px-5 py-9 md:px-8 xl:grid-cols-[minmax(0,1fr)_180px] xl:px-10 2xl:grid-cols-[minmax(0,1fr)_220px]"
+        }
+      >
+        <div className="min-w-0">
+          <ExploreHeader isVisitor={isVisitorVariant} />
+          <div className="mt-7">
+            <RecipeLibraryToolbar
+              search={search}
+              onSearchChange={setSearch}
+              sort={sort}
+              onSortChange={setSort}
+              filtersOpen={filtersOpen}
+              onFiltersOpenChange={setFiltersOpen}
+              activeFilterCount={activeFilterCount}
+            />
+            {filtersOpen && (
+              <RecipeFilterPanel
+                minRating={minRating}
+                maxRating={maxRating}
+                onRatingChange={changeRatingRange}
+                selectedTags={selectedTags}
+                onSelectedTagsChange={setSelectedTags}
+                tagMode={tagMode}
+                onTagModeChange={setTagMode}
+                selectedStatuses={EMPTY_STATUS_FILTERS}
+                onSelectedStatusesChange={() => undefined}
+                showStatusFilter={false}
+                onReset={resetFilters}
+              />
+            )}
+          </div>
+
+          {error && (
+            <p className="mt-6 text-sm font-semibold text-red-700">{error}</p>
+          )}
+
+          {isSearchMode ? (
+            <ExploreSearchResults
+              recipes={searchRecipes}
+              savedStates={savedStates}
+              actionsMode={actionsMode}
+              total={total}
+              hasMore={hasMore}
+              loadMoreCount={loadMoreCount}
+              isLoading={isLoadingSearch}
+              isLoadingMore={isLoadingMore}
+              onSavedChange={handleSavedChange}
+              onLoadMore={loadMore}
+            />
+          ) : (
+            <ExploreRecommendations
+              rows={rows}
+              savedStates={savedStates}
+              actionsMode={actionsMode}
+              isLoading={isLoadingRecommendations}
+              onSavedChange={handleSavedChange}
             />
           )}
         </div>
 
-        {error && (
-          <p className="mt-6 text-sm font-semibold text-red-700">{error}</p>
-        )}
-
-        {isSearchMode ? (
-          <ExploreSearchResults
-            recipes={searchRecipes}
-            savedStates={savedStates}
-            actionsMode={actionsMode}
-            total={total}
-            hasMore={hasMore}
-            loadMoreCount={loadMoreCount}
-            isLoading={isLoadingSearch}
-            isLoadingMore={isLoadingMore}
-            onSavedChange={handleSavedChange}
-            onLoadMore={loadMore}
-          />
-        ) : (
-          <ExploreRecommendations
-            rows={rows}
-            savedStates={savedStates}
-            actionsMode={actionsMode}
-            isLoading={isLoadingRecommendations}
-            onSavedChange={handleSavedChange}
-          />
+        {!isVisitorVariant && (
+          <div className="hidden xl:block">
+            <AdSlot
+              variant="rail"
+              className="sticky top-8"
+            />
+          </div>
         )}
       </div>
     </div>
@@ -330,6 +348,9 @@ export default function ExplorePage({
     return (
       <section id="explore" className="border-t-[10px] border-vegr-gold bg-vegr-cream text-vegr-ink">
         {content}
+        <div className="px-5 pb-12 md:px-8">
+          <AdSlot className="mx-auto max-w-7xl" />
+        </div>
       </section>
     );
   }
@@ -462,7 +483,7 @@ function ExploreSearchResults({
           No approved recipes match your current search and filters.
         </p>
       ) : (
-        <div className="mt-5 grid grid-cols-1 items-stretch justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="mt-5 grid grid-cols-1 items-stretch justify-start gap-5 sm:grid-cols-2 lg:[grid-template-columns:repeat(auto-fit,minmax(260px,300px))]">
           {recipes.map((recipe) => (
             <RecipeCard
               key={recipe.recipeId}
@@ -472,7 +493,7 @@ function ExploreSearchResults({
               showOwnerStatus={false}
               savedState={savedStates[recipe.recipeId] ?? recipe.initiallySaved}
               onSavedChange={onSavedChange}
-              className="min-h-[390px] max-w-[300px] md:min-h-0"
+              className="min-h-[390px] w-full max-w-[300px] md:min-h-0"
             />
           ))}
         </div>

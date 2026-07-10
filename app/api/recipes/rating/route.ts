@@ -54,7 +54,7 @@ export async function PUT(request: Request) {
           },
           OR: [{ status: "APPROVED" }, { authorId: userId }],
         },
-        select: { id: true },
+        select: { id: true, authorId: true },
       }),
     ]);
 
@@ -62,6 +62,13 @@ export async function PUT(request: Request) {
       return NextResponse.json(
         { error: !user || user.isDeleted ? "User account not found." : "Recipe not found." },
         { status: 404 }
+      );
+    }
+
+    if (recipe.authorId === userId) {
+      return NextResponse.json(
+        { error: "You cannot rate your own recipe." },
+        { status: 403 }
       );
     }
 

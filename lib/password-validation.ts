@@ -20,10 +20,10 @@ export function validatePassword(
     };
   }
 
-  if (password.length < 8) {
+  if (password.length < 8 || password.length > 25 || bcrypt.truncates(password)) {
     return {
       isValid: false,
-      error: "Password must be at least 8 characters long.",
+      error: "Password must be 8 to 25 characters long.",
     };
   }
 
@@ -37,14 +37,14 @@ export function validatePassword(
   if (!/[^A-Za-z0-9]/.test(password)) {
     return {
       isValid: false,
-      error: "Password must contain at least one special character.",
+      error: "Password must contain at least one special character, e.g. ! @ # ?.",
     };
   }
 
   if (!/[0-9]/.test(password)) {
     return {
       isValid: false,
-      error: "Password must contain at least one numerical digit.",
+      error: "Password must contain at least one number, 0-9.",
     };
   }
 
@@ -52,13 +52,6 @@ export function validatePassword(
     return {
       isValid: false,
       error: "Passwords do not match.",
-    };
-  }
-
-  if (bcrypt.truncates(password)) {
-    return {
-      isValid: false,
-      error: "Password is too long. Please use a shorter password.",
     };
   }
 

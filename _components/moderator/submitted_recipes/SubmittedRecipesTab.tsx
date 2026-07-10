@@ -112,9 +112,7 @@ export default function SubmittedRecipesTab() {
               </p>
             ) : (
               entries.map((entry) => (
-                <button
-                  key={entry.recipeId}
-                  type="button"
+                <button key={entry.recipeId} type="button"
                   onClick={() =>
                     router.push(`/recipes?recipeId=${encodeURIComponent(entry.recipeId)}`)
                   }
@@ -136,17 +134,11 @@ export default function SubmittedRecipesTab() {
 
           {hasMore && (
             <div className="mt-6 flex justify-center">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => void loadMore()}
-                disabled={isLoadingMore}
+              <Button type="button" variant="outline" onClick={() => void loadMore()} disabled={isLoadingMore}
                 className="border-vegr-green bg-white text-vegr-green-dark hover:bg-vegr-green-soft"
               >
                 <ArrowDown className={isLoadingMore ? "animate-bounce" : ""} />
-                {isLoadingMore
-                  ? "Loading..."
-                  : `Load ${Math.min(PAGE_SIZE, total - entries.length)} more`}
+                {isLoadingMore ? "Loading..." : `Load ${Math.min(PAGE_SIZE, total - entries.length)} more`}
               </Button>
             </div>
           )}

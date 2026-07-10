@@ -39,11 +39,11 @@ export default function ReportRecipeDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [loginOpen, setLoginOpen] = useState(false);
+  const requiresLogin =
+    open && (!currentUser.id || currentUser.userType === "VISITOR");
 
   async function submitReport() {
     if (!currentUser.id || currentUser.userType === "VISITOR") {
-      setLoginOpen(true);
       return;
     }
 
@@ -94,7 +94,7 @@ export default function ReportRecipeDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={close}>
+      <Dialog open={open && !requiresLogin} onOpenChange={close}>
         <DialogContent showCloseButton={false} className="border-vegr-berry-soft bg-vegr-cream sm:max-w-lg">
           <DialogClose asChild>
             <Button
@@ -193,8 +193,12 @@ export default function ReportRecipeDialog({
       </Dialog>
 
       <LoginWindow
-        open={loginOpen}
-        onOpenChange={setLoginOpen}
+        open={requiresLogin}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) {
+            onOpenChange(false);
+          }
+        }}
         showTrigger={false}
         redirectAfterAuth={null}
       />

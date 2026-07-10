@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowDown } from "lucide-react";
 
+import AdSlot from "@/_components/ads/AdSlot";
 import NavigationMenu from "@/_components/NavigationMenu";
 import AddCard from "@/_components/recipes/cards/AddCard";
 import RecipeCard from "@/_components/recipes/cards/RecipeCard";
@@ -255,7 +256,7 @@ export default function RecipesPage({
       <NavigationMenu />
 
       <div className="min-w-0 flex-1 px-5 py-9 md:px-8 xl:px-10">
-        <header className="flex flex-wrap items-end justify-between gap-4">
+        <header className="grid items-end gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,420px)]">
           <div>
             <p className="text-sm font-bold uppercase text-vegr-green-dark">
               Recipe library
@@ -264,11 +265,15 @@ export default function RecipesPage({
               {title}
             </h1>
           </div>
-          {!isLoading && !error && (
-            <p className="pb-1 text-sm font-semibold text-zinc-600">
-              {total} recipe{total === 1 ? "" : "s"}
-            </p>
-          )}
+
+          <div className="space-y-2">
+            {!isLoading && !error && (
+              <p className="text-right text-sm font-semibold text-zinc-600">
+                {total} recipe{total === 1 ? "" : "s"}
+              </p>
+            )}
+            <AdSlot variant="compact" />
+          </div>
         </header>
 
         <div className="mt-7">
@@ -346,6 +351,8 @@ export default function RecipesPage({
                 </button>
               </div>
             )}
+
+            <AdSlot className="mt-12" />
           </>
         )}
       </div>

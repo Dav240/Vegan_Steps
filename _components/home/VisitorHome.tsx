@@ -7,8 +7,7 @@ import VisitorHeader from "@/_components/home/VisitorHeader";
 import ExplorePage from "@/_components/recipes/explore/ExplorePage";
 
 export default function VisitorHome() {
-  const bannerUrl =
-    "https://res.cloudinary.com/diqefvh29/image/upload/banner_plbcgv";
+  const bannerUrl = "https://res.cloudinary.com/diqefvh29/image/upload/banner_plbcgv";
 
   return (
     <main className="min-h-screen bg-vegr-cream text-vegr-ink">
@@ -16,13 +15,7 @@ export default function VisitorHome() {
 
       <section className="flex min-h-[calc(100dvh-5rem)] flex-col bg-white text-center">
         <div className="relative min-h-[42dvh] overflow-hidden border-b-[10px] border-vegr-gold">
-          <Image
-            src={bannerUrl}
-            alt="Vegan food banner"
-            fill
-            className="object-cover object-center"
-            priority
-          />
+          <Image src={bannerUrl} alt="Vegan food banner" fill className="object-cover object-center" priority/>
           <div className="absolute inset-0 bg-vegr-berry-dark/45" />
           <div className="relative z-10 flex h-full min-h-[45dvh] items-center justify-center px-6 py-12">
             <div>
@@ -46,13 +39,12 @@ export default function VisitorHome() {
               VegR is a simple space for finding and sharing vegan recipes, from
               quick everyday meals to creative plant-based favourites. Browse
               public recipes, save ideas, and share your own dishes with the
-              community.
+              community!
             </p>
 
-            <a
-              href="#explore"
+            <a href="#explore"
               className="mx-auto mt-10 flex size-14 animate-bounce items-center justify-center rounded-full border border-vegr-green bg-white text-vegr-green shadow-sm transition-colors hover:bg-vegr-green hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-green"
-              aria-label="Jump to Explore recipes"
+              aria-label="Jump to Explore recipes" 
             >
               <ArrowDown className="size-7" />
             </a>

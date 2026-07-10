@@ -58,11 +58,10 @@ export default function CookiePreferencesBanner() {
           </p>
           <h2 className="mt-1 text-xl font-bold">Choose how VegR learns.</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-700">
-            Essential cookies keep login and security working. Optional analytics
-            and visitor recommendations stay off unless you allow them.
+            Essential cookies keep login and security working. Optional analytics and visitor recommendations stay off unless you allow them.
           </p>
           <Link href="/legal#cookies" className="mt-2 inline-flex text-sm font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline">
-            Read the cookie policy
+            Read the FAQ
           </Link>
         </div>
 
@@ -131,8 +130,6 @@ async function syncProfilePreferences(preferences: PrivacyPreferences) {
     console.error(error);
   }
 }
-
-
 
 function readCookiePreferences() {
   const match = document.cookie.split("; ").find((cookie) => cookie.startsWith(`${COOKIE_NAME}=`));

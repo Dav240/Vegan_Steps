@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import AdSlot from "@/_components/ads/AdSlot";
 import NavigationMenu from "@/_components/NavigationMenu";
 import MyRecipesProfile from "@/_components/profile/MyRecipesProfile";
 import ProfileDetails from "@/_components/profile/ProfileDetails";
@@ -54,18 +55,27 @@ export default function ProfilePage() {
     <main className="flex min-h-screen bg-vegr-cream text-vegr-ink">
       <NavigationMenu />
 
-      <div className="min-w-0 flex-1 px-6 py-10 md:px-12 lg:px-16">
-        <ProfileDetails />
-        <SavedRecipesProfile
-          refreshKey={savedRecipesVersion + profileRecipesVersion}
-          savedRecipeStates={savedRecipeStates}
-          onSavedChange={handleSavedRecipeChange}
-          onRecipeDeleted={handleProfileRecipeDeleted} />
-        <MyRecipesProfile
-          refreshKey={profileRecipesVersion}
-          savedRecipeStates={savedRecipeStates}
-          onSavedChange={handleSavedRecipeChange}
-          onRecipeDeleted={handleProfileRecipeDeleted} />
+      <div className="grid min-w-0 flex-1 gap-8 px-6 py-10 md:px-12 lg:px-16 xl:grid-cols-[minmax(0,1fr)_180px] 2xl:grid-cols-[minmax(0,1fr)_220px]">
+        <div className="min-w-0">
+          <ProfileDetails />
+          <SavedRecipesProfile
+            refreshKey={savedRecipesVersion + profileRecipesVersion}
+            savedRecipeStates={savedRecipeStates}
+            onSavedChange={handleSavedRecipeChange}
+            onRecipeDeleted={handleProfileRecipeDeleted} />
+          <MyRecipesProfile
+            refreshKey={profileRecipesVersion}
+            savedRecipeStates={savedRecipeStates}
+            onSavedChange={handleSavedRecipeChange}
+            onRecipeDeleted={handleProfileRecipeDeleted} />
+        </div>
+
+        <div className="hidden xl:block">
+          <AdSlot
+            variant="rail"
+            className="sticky top-8"
+          />
+        </div>
       </div>
     </main>
   );

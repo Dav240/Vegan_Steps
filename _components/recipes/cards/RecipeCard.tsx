@@ -216,7 +216,12 @@ export default function RecipeCard({
                 <TagBubble
                   key={tag}
                   tag={tag}
-                  className="max-w-full shrink-0 whitespace-nowrap"
+                  className={cn(
+                    "max-w-full shrink-0",
+                    tagPresentation === "explore"
+                      ? "whitespace-normal break-words text-left leading-tight"
+                      : "whitespace-nowrap"
+                  )}
                 />
               ))}
               {tagPresentation !== "explore" && tags.length > 3 && (

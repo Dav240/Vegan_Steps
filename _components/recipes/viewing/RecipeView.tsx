@@ -399,18 +399,20 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
                       </p>
                     )}
 
-                    <div className="mt-9">
-                      <h2 className="text-sm font-bold uppercase text-vegr-berry-dark">
-                        {isLoggedIn ? "Your rating" : "Log in to rate"}
-                      </h2>
-                      <EditableStarsRating
-                        key={`${recipe.recipeId}-${currentUser.id ?? "visitor"}-${recipe.userRating}`}
-                        recipeId={recipe.recipeId}
-                        initialRating={recipe.userRating}
-                        onRatingChange={handleRatingChange}
-                        className="mt-3"
-                      />
-                    </div>
+                    {currentUser.id !== recipe.authorId && (
+                      <div className="mt-9">
+                        <h2 className="text-sm font-bold uppercase text-vegr-berry-dark">
+                          {isLoggedIn ? "Your rating" : "Log in to rate"}
+                        </h2>
+                        <EditableStarsRating
+                          key={`${recipe.recipeId}-${currentUser.id ?? "visitor"}-${recipe.userRating}`}
+                          recipeId={recipe.recipeId}
+                          initialRating={recipe.userRating}
+                          onRatingChange={handleRatingChange}
+                          className="mt-3"
+                        />
+                      </div>
+                    )}
                   </>
                 )}
 

@@ -16,16 +16,12 @@ export default function PreferenceRow({
     return (
     <label className="flex items-center justify-between gap-4 rounded-md border border-vegr-green-soft bg-vegr-cream p-3">
         <span>
-        <span className="block font-bold text-vegr-ink">{title}</span>
-        <span className="mt-1 block text-sm leading-5 text-zinc-600">
-            {description}
+            <span className="block font-bold text-vegr-ink">{title}</span>
+            <span className="mt-1 block text-sm leading-5 text-zinc-600">
+                {description}
+            </span>
         </span>
-        </span>
-        <Switch
-        checked={checked}
-        disabled={disabled}
-        onCheckedChange={onCheckedChange}
-        />
+        <Switch checked={checked} disabled={disabled} onCheckedChange={onCheckedChange}/>
     </label>
     );
 }

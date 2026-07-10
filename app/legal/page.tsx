@@ -15,14 +15,14 @@ export default function LegalPage() {
 
         <header className="mt-8 max-w-3xl">
           <p className="text-sm font-bold uppercase tracking-wide text-vegr-berry">
-            Legal centre
+            FAQ
           </p>
           <h1 className="mt-3 text-4xl font-bold text-vegr-ink md:text-5xl">
-            Clear rules, plain language.
+            Help, safety, and privacy.
           </h1>
           <p className="mt-4 text-lg leading-8 text-zinc-700">
-            These drafts show the structure VegR should use before public hosting:
-            short summaries, readable policies, and separate optional privacy choices.
+            Quick answers about how VegR works, what data is used, and the rules
+            that keep recipes safer for everyone.
           </p>
         </header>
 

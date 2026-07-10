@@ -144,7 +144,7 @@ export default function PrivacyPreferences() {
           href="/legal#privacy"
           className="text-sm font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline"
         >
-          Privacy Policy
+          FAQ
         </Link>
       </div>
 
@@ -218,5 +218,4 @@ async function readJsonResponse(response: Response) {
     storageReady?: boolean;
   };
 }
-
 

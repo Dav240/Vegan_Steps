@@ -13,6 +13,7 @@ import {
   ChevronRight,
   ChevronUp,
   Heart,
+  HelpCircle,
   LogOut,
   UserRound,
 } from "lucide-react";
@@ -88,6 +89,9 @@ export default function NavigationMenu() {
             <MobileNavLink href="/saved-recipes" active={pathname === "/saved-recipes"} label="Saved recipes">
               <Heart className="size-5" />
             </MobileNavLink>
+            <MobileNavLink href="/legal" active={pathname === "/legal"} label="FAQ">
+              <HelpCircle className="size-5" />
+            </MobileNavLink>
             <button
               type="button"
           onClick={() => void handleLogout()}
@@ -107,7 +111,7 @@ export default function NavigationMenu() {
       >
         <div className="flex h-20 items-center border-b border-white/20 px-4">
           {isOpen && (
-            <Link href="/profile" className="vegr-logo-link font-indie-flower text-4xl font-bold text-white hover:text-vegr-gold-soft">
+            <Link href="/explore" className="vegr-logo-link font-indie-flower text-4xl font-bold text-white hover:text-vegr-gold-soft">
               VegR
             </Link>
           )}
@@ -151,9 +155,14 @@ export default function NavigationMenu() {
         </nav>
 
         <div className="mt-auto p-3">
+          <Link href="/legal" className={linkClass("/legal")}>
+            <HelpCircle className="size-5 shrink-0" />
+            {isOpen && <span>FAQ</span>}
+          </Link>
+
         <button type="button" onClick={() => void handleLogout()}
             className={cn(
-              "flex h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-semibold text-vegr-gold-soft transition-colors hover:bg-vegr-berry-dark hover:text-white",
+              "mt-2 flex h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-semibold text-vegr-gold-soft transition-colors hover:bg-vegr-berry-dark hover:text-white",
               !isOpen && "justify-center px-0"
             )}
           >
