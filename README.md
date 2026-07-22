@@ -118,42 +118,6 @@ The Prisma schema models the main product workflow:
 - `EmailVerificationCode`: registration, email-change, and password-reset codes
 - `RecipeView`: recent viewing signals for recommendations
 
-## Getting Started
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Generate the Prisma client and apply database migrations:
-
-```bash
-npx prisma generate
-npx prisma migrate dev
-```
-
-Run the development server:
-
-```bash
-npm run dev
-```
-
-Open:
-
-```text
-http://localhost:3000
-```
-
-## Quality Checks
-
-Before sharing or deploying, run:
-
-```bash
-npm run lint
-npm run build
-```
-
 These checks help catch TypeScript, routing, and production build issues before they appear in deployment.
 
 ## Notes
