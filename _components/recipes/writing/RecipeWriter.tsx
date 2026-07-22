@@ -350,7 +350,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
     draft !== null && draft.ingredients.length > 10;
 
   return (
-    <main className="flex min-h-screen bg-vegr-cream text-vegr-ink">
+    <main className="flex min-h-screen bg-brand-cream text-brand-ink">
       <NavigationMenu />
 
       <div className="min-w-0 flex-1">
@@ -364,7 +364,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
           <div className="mx-auto w-full max-w-[1500px] px-6 py-10 md:px-12 lg:px-16">
             <div className="grid items-start gap-x-10 gap-y-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)] xl:gap-x-16">
               <section className="min-w-0">
-                <p className="text-sm font-semibold uppercase text-vegr-berry">
+                <p className="text-sm font-semibold uppercase text-brand-berry">
                   Recipe draft
                 </p>
                 <Label htmlFor="recipe-title" className="sr-only">
@@ -385,18 +385,18 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
                   />
                 </div>
                 {draft.rejectionReason && (
-                  <div className="mt-6 rounded-lg border border-vegr-berry-soft bg-vegr-berry-soft/50 px-4 py-3 shadow-sm">
-                    <p className="text-xs font-bold uppercase text-vegr-berry-dark">
+                  <div className="mt-6 rounded-lg border border-brand-berry-soft bg-brand-berry-soft/50 px-4 py-3 shadow-sm">
+                    <p className="text-xs font-bold uppercase text-brand-berry-dark">
                       Moderator comment
                     </p>
-                    <p className="mt-2 text-sm leading-6 text-vegr-ink">
+                    <p className="mt-2 text-sm leading-6 text-brand-ink">
                       {draft.rejectionReason}
                     </p>
                   </div>
                 )}
               </section>
 
-              <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-vegr-berry-soft bg-white lg:col-start-1 lg:row-start-2">
+              <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-brand-berry-soft bg-white lg:col-start-1 lg:row-start-2">
                   {draft.imageUrl ? (
                     <Image src={draft.imageUrl} alt={draft.name || "Recipe image"} fill sizes="(max-width: 1024px) 100vw, 60vw" className="object-cover"/>
                   ) : (
@@ -404,7 +404,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
                   )}
 
                   <Button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading}
-                  className="absolute bottom-5 left-5 h-11 bg-vegr-green px-5 text-white shadow-md hover:bg-vegr-green-dark" >
+                  className="absolute bottom-5 left-5 h-11 bg-brand-green px-5 text-white shadow-md hover:bg-brand-green-dark" >
                     <ImagePlus />
                     {isUploading ? "Uploading..." : draft.imageUrl ? "Replace image" : "Upload image"}
                   </Button>
@@ -423,17 +423,17 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
                 <textarea id="recipe-description" value={draft.description} onChange={(event) => updateDraft("description", event.target.value)}
                   placeholder="Recipe description"
                   rows={5}
-                  className="mt-3 w-full resize-y rounded-lg border border-vegr-berry-soft bg-white px-4 py-3 text-base leading-6 outline-none focus:border-vegr-green focus:ring-2 focus:ring-vegr-green-soft"
+                  className="mt-3 w-full resize-y rounded-lg border border-brand-berry-soft bg-white px-4 py-3 text-base leading-6 outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green-soft"
                 />
 
                 <div className="mt-6">
-                  <p className="text-sm font-bold uppercase text-vegr-berry-dark">
+                  <p className="text-sm font-bold uppercase text-brand-berry-dark">
                     Tags
                   </p>
                   <div className="mt-3 flex min-h-9 flex-wrap items-center gap-2">
                     {draft.tags.map((tag) => (
                       <span key={tag}
-                        className="inline-flex items-center gap-1 rounded-full border border-vegr-green/25 bg-vegr-green-soft px-3 py-1 text-xs font-semibold text-vegr-green-dark"
+                        className="inline-flex items-center gap-1 rounded-full border border-brand-green/25 bg-brand-green-soft px-3 py-1 text-xs font-semibold text-brand-green-dark"
                       >
                         {formatRecipeEnum(tag)}
                         <button type="button" onClick={() => removeTag(tag)} aria-label={`Remove ${formatRecipeEnum(tag)}`}
@@ -494,7 +494,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
               <p
                 role="status"
                 className={cn( "mt-8 rounded-md border px-4 py-3 text-sm font-medium",
-                  error ? "border-red-200 bg-red-50 text-red-700" : "border-vegr-green/25 bg-vegr-green-soft text-vegr-green-dark"
+                  error ? "border-red-200 bg-red-50 text-red-700" : "border-brand-green/25 bg-brand-green-soft text-brand-green-dark"
                 )}
               >
                 {error || notice}
@@ -503,7 +503,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
 
             <div className="mt-10 flex flex-wrap gap-3">
               <Button type="button" onClick={() => setSubmitDialogOpen(true)} disabled={isSaving || isUploading}
-              className="h-11 bg-vegr-green px-5 text-white hover:bg-vegr-green-dark"
+              className="h-11 bg-brand-green px-5 text-white hover:bg-brand-green-dark"
               >
                 <Send />
                 Submit
@@ -513,7 +513,7 @@ export default function RecipeWriter({ recipeId }: { recipeId: string }) {
                 variant="outline"
                 onClick={() => void saveDraft("save")}
                 disabled={isSaving || isUploading}
-                className="h-11 border-vegr-berry bg-white px-5 text-vegr-berry hover:bg-vegr-berry-soft"
+                className="h-11 border-brand-berry bg-white px-5 text-brand-berry hover:bg-brand-berry-soft"
               >
                 <Save />
                 Save Draft

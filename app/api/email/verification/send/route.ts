@@ -75,8 +75,8 @@ async function sendRegisterCode(body: SendVerificationBody) {
   await sendVerificationEmail({
     to: emailValidation.value,
     code: verification.code,
-    subject: "Your VegR registration code",
-    intro: "Use this code to finish creating your VegR account.",
+    subject: "Your Vegan Steps registration code",
+    intro: "Use this code to finish creating your Vegan Steps account.",
   });
 
   return NextResponse.json({
@@ -139,14 +139,14 @@ async function sendChangeEmailCodes(request: Request, body: SendVerificationBody
   await sendVerificationEmail({
     to: user.email,
     code: oldEmailVerification.code,
-    subject: "Confirm your VegR email change",
-    intro: `Use this code to confirm changing your VegR email to ${emailValidation.value}.`,
+    subject: "Confirm your Vegan Steps email change",
+    intro: `Use this code to confirm changing your Vegan Steps email to ${emailValidation.value}.`,
   });
   await sendVerificationEmail({
     to: emailValidation.value,
     code: newEmailVerification.code,
-    subject: "Confirm your new VegR email",
-    intro: "Use this code to confirm this email address for your VegR account.",
+    subject: "Confirm your new Vegan Steps email",
+    intro: "Use this code to confirm this email address for your Vegan Steps account.",
   });
 
   return NextResponse.json({

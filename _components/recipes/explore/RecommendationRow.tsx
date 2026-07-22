@@ -59,7 +59,7 @@ export default function RecommendationRow({
 
   return (
     <section className="space-y-4">
-      <h2 className="text-2xl font-bold text-vegr-ink md:text-3xl">
+      <h2 className="text-2xl font-bold text-brand-ink md:text-3xl">
         {row.title}
       </h2>
 
@@ -138,7 +138,7 @@ function CarouselButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="flex size-11 items-center justify-center rounded-full border border-vegr-berry bg-white text-vegr-berry shadow-sm transition-colors hover:bg-vegr-berry hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry"
+      className="flex size-11 items-center justify-center rounded-full border border-brand-berry bg-white text-brand-berry shadow-sm transition-colors hover:bg-brand-berry hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-berry"
     >
       <Icon className="size-6" />
     </button>

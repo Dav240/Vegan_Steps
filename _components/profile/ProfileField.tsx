@@ -22,7 +22,7 @@ export default function ProfileField({ id, label, type, value, pending, message,
     <div>
       <div className="grid grid-cols-[minmax(0,1fr)_40px] items-end gap-3">
         <div className="space-y-2">
-          <Label htmlFor={id} className="font-semibold text-vegr-berry-dark">
+          <Label htmlFor={id} className="font-semibold text-brand-berry-dark">
             {label}
           </Label>
           <Input
@@ -30,7 +30,7 @@ export default function ProfileField({ id, label, type, value, pending, message,
             type={type}
             value={value}
             onChange={(event) => onChange(event.target.value)}
-            className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+            className="h-10 border-brand-berry-soft bg-white text-brand-ink shadow-sm focus-visible:border-brand-green focus-visible:ring-brand-green-soft"
           />
         </div>
 
@@ -39,7 +39,7 @@ export default function ProfileField({ id, label, type, value, pending, message,
           onClick={onSave}
           disabled={pending}
           aria-label={`Save ${label.toLowerCase()}`}
-          className="flex size-10 items-center justify-center rounded-md border border-vegr-green-dark bg-vegr-green text-white shadow-sm transition-colors hover:bg-vegr-green-dark disabled:cursor-wait disabled:opacity-60"
+          className="flex size-10 items-center justify-center rounded-md border border-brand-green-dark bg-brand-green text-white shadow-sm transition-colors hover:bg-brand-green-dark disabled:cursor-wait disabled:opacity-60"
         >
           {pending ? (
             <LoaderCircle className="size-5 animate-spin" />
@@ -52,7 +52,7 @@ export default function ProfileField({ id, label, type, value, pending, message,
       {message && (
         <p
           className={
-            message.type === "error" ? "mt-2 text-sm text-red-700" : "mt-2 text-sm text-vegr-green-dark"
+            message.type === "error" ? "mt-2 text-sm text-red-700" : "mt-2 text-sm text-brand-green-dark"
           }
         >
           {message.text}

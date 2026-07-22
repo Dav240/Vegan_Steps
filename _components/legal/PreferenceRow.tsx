@@ -14,9 +14,9 @@ export default function PreferenceRow({
     onCheckedChange: (checked: boolean) => void;
 }) {
     return (
-    <label className="flex items-center justify-between gap-4 rounded-md border border-vegr-green-soft bg-vegr-cream p-3">
+    <label className="flex items-center justify-between gap-4 rounded-md border border-brand-green-soft bg-brand-cream p-3">
         <span>
-            <span className="block font-bold text-vegr-ink">{title}</span>
+            <span className="block font-bold text-brand-ink">{title}</span>
             <span className="mt-1 block text-sm leading-5 text-zinc-600">
                 {description}
             </span>

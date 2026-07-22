@@ -10,7 +10,7 @@ export type AuthenticatedUser = {
   userType: "CLIENT" | "MODERATOR";
 };
 
-const SESSION_COOKIE_NAME = "vegr_session";
+const SESSION_COOKIE_NAME = "vegansteps_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
 type SessionPayload = {
@@ -203,7 +203,7 @@ function getSessionSecret() {
     throw new Error("SESSION_SECRET must be configured in production.");
   }
 
-  return "dev-only-vegr-session-secret-change-before-deployment";
+  return "dev-only-vegansteps-session-secret-change-before-deployment";
 }
 
 function safeEqual(left: string, right: string) {

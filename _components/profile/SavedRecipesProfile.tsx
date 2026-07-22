@@ -79,7 +79,7 @@ export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onS
 
   return (
     <section className="w-full py-8">
-      <h2 className="font-indie-flower text-5xl font-bold text-vegr-ink">
+      <h2 className="font-indie-flower text-5xl font-bold text-brand-ink">
         Saved Recipes
       </h2>
 
@@ -88,12 +88,12 @@ export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onS
           {Array.from({ length: 3 }, (_, index) => (
             <div
               key={index}
-              className="min-h-[380px] w-full max-w-[370px] animate-pulse rounded-lg border border-vegr-berry-soft bg-white"
+              className="min-h-[380px] w-full max-w-[370px] animate-pulse rounded-lg border border-brand-berry-soft bg-white"
             >
-              <div className="aspect-[4/3] bg-vegr-green-soft" />
+              <div className="aspect-[4/3] bg-brand-green-soft" />
               <div className="space-y-3 p-4">
-                <div className="h-5 w-3/4 rounded bg-vegr-berry-soft" />
-                <div className="h-4 w-1/2 rounded bg-vegr-green-soft" />
+                <div className="h-5 w-3/4 rounded bg-brand-berry-soft" />
+                <div className="h-4 w-1/2 rounded bg-brand-green-soft" />
               </div>
             </div>
           ))}

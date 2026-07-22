@@ -133,7 +133,7 @@ export async function POST(request: Request) {
     const bytes = Buffer.from(await file.arrayBuffer());
     const dataUri = `data:${file.type};base64,${bytes.toString("base64")}`;
     const uploadedImage = await cloudinary.uploader.upload(dataUri, {
-      folder: "vegr/recipes",
+      folder: "vegansteps/recipes",
       resource_type: "image",
       allowed_formats: ["jpg", "jpeg", "png", "webp"],
       transformation: [

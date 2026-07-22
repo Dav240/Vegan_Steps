@@ -6,9 +6,9 @@ import { Plus, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export const writingInputClassName = "h-10 border-vegr-berry-soft bg-white text-vegr-ink focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft";
+export const writingInputClassName = "h-10 border-brand-berry-soft bg-white text-brand-ink focus-visible:border-brand-green focus-visible:ring-brand-green-soft";
 
-export const writingSelectClassName = "h-10 w-full rounded-lg border border-vegr-berry-soft bg-white px-3 text-sm text-vegr-ink outline-none focus:border-vegr-green focus:ring-2 focus:ring-vegr-green-soft";
+export const writingSelectClassName = "h-10 w-full rounded-lg border border-brand-berry-soft bg-white px-3 text-sm text-brand-ink outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green-soft";
 
 export function WritingListHeader({ title, icon: Icon, accessory, tone = "berry", standalone = false }: {
   title: string;
@@ -21,14 +21,14 @@ export function WritingListHeader({ title, icon: Icon, accessory, tone = "berry"
     <div
       className={cn( "flex min-h-20 items-center justify-between gap-5 border px-5 py-4",
         standalone ? "rounded-lg" : "rounded-t-lg border-b-0",
-        tone === "green" ? "border-vegr-green/20 bg-vegr-green-soft": "border-vegr-berry-soft bg-vegr-berry-soft/55"
+        tone === "green" ? "border-brand-green/20 bg-brand-green-soft": "border-brand-berry-soft bg-brand-berry-soft/55"
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
         {Icon && (
-          <Icon className="size-7 shrink-0 text-vegr-green-dark" aria-hidden="true"/>
+          <Icon className="size-7 shrink-0 text-brand-green-dark" aria-hidden="true"/>
         )}
-        <h2 className="font-indie-flower text-3xl font-bold text-vegr-ink">
+        <h2 className="font-indie-flower text-3xl font-bold text-brand-ink">
           {title}
         </h2>
       </div>
@@ -46,7 +46,7 @@ export function WritingAddButton({ label, disabled, standalone = false, onClick 
   return (
     <button type="button" onClick={onClick} disabled={disabled} aria-label={label} title={label}
       className={cn(
-        "flex h-12 w-full items-center justify-center border border-vegr-berry-soft bg-white text-vegr-green-dark hover:bg-vegr-green-soft disabled:cursor-not-allowed disabled:opacity-40",
+        "flex h-12 w-full items-center justify-center border border-brand-berry-soft bg-white text-brand-green-dark hover:bg-brand-green-soft disabled:cursor-not-allowed disabled:opacity-40",
         standalone ? "mt-4 rounded-lg shadow-sm" : "rounded-b-lg"
       )}
     >
@@ -64,7 +64,7 @@ export function WritingRemoveButton({
 }) {
   return (
     <button type="button" onClick={onClick} aria-label={label} title={label}
-      className="flex size-10 items-center justify-center rounded-md text-vegr-berry hover:bg-vegr-berry-soft">
+      className="flex size-10 items-center justify-center rounded-md text-brand-berry hover:bg-brand-berry-soft">
       <X className="size-4" />
     </button>
   );

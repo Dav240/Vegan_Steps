@@ -13,12 +13,7 @@ export type RatingUpdate = {
   userRating: number;
 };
 
-export default function EditableStarsRating({
-  recipeId,
-  initialRating = 0,
-  onRatingChange,
-  className,
-}: {
+export default function EditableStarsRating({ recipeId, initialRating = 0, onRatingChange, className } : {
   recipeId: string;
   initialRating?: number;
   onRatingChange?: (rating: RatingUpdate) => void;
@@ -55,9 +50,7 @@ export default function EditableStarsRating({
         }),
       });
       const contentType = response.headers.get("content-type") ?? "";
-      const data = contentType.includes("application/json")
-        ? await response.json()
-        : null;
+      const data = contentType.includes("application/json") ? await response.json() : null;
 
       if (!response.ok) {
         throw new Error(data?.error || "Could not update your rating.");
@@ -75,10 +68,7 @@ export default function EditableStarsRating({
 
   return (
     <>
-      <div
-        className={cn("flex items-center gap-1", className)}
-        role="radiogroup"
-        aria-label={canRate ? "Your recipe rating" : "Log in to rate this recipe"}
+      <div className={cn("flex items-center gap-1", className)} role="radiogroup" aria-label={canRate ? "Your recipe rating" : "Log in to rate this recipe"}
         onMouseLeave={() => setHoveredRating(0)}
       >
         {Array.from({ length: 5 }, (_, index) => {
@@ -97,12 +87,12 @@ export default function EditableStarsRating({
               onFocus={() => setHoveredRating(value)}
               onBlur={() => setHoveredRating(0)}
               onClick={() => rateRecipe(value)}
-              className="rounded-sm p-0.5 text-vegr-gold-dark transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry disabled:cursor-wait"
+              className="rounded-sm p-0.5 text-brand-gold-dark transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-berry disabled:cursor-wait"
             >
               <Star
                 className={cn(
                   "size-8",
-                  active ? "fill-vegr-gold" : "fill-transparent"
+                  active ? "fill-brand-gold" : "fill-transparent"
                 )}
               />
             </button>
@@ -110,12 +100,7 @@ export default function EditableStarsRating({
         })}
       </div>
 
-      <LoginWindow
-        open={loginOpen}
-        onOpenChange={setLoginOpen}
-        showTrigger={false}
-        redirectAfterAuth={null}
-      />
+      <LoginWindow open={loginOpen} onOpenChange={setLoginOpen} showTrigger={false} redirectAfterAuth={null}/>
     </>
   );
 }

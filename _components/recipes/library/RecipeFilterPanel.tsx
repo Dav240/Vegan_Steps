@@ -2,12 +2,12 @@
 
 import { RotateCcw } from "lucide-react";
 
-import { formatRecipeEnum, 
-  type EditableRecipeStatus,
-  type RecipeTag,
-} from "@/lib/recipe-draft";
-import { getRecipeTagCategories, getRecipeTagLabel } from "@/lib/recipe-tags";
+import { formatRecipeEnum, type EditableRecipeStatus, type RecipeTag } from "@/lib/recipe-draft";
+import { getRecipeTagCategories } from "@/lib/recipe-tags";
 import { cn } from "@/lib/utils";
+
+import TagCategoryGroup from "@/_components/recipes/library/TagCategoryGroup";
+import TagModeSwitch from "@/_components/recipes/library/TagModeSwitch";
 
 export type RecipeTagMode = "all" | "partial";
 export type RecipeStatusFilter = Extract<
@@ -55,16 +55,13 @@ export default function RecipeFilterPanel({ minRating, maxRating, onRatingChange
   return (
     <section
       aria-label="Recipe filters"
-      className={cn(
-        "grid gap-6 border-b border-vegr-berry-soft bg-white px-5 py-5",
-        showStatusFilter
-          ? "xl:grid-cols-[300px_96px_minmax(0,1fr)]"
-          : "xl:grid-cols-[340px_minmax(0,1fr)]"
+      className={cn( "grid gap-6 border-b border-brand-berry-soft bg-white px-5 py-5",
+        showStatusFilter ? "xl:grid-cols-[300px_96px_minmax(0,1fr)]" : "xl:grid-cols-[340px_minmax(0,1fr)]"
       )}
     >
       <div className="space-y-7">
         <fieldset>
-          <legend className="text-sm font-bold uppercase text-vegr-berry-dark">
+          <legend className="text-sm font-bold uppercase text-brand-berry-dark">
             Rating range
           </legend>
           <div className="mt-3">
@@ -78,7 +75,7 @@ export default function RecipeFilterPanel({ minRating, maxRating, onRatingChange
                       maxRating
                     )
                   }
-                  className="h-10 w-full rounded-md border border-vegr-berry-soft bg-white px-3 text-sm font-semibold text-vegr-ink outline-none focus:border-vegr-green focus:ring-2 focus:ring-vegr-green-soft"
+                  className="h-10 w-full rounded-md border border-brand-berry-soft bg-white px-3 text-sm font-semibold text-brand-ink outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green-soft"
                 />
               </label>
               <span className="text-zinc-400">-</span>
@@ -91,14 +88,14 @@ export default function RecipeFilterPanel({ minRating, maxRating, onRatingChange
                       Math.max(clampRating(event.target.value, maxRating), minRating)
                     )
                   }
-                  className="h-10 w-full rounded-md border border-vegr-berry-soft bg-white px-3 text-sm font-semibold text-vegr-ink outline-none focus:border-vegr-green focus:ring-2 focus:ring-vegr-green-soft"
+                  className="h-10 w-full rounded-md border border-brand-berry-soft bg-white px-3 text-sm font-semibold text-brand-ink outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green-soft"
                 />
               </label>
             </div>
             <div className="relative mt-4 h-7">
-              <div className="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-vegr-berry-soft" />
+              <div className="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-brand-berry-soft" />
               <div
-                className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-vegr-ink"
+                className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-brand-ink"
                 style={{
                   left: `${ratingPercent(minRating)}%`,
                   right: `${100 - ratingPercent(maxRating)}%`,
@@ -112,7 +109,7 @@ export default function RecipeFilterPanel({ minRating, maxRating, onRatingChange
                   )
                 }
                 aria-label="Minimum rating"
-                className="pointer-events-none absolute inset-x-0 top-1/2 z-20 h-1 w-full -translate-y-1/2 appearance-none bg-transparent [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-vegr-ink [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:bg-vegr-ink [&::-webkit-slider-thumb]:shadow-sm"
+                className="pointer-events-none absolute inset-x-0 top-1/2 z-20 h-1 w-full -translate-y-1/2 appearance-none bg-transparent [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-brand-ink [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:bg-brand-ink [&::-webkit-slider-thumb]:shadow-sm"
               />
               <input type="range" min={0} max={5} step={0.1} value={maxRating}
                 onChange={(event) =>
@@ -122,14 +119,14 @@ export default function RecipeFilterPanel({ minRating, maxRating, onRatingChange
                   )
                 }
                 aria-label="Maximum rating"
-                className="pointer-events-none absolute inset-x-0 top-1/2 z-30 h-1 w-full -translate-y-1/2 appearance-none bg-transparent [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-vegr-ink [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:bg-vegr-ink [&::-webkit-slider-thumb]:shadow-sm"
+                className="pointer-events-none absolute inset-x-0 top-1/2 z-30 h-1 w-full -translate-y-1/2 appearance-none bg-transparent [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-brand-ink [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:size-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:bg-brand-ink [&::-webkit-slider-thumb]:shadow-sm"
               />
             </div>
           </div>
         </fieldset>
 
       <button type="button" onClick={onReset}
-        className="flex h-10 w-fit items-center justify-center gap-2 rounded-md border border-vegr-berry-soft bg-white px-4 text-sm font-semibold text-vegr-berry transition-colors hover:bg-vegr-berry-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry"
+        className="flex h-10 w-fit items-center justify-center gap-2 rounded-md border border-brand-berry-soft bg-white px-4 text-sm font-semibold text-brand-berry transition-colors hover:bg-brand-berry-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-berry"
       >
         <RotateCcw className="size-4" />
         Reset
@@ -138,15 +135,15 @@ export default function RecipeFilterPanel({ minRating, maxRating, onRatingChange
 
       {showStatusFilter && (
         <fieldset>
-          <legend className="text-sm font-bold uppercase text-vegr-berry-dark">
+          <legend className="text-sm font-bold uppercase text-brand-berry-dark">
             Status
           </legend>
           <div className="mt-3 flex flex-wrap gap-3 xl:flex-col xl:gap-4">
             {STATUS_FILTERS.map((status) => (
-              <label key={status} className="flex items-center gap-2 text-sm font-semibold text-vegr-ink">
+              <label key={status} className="flex items-center gap-2 text-sm font-semibold text-brand-ink">
                 <input type="checkbox" checked={selectedStatuses.includes(status)}
                   onChange={() => toggleStatus(status)}
-                  className="size-4 accent-vegr-green" />
+                  className="size-4 accent-brand-green" />
                 {formatRecipeEnum(status)}
               </label>
             ))}
@@ -156,7 +153,7 @@ export default function RecipeFilterPanel({ minRating, maxRating, onRatingChange
 
       <fieldset aria-label="Tag filters">
         <div className="flex flex-wrap items-center gap-4">
-          <span className="text-sm font-bold uppercase text-vegr-berry-dark">
+          <span className="text-sm font-bold uppercase text-brand-berry-dark">
             Tags
           </span>
           <TagModeSwitch mode={tagMode} onModeChange={onTagModeChange} />
@@ -194,51 +191,6 @@ export default function RecipeFilterPanel({ minRating, maxRating, onRatingChange
   );
 }
 
-function TagCategoryGroup({
-  category,
-  selectedTags,
-  onToggleTag,
-}: {
-  category: ReturnType<typeof getRecipeTagCategories>[number];
-  selectedTags: RecipeTag[];
-  onToggleTag: (tag: RecipeTag) => void;
-}) {
-  return (
-    <div>
-      <p className="text-xs font-bold uppercase tracking-wide text-vegr-berry">
-        {category.label}
-      </p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {category.tags.length > 0 ? (
-          category.tags.map((tag) => {
-            const selected = selectedTags.includes(tag);
-            return (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => onToggleTag(tag)}
-                aria-pressed={selected}
-                className={cn(
-                  "rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-green",
-                  selected
-                    ? "border-vegr-green bg-vegr-green text-white"
-                    : "border-vegr-green/30 bg-vegr-green-soft text-vegr-green-dark hover:border-vegr-green"
-                )}
-              >
-                {getRecipeTagLabel(tag)}
-              </button>
-            );
-          })
-        ) : (
-          <span className="text-sm font-medium text-zinc-400">
-            No tags yet.
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function clampRating(value: string, boundary: number) {
   const rating = Number(value);
   if (!Number.isFinite(rating)) return boundary;
@@ -249,29 +201,4 @@ function clampRating(value: string, boundary: number) {
 
 function ratingPercent(value: number) {
   return (value / 5) * 100;
-}
-
-function TagModeSwitch({ mode, onModeChange }: {
-  mode: RecipeTagMode;
-  onModeChange: (mode: RecipeTagMode) => void;
-}) {
-  const isAll = mode === "all";
-
-  return (
-    <button type="button" aria-label="Require all or any selected tags" aria-pressed={isAll}
-      onClick={() => onModeChange(isAll ? "partial" : "all")}
-      className={cn(
-        "relative h-9 w-36 rounded-full p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry",
-        isAll ? "bg-vegr-green-soft" : "bg-vegr-gold-soft"
-      )}
-    >
-      <span
-        className={cn( "absolute top-1 flex h-7 w-[4.75rem] items-center justify-center rounded-full text-xs font-bold uppercase text-white shadow-sm transition-all",
-          isAll ? "left-1 bg-vegr-green" : "left-[calc(100%-5rem)] bg-vegr-gold-dark"
-        )}
-      >
-        {isAll ? "All" : "Partial"}
-      </span>
-    </button>
-  );
 }

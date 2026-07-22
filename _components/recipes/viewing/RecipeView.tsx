@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Ban, CalendarDays, ChevronLeft, ChevronRight, ShieldCheck, Trash2 } from "lucide-react";
+import { ArrowLeft, CalendarDays } from "lucide-react";
 
 import NavigationMenu from "@/_components/NavigationMenu";
 import VisitorHeader from "@/_components/home/VisitorHeader";
@@ -17,13 +17,16 @@ import SaveButton from "@/_components/recipes/viewing/SaveButton";
 import StarsRating from "@/_components/recipes/viewing/StarsRating";
 import TagBubble from "@/_components/recipes/viewing/TagBubble";
 import TimeBubble from "@/_components/recipes/viewing/TimeBubble";
+import ModeratorReviewPanel from "@/_components/recipes/viewing/ModeratorReviewPanel";
+import IngredientsTable from "@/_components/recipes/viewing/IngredientsTable";
+import RecipeViewLoading from "@/_components/recipes/viewing/RecipeViewLoading";
 
 import { Button } from "@/_components/ui/button";
 import RecipeImagePlaceholder from "@/_components/ui/RecipeImagePlaceholder";
 import { createRecipeDraft } from "@/lib/recipe-draft";
 import { useSession } from "@/lib/session";
 
-type RecipeViewData = {
+export type RecipeViewData = {
   recipeId: string;
   name: string;
   description: string;
@@ -47,7 +50,7 @@ type RecipeViewData = {
   reports: RecipeReport[];
 };
 
-type RecipeIngredient = {
+export type RecipeIngredient = {
   id: string;
   name: string;
   quantity: number | null;
@@ -249,7 +252,7 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
   }
 
   return (
-    <main className={showClientNavigation ? "flex min-h-screen bg-vegr-cream" : "min-h-screen bg-vegr-cream"}>
+    <main className={showClientNavigation ? "flex min-h-screen bg-brand-cream" : "min-h-screen bg-brand-cream"}>
       {showClientNavigation && <NavigationMenu />}
 
       <div className="min-w-0 flex-1">
@@ -268,7 +271,7 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
             {isModerator && (
               <Link
                 href="/moderator"
-                className="mb-7 inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm font-bold uppercase text-vegr-berry transition-colors hover:bg-vegr-berry-soft hover:text-vegr-berry-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry"
+                className="mb-7 inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm font-bold uppercase text-brand-berry transition-colors hover:bg-brand-berry-soft hover:text-brand-berry-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-berry"
               >
                 <ArrowLeft className="size-4" />
                 Moderator Home
@@ -279,10 +282,10 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
               <section className="min-w-0">
                 <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
                   <div>
-                    <p className="text-sm font-semibold uppercase text-vegr-berry">
+                    <p className="text-sm font-semibold uppercase text-brand-berry">
                       Recipe by {recipe.authorUsername}
                     </p>
-                    <h1 className="mt-1 text-5xl font-bold text-vegr-ink md:text-6xl">
+                    <h1 className="mt-1 text-5xl font-bold text-brand-ink md:text-6xl">
                       {recipe.name}
                     </h1>
                   </div>
@@ -291,17 +294,17 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
                     <TimeBubble
                       type="prep"
                       minutes={recipe.prepTimeMinutes}
-                      className="h-10 border-vegr-berry-soft px-4 text-sm"
+                      className="h-10 border-brand-berry-soft px-4 text-sm"
                     />
                     <TimeBubble
                       type="cook"
                       minutes={recipe.cookTimeMinutes}
-                      className="h-10 border-vegr-berry-soft px-4 text-sm"
+                      className="h-10 border-brand-berry-soft px-4 text-sm"
                     />
                   </div>
                 </div>
 
-                <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-vegr-berry-soft bg-vegr-green-soft">
+                <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-brand-berry-soft bg-brand-green-soft">
                   {recipe.imageUrl ? (
                     <Image src={recipe.imageUrl} alt={recipe.name} fill priority sizes="(max-width: 1024px) 100vw, 60vw" className="object-cover"/>
                   ) : (
@@ -310,7 +313,7 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
                 </div>
 
                 <div className="mt-6 inline-flex flex-col items-start">
-                  <span className="text-4xl font-bold text-vegr-ink">
+                  <span className="text-4xl font-bold text-brand-ink">
                     {recipe.averageRating.toFixed(1)}
                   </span>
                   <StarsRating
@@ -327,7 +330,7 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
 
               <section className="min-w-0 pt-1">
                 <div className="flex items-center justify-end gap-2 text-sm text-zinc-600">
-                  <CalendarDays className="size-4 text-vegr-berry" />
+                  <CalendarDays className="size-4 text-brand-berry" />
                   <span>Updated {formatDate(recipe.updatedAt)}</span>
                 </div>
                 {currentUser.id !== recipe.authorId && !isModerator && (
@@ -335,7 +338,7 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
                     <button
                       type="button"
                       onClick={() => setReportDialogOpen(true)}
-                      className="text-xs font-bold uppercase text-vegr-berry hover:text-vegr-berry-dark hover:underline"
+                      className="text-xs font-bold uppercase text-brand-berry hover:text-brand-berry-dark hover:underline"
                     >
                       Report recipe
                     </button>
@@ -343,7 +346,7 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
                 )}
 
                 <div className="mt-10">
-                  <h2 className="font-indie-flower text-4xl font-bold text-vegr-ink">
+                  <h2 className="font-indie-flower text-4xl font-bold text-brand-ink">
                     Description
                   </h2>
                   <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-700">
@@ -362,11 +365,11 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
                 </div>
 
                 {recipe.rejectionReason && (
-                  <div className="mt-8 rounded-lg border border-vegr-berry-soft bg-vegr-berry-soft/50 px-4 py-3 shadow-sm">
-                    <p className="text-xs font-bold uppercase text-vegr-berry-dark">
+                  <div className="mt-8 rounded-lg border border-brand-berry-soft bg-brand-berry-soft/50 px-4 py-3 shadow-sm">
+                    <p className="text-xs font-bold uppercase text-brand-berry-dark">
                       Rejection reason
                     </p>
-                    <p className="mt-2 text-sm leading-6 text-vegr-ink">
+                    <p className="mt-2 text-sm leading-6 text-brand-ink">
                       {recipe.rejectionReason}
                     </p>
                   </div>
@@ -381,14 +384,14 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
                         initiallySaved={recipe.initiallySaved}
                         savedState={recipe.initiallySaved}
                         onSavedChange={handleSavedChange}
-                        className="size-12 border border-vegr-berry-soft bg-white shadow-sm"
+                        className="size-12 border border-brand-berry-soft bg-white shadow-sm"
                       />
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => void editYourOwn()}
                         disabled={isCreatingCopy}
-                        className="h-12 border-vegr-berry bg-white px-6 text-vegr-berry hover:bg-vegr-berry-soft hover:text-vegr-berry-dark"
+                        className="h-12 border-brand-berry bg-white px-6 text-brand-berry hover:bg-brand-berry-soft hover:text-brand-berry-dark"
                       >
                         {isCreatingCopy ? "Creating copy..." : "Make New Recipe"}
                       </Button>
@@ -401,7 +404,7 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
 
                     {currentUser.id !== recipe.authorId && (
                       <div className="mt-9">
-                        <h2 className="text-sm font-bold uppercase text-vegr-berry-dark">
+                        <h2 className="text-sm font-bold uppercase text-brand-berry-dark">
                           {isLoggedIn ? "Your rating" : "Log in to rate"}
                         </h2>
                         <EditableStarsRating
@@ -468,305 +471,10 @@ export default function RecipeView({ recipeId }: { recipeId: string }) {
   );
 }
 
-function IngredientsTable({
-  servings,
-  ingredients,
-}: {
-  servings: number;
-  ingredients: RecipeIngredient[];
-}) {
-  return (
-    <section className="mt-16" aria-labelledby="ingredients-heading">
-      <div className="overflow-hidden rounded-lg border border-vegr-berry-soft bg-white shadow-sm">
-        <div className="flex items-center justify-between gap-4 border-b border-vegr-green/20 bg-vegr-green-soft px-5 py-4">
-          <h2
-            id="ingredients-heading"
-            className="font-indie-flower text-3xl font-bold text-vegr-ink"
-          >
-            Ingredients
-          </h2>
-          <span className="shrink-0 text-sm font-bold text-vegr-berry-dark">
-            Servings: {servings}
-          </span>
-        </div>
-
-        <table className="w-full border-collapse">
-          <thead className="sr-only">
-            <tr>
-              <th scope="col">Amount</th>
-              <th scope="col">Ingredient</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ingredients.length > 0 ? (
-              ingredients.map((ingredient) => (
-                <tr
-                  key={ingredient.id}
-                  className="border-b border-vegr-green/15 last:border-b-0"
-                >
-                  <td className="w-32 px-5 py-3.5 align-top font-semibold text-vegr-green-dark">
-                    {formatIngredientAmount(ingredient)}
-                  </td>
-                  <td className="px-5 py-3.5 text-vegr-ink">
-                    {ingredient.name}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={2} className="px-5 py-6 text-sm text-zinc-600">
-                  No ingredients have been added yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  );
-}
-
-function ModeratorReviewPanel({
-  recipe,
-  reportIndex,
-  onReportIndexChange,
-  denyReason,
-  onDenyReasonChange,
-  isPending,
-  error,
-  notice,
-  onApprove,
-  onDeny,
-  onIgnoreReports,
-  onDeleteRecipe,
-  onDeleteRecipeAndBanUser,
-}: {
-  recipe: RecipeViewData;
-  reportIndex: number;
-  onReportIndexChange: (index: number) => void;
-  denyReason: string;
-  onDenyReasonChange: (reason: string) => void;
-  isPending: boolean;
-  error: string;
-  notice: string;
-  onApprove: () => void;
-  onDeny: () => void;
-  onIgnoreReports: () => void;
-  onDeleteRecipe: () => void;
-  onDeleteRecipeAndBanUser: () => void;
-}) {
-  const currentReport = recipe.reports[reportIndex] ?? null;
-  const reportCount = recipe.reports.length;
-
-  function moveReport(direction: -1 | 1) {
-    if (reportCount === 0) return;
-    onReportIndexChange((reportIndex + direction + reportCount) % reportCount);
-  }
-
-  return (
-    <section className="mt-10 space-y-6">
-      {recipe.status === "PENDING" && (
-        <div className="rounded-lg border border-vegr-green/25 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-bold uppercase text-vegr-green-dark">
-            Submitted recipe review
-          </h2>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Button
-              type="button"
-              onClick={onApprove}
-              disabled={isPending}
-              className="bg-vegr-green text-white hover:bg-vegr-green-dark"
-            >
-              <ShieldCheck />
-              Approve
-            </Button>
-          </div>
-          <label
-            htmlFor="deny-reason"
-            className="mt-5 block text-sm font-bold uppercase text-vegr-berry-dark"
-          >
-            Deny reason
-          </label>
-          <textarea
-            id="deny-reason"
-            value={denyReason}
-            onChange={(event) => onDenyReasonChange(event.target.value)}
-            rows={4}
-            className="mt-2 w-full resize-y rounded-md border border-vegr-berry-soft bg-vegr-cream px-3 py-2 text-sm outline-none focus:border-vegr-berry focus:ring-2 focus:ring-vegr-berry-soft"
-            placeholder="Explain what needs to change."
-          />
-          <Button
-            type="button"
-            onClick={onDeny}
-            disabled={isPending}
-            className="mt-3 bg-deep-crimson-600 text-white hover:bg-deep-crimson-700"
-          >
-            Deny
-          </Button>
-        </div>
-      )}
-
-      {reportCount > 0 && (
-        <div className="rounded-lg border border-vegr-berry-soft bg-white p-5 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-bold uppercase text-vegr-berry-dark">
-                Reports
-              </h2>
-              <p className="mt-1 text-sm text-zinc-600">
-                {reportIndex + 1}/{reportCount}
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => moveReport(-1)}
-                aria-label="Previous report"
-              >
-                <ChevronLeft className="size-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => moveReport(1)}
-                aria-label="Next report"
-              >
-                <ChevronRight className="size-4" />
-              </Button>
-            </div>
-          </div>
-
-          {currentReport && (
-            <article className="mt-4 rounded-md border border-vegr-green/20 bg-vegr-cream p-4">
-              <div className="flex flex-wrap justify-between gap-2">
-                <h3 className="font-bold text-vegr-ink">
-                  {currentReport.title}
-                </h3>
-                <span className="text-xs font-semibold text-zinc-600">
-                  {formatDateTime(currentReport.createdAt)}
-                </span>
-              </div>
-              <p className="mt-2 text-sm font-semibold text-vegr-berry-dark">
-                {formatEnum(currentReport.reason)} by{" "}
-                {currentReport.reporterUsername}
-              </p>
-              <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-zinc-700">
-                {currentReport.details || "No additional details were provided."}
-              </p>
-            </article>
-          )}
-
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onIgnoreReports}
-              disabled={isPending}
-              className="border-vegr-green text-vegr-green-dark hover:bg-vegr-green-soft"
-            >
-              Ignore Recipe
-            </Button>
-            <Button
-              type="button"
-              onClick={onDeleteRecipe}
-              disabled={isPending}
-              className="bg-deep-crimson-600 text-white hover:bg-deep-crimson-700"
-            >
-              <Trash2 />
-              Delete Recipe
-            </Button>
-            <Button
-              type="button"
-              onClick={onDeleteRecipeAndBanUser}
-              disabled={isPending}
-              className="bg-vegr-berry text-white hover:bg-vegr-berry-dark"
-            >
-              <Ban />
-              Delete Recipe & Ban User
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {(error || notice) && (
-        <p
-          className={
-            error
-              ? "rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
-              : "rounded-md border border-vegr-green/25 bg-vegr-green-soft px-4 py-3 text-sm font-semibold text-vegr-green-dark"
-          }
-        >
-          {error || notice}
-        </p>
-      )}
-    </section>
-  );
-}
-
-function RecipeViewLoading() {
-  return (
-    <div className="mx-auto grid w-full max-w-[1500px] animate-pulse gap-10 px-6 py-10 md:px-12 lg:grid-cols-2 lg:px-16">
-      <div>
-        <div className="h-14 w-2/3 rounded bg-vegr-berry-soft" />
-        <div className="mt-6 aspect-[16/10] rounded-lg bg-vegr-green-soft" />
-      </div>
-      <div className="space-y-5 pt-16">
-        <div className="h-9 w-1/3 rounded bg-vegr-berry-soft" />
-        <div className="h-5 w-full rounded bg-vegr-green-soft" />
-        <div className="h-5 w-4/5 rounded bg-vegr-green-soft" />
-      </div>
-    </div>
-  );
-}
-
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
   }).format(new Date(value));
-}
-
-function formatDateTime(value: string) {
-  return new Intl.DateTimeFormat("en-GB", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
-}
-
-function formatEnum(value: string) {
-  return value
-    .replaceAll("_", " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-const unitLabels: Record<string, string> = {
-  GRAM: "g",
-  KILOGRAM: "kg",
-  MILLILITRE: "ml",
-  LITRE: "l",
-  TEASPOON: "tsp",
-  TABLESPOON: "tbsp",
-  CUP: "cup",
-  PIECE: "piece",
-  PINCH: "pinch",
-  POUNDS: "lb",
-  OUNCES: "oz",
-  NONE: "",
-};
-
-function formatIngredientAmount(ingredient: RecipeIngredient) {
-  const quantity =
-    ingredient.quantity == null
-      ? ""
-      : new Intl.NumberFormat("en-GB", {
-          maximumFractionDigits: 2,
-        }).format(ingredient.quantity);
-  const unit = ingredient.unit ? unitLabels[ingredient.unit] ?? ingredient.unit : "";
-
-  return [quantity, unit].filter(Boolean).join(" ") || "To taste";
 }

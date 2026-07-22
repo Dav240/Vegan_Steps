@@ -13,11 +13,11 @@ export default function TimeBubble({ type, minutes, className }: {
   return (
     <div
       className={cn(
-        "flex h-8 items-center gap-2 rounded-full border border-white/60 bg-vegr-cream/95 px-3 text-xs font-bold text-vegr-ink shadow-sm backdrop-blur-sm",
+        "flex h-8 items-center gap-2 rounded-full border border-white/60 bg-brand-cream/95 px-3 text-xs font-bold text-brand-ink shadow-sm backdrop-blur-sm",
         className
       )}
     >
-      <Icon className="size-4 text-vegr-green" aria-hidden="true" />
+      <Icon className="size-4 text-brand-green" aria-hidden="true" />
       <span>
         {label}: {formatMinutes(minutes)}
       </span>

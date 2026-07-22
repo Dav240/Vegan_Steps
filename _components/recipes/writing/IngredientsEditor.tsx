@@ -49,7 +49,7 @@ export default function IngredientsEditor({
     <div className="flex shrink-0 items-center gap-2">
       <Label
         htmlFor="servings"
-        className="text-sm font-bold text-vegr-berry-dark"
+        className="text-sm font-bold text-brand-berry-dark"
       >
         Servings
       </Label>
@@ -62,7 +62,7 @@ export default function IngredientsEditor({
         onChange={(event) =>
           onServingsChange(Math.max(1, Number(event.target.value)))
         }
-        className="h-9 w-20 border-vegr-green/30 bg-white text-center"
+        className="h-9 w-20 border-brand-green/30 bg-white text-center"
       />
     </div>
   );
@@ -135,12 +135,12 @@ function IngredientColumn({
       className={cn(
         "min-w-0 overflow-x-auto bg-white",
         standalone
-          ? "self-start rounded-lg border border-vegr-berry-soft shadow-sm"
-          : "border-x border-vegr-berry-soft"
+          ? "self-start rounded-lg border border-brand-berry-soft shadow-sm"
+          : "border-x border-brand-berry-soft"
       )}
     >
       <div className="min-w-[540px]">
-        <div className="grid grid-cols-[7rem_10rem_minmax(12rem,1fr)_3rem] border-b border-vegr-green/15 text-xs uppercase text-zinc-600">
+        <div className="grid grid-cols-[7rem_10rem_minmax(12rem,1fr)_3rem] border-b border-brand-green/15 text-xs uppercase text-zinc-600">
           <span className="px-4 py-2.5">Quantity</span>
           <span className="px-4 py-2.5">Unit</span>
           <span className="px-4 py-2.5">Ingredient</span>
@@ -150,7 +150,7 @@ function IngredientColumn({
         {ingredients.map((ingredient) => (
           <div
             key={ingredient.rowId}
-            className="grid grid-cols-[7rem_10rem_minmax(12rem,1fr)_3rem] border-b border-vegr-green/15 last:border-b-0"
+            className="grid grid-cols-[7rem_10rem_minmax(12rem,1fr)_3rem] border-b border-brand-green/15 last:border-b-0"
           >
             <div className="px-4 py-3">
               <Input

@@ -302,7 +302,7 @@ async function hasViewTrackingConsent(request: Request, userId: string) {
 }
 
 function visitorAllowsViewTracking(request: Request) {
-  const preferences = getCookie(request, "vegr_cookie_preferences");
+  const preferences = getCookie(request, "vegansteps_cookie_preferences");
 
   if (!preferences) {
     return false;

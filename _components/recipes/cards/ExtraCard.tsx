@@ -26,21 +26,21 @@ export default function ExtraCard({
   return (
     <div
       className={cn(
-        "flex min-h-[380px] w-full max-w-[370px] self-stretch flex-col overflow-hidden rounded-lg border border-vegr-berry-soft bg-vegr-gold-soft text-vegr-berry shadow-sm",
+        "flex min-h-[380px] w-full max-w-[370px] self-stretch flex-col overflow-hidden rounded-lg border border-brand-berry-soft bg-brand-gold-soft text-brand-berry shadow-sm",
         className
       )}
     >
       {actions.map((action, index) => {
         const Icon = action.icon;
         const actionClassName = cn(
-          "vegr-extra-card-action group/action flex min-h-0 flex-1 flex-col items-center justify-center bg-vegr-gold-soft p-5 text-center text-vegr-berry transition-colors hover:bg-vegr-berry hover:text-white focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-vegr-berry disabled:cursor-wait disabled:opacity-60",
-          index > 0 && "border-t border-vegr-berry-soft"
+          "brand-extra-card-action group/action flex min-h-0 flex-1 flex-col items-center justify-center bg-brand-gold-soft p-5 text-center text-brand-berry transition-colors hover:bg-brand-berry hover:text-white focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-berry disabled:cursor-wait disabled:opacity-60",
+          index > 0 && "border-t border-brand-berry-soft"
         );
         const content = (
           <>
-            <span className="vegr-extra-card-icon-badge flex size-16 items-center justify-center rounded-full border-2 border-vegr-berry bg-vegr-berry text-white transition-colors group-hover/action:border-vegr-cream group-hover/action:bg-vegr-cream group-hover/action:text-vegr-berry">
+            <span className="brand-extra-card-icon-badge flex size-16 items-center justify-center rounded-full border-2 border-brand-berry bg-brand-berry text-white transition-colors group-hover/action:border-brand-cream group-hover/action:bg-brand-cream group-hover/action:text-brand-berry">
               <Icon
-                className={cn("vegr-extra-card-icon size-8", action.iconClassName)}
+                className={cn("brand-extra-card-icon size-8", action.iconClassName)}
                 aria-hidden="true"
               />
             </span>

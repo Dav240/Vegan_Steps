@@ -37,13 +37,13 @@ export default function InstructionsEditor({
     <section className="min-w-0">
       <WritingListHeader title={title} icon={Icon} />
 
-      <div className="border-x border-vegr-berry-soft bg-white">
+      <div className="border-x border-brand-berry-soft bg-white">
         {steps.map((step, index) => (
           <div
             key={step.rowId}
-            className="grid grid-cols-[3.5rem_minmax(0,1fr)_3rem] border-b border-vegr-green/15 last:border-b-0"
+            className="grid grid-cols-[3.5rem_minmax(0,1fr)_3rem] border-b border-brand-green/15 last:border-b-0"
           >
-            <span className="px-5 py-4 font-indie-flower text-2xl font-bold leading-6 text-vegr-green-dark">
+            <span className="px-5 py-4 font-indie-flower text-2xl font-bold leading-6 text-brand-green-dark">
               {index + 1}.
             </span>
             <div className="py-3 pr-2">

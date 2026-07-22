@@ -184,12 +184,12 @@ export default function ProfileDetails() {
   return (
     <>
       <section className="w-full pb-8">
-        <h1 className="font-indie-flower text-5xl font-bold text-vegr-ink">
+        <h1 className="font-indie-flower text-5xl font-bold text-brand-ink">
           Profile
         </h1>
 
         <div className="mt-8 grid items-start gap-7 md:grid-cols-[96px_minmax(0,1fr)]">
-          <div className="hidden size-24 shrink-0 items-center justify-center rounded-full border-2 border-vegr-green bg-vegr-green-soft font-indie-flower text-5xl font-bold text-vegr-green-dark shadow-sm ring-4 ring-vegr-gold-soft md:flex">
+          <div className="hidden size-24 shrink-0 items-center justify-center rounded-full border-2 border-brand-green bg-brand-green-soft font-indie-flower text-5xl font-bold text-brand-green-dark shadow-sm ring-4 ring-brand-gold-soft md:flex">
             {(username || currentUser.username || "U").charAt(0).toUpperCase()}
           </div>
 
@@ -236,7 +236,7 @@ export default function ProfileDetails() {
                       type="button"
                       variant="outline"
                       onClick={() => setPasswordResetOpen(true)}
-                      className="border-vegr-berry bg-white text-vegr-berry shadow-sm hover:bg-vegr-berry-soft hover:text-vegr-berry-dark"
+                      className="border-brand-berry bg-white text-brand-berry shadow-sm hover:bg-brand-berry-soft hover:text-brand-berry-dark"
                     >
                       Change Password
                     </Button>

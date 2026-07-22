@@ -15,7 +15,7 @@ export default function AdSlot({
     <aside
       aria-label={label}
       className={cn(
-        "flex items-center justify-center rounded-lg border border-dashed border-vegr-green/35 bg-vegr-green-soft/35 text-xs font-bold uppercase tracking-[0.2em] text-vegr-green-dark/70",
+        "flex items-center justify-center rounded-lg border border-dashed border-brand-green/35 bg-brand-green-soft/35 text-xs font-bold uppercase tracking-[0.2em] text-brand-green-dark/70",
         variant === "horizontal" && "min-h-28 w-full px-6 text-center",
         variant === "rail" && "min-h-[520px] w-full px-4 text-center",
         variant === "compact" && "min-h-24 w-full px-4 text-center",

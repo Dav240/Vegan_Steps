@@ -10,21 +10,11 @@ import ReportRecipeDialog from "@/_components/recipes/report/ReportRecipeDialog"
 import StarsRating from "@/_components/recipes/viewing/StarsRating";
 import TagBubble from "@/_components/recipes/viewing/TagBubble";
 import TimeBubble from "@/_components/recipes/viewing/TimeBubble";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/_components/ui/dropdown-menu";
+
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/_components/ui/dropdown-menu";
 import { Button } from "@/_components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/_components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/_components/ui/dialog";
+
 import RecipeImagePlaceholder from "@/_components/ui/RecipeImagePlaceholder";
 import { createRecipeDraft, type EditableRecipeStatus } from "@/lib/recipe-draft";
 import { useSession } from "@/lib/session";
@@ -167,25 +157,16 @@ export default function RecipeCard({
 
   return (
     <>
-      <article
-        role="link"
-        tabIndex={0}
-        aria-label={`View ${name}`}
-        onClick={openRecipe}
-        onKeyDown={handleKeyDown}
+      <article role="link" tabIndex={0} aria-label={`View ${name}`} onClick={openRecipe} onKeyDown={handleKeyDown}
         className={cn(
-          "w-full max-w-[370px] cursor-pointer self-stretch overflow-hidden rounded-lg border border-vegr-berry-soft bg-vegr-paper shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry",
-          "vegr-recipe-card",
+          "w-full max-w-[370px] cursor-pointer self-stretch overflow-hidden rounded-lg border border-brand-berry-soft bg-brand-paper shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-berry",
+          "brand-recipe-card",
           className
         )}
       >
-        <div className="relative aspect-[4/3] overflow-hidden bg-vegr-green-soft">
+        <div className="relative aspect-[4/3] overflow-hidden bg-brand-green-soft">
           {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={imageAlt || name}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            <Image src={imageUrl} alt={imageAlt || name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover transition-transform duration-300 hover:scale-[1.02]"
             />
           ) : (
@@ -200,42 +181,32 @@ export default function RecipeCard({
 
         <div className="grid min-h-32 grid-cols-[minmax(0,1fr)_auto] gap-4 p-4">
           <div className="min-w-0">
-            <h3 className="line-clamp-2 text-lg font-bold leading-6 text-vegr-ink">
+            <h3 className="line-clamp-2 text-lg font-bold leading-6 text-brand-ink">
               {name}
             </h3>
 
             <div
               className={cn(
                 "mt-3 flex max-w-full gap-1.5",
-                tagPresentation === "explore"
-                  ? "flex-col items-start"
-                  : "flex-nowrap items-center overflow-hidden"
+                tagPresentation === "explore" ? "flex-col items-start" : "flex-nowrap items-center overflow-hidden"
               )}
             >
               {displayedTags.map((tag) => (
-                <TagBubble
-                  key={tag}
-                  tag={tag}
-                  className={cn(
-                    "max-w-full shrink-0",
-                    tagPresentation === "explore"
-                      ? "whitespace-normal break-words text-left leading-tight"
-                      : "whitespace-nowrap"
+                <TagBubble key={tag} tag={tag}
+                  className={cn( "max-w-full shrink-0",
+                    tagPresentation === "explore" ? "whitespace-normal break-words text-left leading-tight" : "whitespace-nowrap"
                   )}
                 />
               ))}
               {tagPresentation !== "explore" && tags.length > 3 && (
-                <span
-                  className="shrink-0 px-1 text-sm font-bold text-vegr-berry"
-                  aria-label={`${tags.length - 3} more tags`}
-                >
+                <span className="shrink-0 px-1 text-sm font-bold text-brand-berry" aria-label={`${tags.length - 3} more tags`}>
                   ...
                 </span>
               )}
             </div>
 
             {showOwnerStatus && isOwner && status && (
-              <p className="mt-3 text-xs font-bold uppercase text-vegr-berry-dark">
+              <p className="mt-3 text-xs font-bold uppercase text-brand-berry-dark">
                 Status: {formatStatus(status)}
               </p>
             )}
@@ -244,20 +215,12 @@ export default function RecipeCard({
           <div className="flex min-w-[104px] flex-col items-end">
             {showActions && (
               <div className="flex items-center gap-1">
-                <SaveButton
-                  recipeId={recipeId}
-                  recipeName={name}
-                  initiallySaved={initiallySaved}
-                  savedState={savedState}
-                  onSavedChange={onSavedChange}
-                />
+                <SaveButton recipeId={recipeId} recipeName={name} initiallySaved={initiallySaved} savedState={savedState} onSavedChange={onSavedChange}/>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button
-                      type="button"
-                      aria-label={`More options for ${name}`}
-                      className="flex size-10 items-center justify-center rounded-md text-vegr-berry transition-colors hover:bg-vegr-berry-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry"
+                    <button type="button" aria-label={`More options for ${name}`}
+                      className="flex size-10 items-center justify-center rounded-md text-brand-berry transition-colors hover:bg-brand-berry-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-berry"
                     >
                       <Ellipsis className="size-6" />
                     </button>
@@ -265,10 +228,8 @@ export default function RecipeCard({
                   <DropdownMenuContent align="end" className="min-w-40">
                     {isOwner ? (
                       <>
-                        <DropdownMenuItem
-                          onSelect={() => void openEditor()}
-                          disabled={isOpeningEditor || isDeleting}
-                          className="text-vegr-green-dark focus:bg-vegr-green-soft focus:text-vegr-green-dark"
+                        <DropdownMenuItem onSelect={() => void openEditor()} disabled={isOpeningEditor || isDeleting}
+                          className="text-brand-green-dark focus:bg-brand-green-soft focus:text-brand-green-dark"
                         >
                           <Pencil />
                           {status === "APPROVED" ? "Make New Recipe" : "Edit"}
@@ -308,17 +269,14 @@ export default function RecipeCard({
       </article>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent
-          showCloseButton={false}
-          className="overflow-hidden border-deep-crimson-200 bg-deep-crimson-50 p-0 text-vegr-ink sm:max-w-md"
-        >
-          <DialogHeader className="bg-vegr-cream px-5 py-5">
+        <DialogContent showCloseButton={false} className="overflow-hidden border-deep-crimson-200 bg-deep-crimson-50 p-0 text-brand-ink sm:max-w-md">
+          <DialogHeader className="bg-brand-cream px-5 py-5">
             <div className="flex items-start gap-3">
               <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-deep-crimson-100 text-deep-crimson-700">
                 <Trash2 className="size-5" />
               </span>
               <div>
-                <DialogTitle className="text-2xl font-bold text-vegr-ink">
+                <DialogTitle className="text-2xl font-bold text-brand-ink">
                   Delete recipe
                 </DialogTitle>
                 <DialogDescription className="mt-2 leading-6 text-zinc-700">
@@ -333,19 +291,12 @@ export default function RecipeCard({
             </p>
           )}
           <DialogFooter className="mx-0 mb-0 border-t border-deep-crimson-200 bg-deep-crimson-50 px-5 py-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={isDeleting}
-              className="border-vegr-berry-soft bg-white text-vegr-ink hover:bg-vegr-berry-soft"
+            <Button type="button" variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}
+              className="border-brand-berry-soft bg-white text-brand-ink hover:bg-brand-berry-soft"
             >
               Cancel
             </Button>
-            <Button
-              type="button"
-              onClick={() => void deleteRecipe()}
-              disabled={isDeleting}
+            <Button type="button" onClick={() => void deleteRecipe()} disabled={isDeleting}
               className="bg-deep-crimson-600 px-4 font-bold text-white hover:bg-deep-crimson-700 focus-visible:ring-deep-crimson-200"
             >
               {isDeleting ? "Deleting..." : "Delete"}
@@ -354,10 +305,7 @@ export default function RecipeCard({
         </DialogContent>
       </Dialog>
 
-      <ReportRecipeDialog
-        open={reportDialogOpen}
-        onOpenChange={setReportDialogOpen}
-        recipeId={recipeId}
+      <ReportRecipeDialog open={reportDialogOpen} onOpenChange={setReportDialogOpen} recipeId={recipeId}
         recipeName={name}
       />
     </>

@@ -48,16 +48,16 @@ export default function RecipeTagPicker({ selectedTags, onAddTag }: {
     <DropdownMenu open={open} onOpenChange={closeAndReset}>
       <DropdownMenuTrigger asChild>
         <button type="button" aria-label="Add a recipe tag" title="Add tag"
-          className="flex size-8 items-center justify-center rounded-full border-2 border-vegr-green bg-white text-vegr-green-dark transition-colors hover:bg-vegr-green-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-green"
+          className="flex size-8 items-center justify-center rounded-full border-2 border-brand-green bg-white text-brand-green-dark transition-colors hover:bg-brand-green-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
         >
           <Plus className="size-4" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-72 p-2">
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-vegr-berry" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brand-berry" />
           <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search tags"
-            className="h-9 border-vegr-berry-soft bg-white pl-9 text-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+            className="h-9 border-brand-berry-soft bg-white pl-9 text-sm focus-visible:border-brand-green focus-visible:ring-brand-green-soft"
           />
         </div>
 
@@ -67,7 +67,7 @@ export default function RecipeTagPicker({ selectedTags, onAddTag }: {
           ) : activeCategory ? (
             <>
               <button type="button" onClick={() => setActiveCategory(null)}
-                className="mb-1 flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold text-vegr-berry transition-colors hover:bg-vegr-berry-soft"
+                className="mb-1 flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold text-brand-berry transition-colors hover:bg-brand-berry-soft"
               >
                 <ArrowLeft className="size-4" />
                 {activeCategory.label}
@@ -105,10 +105,10 @@ function CategoryResults({ selectedTags, onCategorySelect }: {
             type="button"
             onClick={() => onCategorySelect(category)}
             disabled={availableCount === 0}
-            className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm font-semibold text-vegr-ink transition-colors hover:bg-vegr-green-soft disabled:cursor-not-allowed disabled:opacity-45"
+            className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm font-semibold text-brand-ink transition-colors hover:bg-brand-green-soft disabled:cursor-not-allowed disabled:opacity-45"
           >
             <span>{category.label}</span>
-            <span className="text-xs text-vegr-berry-dark">
+            <span className="text-xs text-brand-berry-dark">
               {availableCount}
             </span>
           </button>
@@ -136,7 +136,7 @@ function TagResults({ tags, onAddTag }: {
         <DropdownMenuItem
           key={tag}
           onSelect={() => onAddTag(tag)}
-          className="focus:bg-vegr-green-soft focus:text-vegr-green-dark"
+          className="focus:bg-brand-green-soft focus:text-brand-green-dark"
         >
           <Plus />
           {getRecipeTagLabel(tag)}

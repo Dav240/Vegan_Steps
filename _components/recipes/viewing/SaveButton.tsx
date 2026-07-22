@@ -67,20 +67,15 @@ export default function SaveButton({ recipeId, recipeName, initiallySaved = fals
 
   return (
     <>
-      <button
-        type="button"
-        onClick={toggleSaved}
-        disabled={isSaving}
+      <button type="button" onClick={toggleSaved} disabled={isSaving}
         aria-label={ canSave ? isSaved ? `Unsave ${recipeName}` : `Save ${recipeName}` : `Log in to save ${recipeName}` }
         aria-pressed={isSaved}
         className={cn(
-          "flex size-10 items-center justify-center rounded-md text-vegr-berry transition-colors hover:bg-vegr-berry-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-berry disabled:cursor-wait disabled:opacity-60",
+          "flex size-10 items-center justify-center rounded-md text-brand-berry transition-colors hover:bg-brand-berry-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-berry disabled:cursor-wait disabled:opacity-60",
           className
         )}
       >
-        <Heart
-          className={cn( "size-6 transition-colors", isSaved && "fill-red-500 text-red-500", isSaving && "animate-pulse" )}
-        />
+        <Heart className={cn( "size-6 transition-colors", isSaved && "fill-red-500 text-red-500", isSaving && "animate-pulse" )}/>
       </button>
 
       <LoginWindow open={loginOpen} onOpenChange={setLoginOpen} showTrigger={false} redirectAfterAuth={null}/>

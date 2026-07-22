@@ -53,10 +53,10 @@ export default function ForgotPasswordResetForm({ tokenId, token }: {
   }
 
   return (
-    <div className="w-full max-w-md rounded-xl border border-vegr-berry-soft bg-white p-8 shadow-[0_28px_70px_rgba(36,27,34,0.38)]">
-      <h1 className="text-3xl font-bold text-vegr-ink">Reset password</h1>
+    <div className="w-full max-w-md rounded-xl border border-brand-berry-soft bg-white p-8 shadow-[0_28px_70px_rgba(36,27,34,0.38)]">
+      <h1 className="text-3xl font-bold text-brand-ink">Reset password</h1>
       <p className="mt-2 text-sm text-zinc-700">
-        Choose a new password for your VegR account.
+        Choose a new password for your Vegan Steps account.
       </p>
 
       <div className="mt-6 space-y-5">
@@ -70,13 +70,13 @@ export default function ForgotPasswordResetForm({ tokenId, token }: {
         )}
 
         {message && (
-          <div className="rounded-md border border-vegr-green bg-vegr-green-soft p-3 text-sm font-semibold text-vegr-green-dark">
+          <div className="rounded-md border border-brand-green bg-brand-green-soft p-3 text-sm font-semibold text-brand-green-dark">
             {message}
           </div>
         )}
 
         <Button type="button" onClick={() => void resetPassword()} disabled={isSubmitting || Boolean(message)}
-          className="h-10 w-full bg-vegr-green text-white hover:bg-vegr-green-dark disabled:cursor-wait disabled:opacity-60"
+          className="h-10 w-full bg-brand-green text-white hover:bg-brand-green-dark disabled:cursor-wait disabled:opacity-60"
         >
           {isSubmitting ? (
             <LoaderCircle className="size-4 animate-spin" />
@@ -86,7 +86,7 @@ export default function ForgotPasswordResetForm({ tokenId, token }: {
         </Button>
 
         {message && (
-          <Link href="/" className="block text-center text-sm font-semibold text-vegr-berry hover:text-vegr-berry-dark hover:underline">
+          <Link href="/" className="block text-center text-sm font-semibold text-brand-berry hover:text-brand-berry-dark hover:underline">
             Back to home
           </Link>
         )}
@@ -103,11 +103,11 @@ function PasswordField({ id, label, value, onChange }: {
 }) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id} className="font-semibold text-vegr-berry-dark">
+      <Label htmlFor={id} className="font-semibold text-brand-berry-dark">
         {label}
       </Label>
       <Input id={id} type="password" value={value} onChange={(event) => onChange(event.target.value)}
-        className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+        className="h-10 border-brand-berry-soft bg-white text-brand-ink shadow-sm focus-visible:border-brand-green focus-visible:ring-brand-green-soft"
       />
     </div>
   );

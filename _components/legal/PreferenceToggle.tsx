@@ -12,7 +12,7 @@ export default function PreferenceToggle({
     onCheckedChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="flex gap-3 rounded-md border border-vegr-green-soft bg-vegr-cream p-3">
+    <label className="flex gap-3 rounded-md border border-brand-green-soft bg-brand-cream p-3">
       <Switch checked={checked} onCheckedChange={onCheckedChange}/>
       <span>
           <span className="block text-sm font-bold">{label}</span>

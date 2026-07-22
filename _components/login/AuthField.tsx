@@ -36,7 +36,7 @@ export default function AuthField({
                 autoComplete={autoComplete}
                 inputMode={inputMode}
                 spellCheck={spellCheck}
-                className="border-vegr-berry-soft bg-white text-vegr-ink placeholder:text-zinc-400 focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+                className="border-brand-berry-soft bg-white text-brand-ink placeholder:text-zinc-400 focus-visible:border-brand-green focus-visible:ring-brand-green-soft"
             />
             {action}
         </div>

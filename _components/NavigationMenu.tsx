@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -48,7 +49,7 @@ export default function NavigationMenu() {
 
   const linkClass = (href: string) =>
     cn( "flex h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold transition-colors",
-      pathname === href ? "bg-vegr-green text-white" : "text-vegr-cream hover:bg-vegr-berry-dark hover:text-white",
+      pathname === href ? "bg-brand-green text-white" : "text-brand-cream hover:bg-brand-berry-dark hover:text-white",
       !isOpen && "justify-center px-0"
     );
 
@@ -57,14 +58,14 @@ export default function NavigationMenu() {
       <div className="fixed inset-x-0 top-0 z-50 md:hidden">
         <div
           className={cn(
-            "mx-auto w-fit rounded-b-full border border-t-0 border-vegr-berry-dark bg-vegr-berry px-2 py-1 shadow-md",
+            "mx-auto w-fit rounded-b-full border border-t-0 border-brand-berry-dark bg-brand-berry px-2 py-1 shadow-md",
             isMobileOpen && "rounded-b-lg"
           )}
         >
           <button
             type="button"
             onClick={() => setIsMobileOpen((open) => !open)}
-            className="flex size-9 items-center justify-center rounded-md text-white transition-colors hover:bg-vegr-berry-dark"
+            className="flex size-9 items-center justify-center rounded-md text-white transition-colors hover:bg-brand-berry-dark"
             aria-label={isMobileOpen ? "Hide navigation" : "Show navigation"}
           >
             {isMobileOpen ? (
@@ -76,7 +77,7 @@ export default function NavigationMenu() {
         </div>
 
         {isMobileOpen && (
-          <nav className="mx-auto mt-2 flex w-fit items-center gap-2 rounded-full border border-vegr-berry-dark bg-vegr-berry px-3 py-2 shadow-lg">
+          <nav className="mx-auto mt-2 flex w-fit items-center gap-2 rounded-full border border-brand-berry-dark bg-brand-berry px-3 py-2 shadow-lg">
             <MobileNavLink href="/profile" active={pathname === "/profile"} label="Profile">
               <UserRound className="size-5" />
             </MobileNavLink>
@@ -105,21 +106,28 @@ export default function NavigationMenu() {
       </div>
 
       <aside
-        className={cn( "sticky top-0 hidden h-dvh max-h-dvh shrink-0 self-start flex-col border-r border-vegr-berry-dark bg-vegr-berry transition-[width] duration-200 md:flex",
+        className={cn( "sticky top-0 hidden h-dvh max-h-dvh shrink-0 self-start flex-col border-r border-brand-berry-dark bg-brand-berry transition-[width] duration-200 md:flex",
           isOpen ? "w-60" : "w-20"
         )}
       >
-        <div className="flex h-20 items-center border-b border-white/20 px-4">
+        <div className="flex h-24 items-center border-b border-white/20 px-4">
           {isOpen && (
-            <Link href="/explore" className="vegr-logo-link font-indie-flower text-4xl font-bold text-white hover:text-vegr-gold-soft">
-              VegR
+            <Link href="/explore" className="brand-logo-link flex items-center" aria-label="Vegan Steps home">
+              <Image
+                src="/logo_white.png"
+                alt="Vegan Steps"
+                width={1110}
+                height={631}
+                className="h-auto w-40 object-contain"
+                priority
+              />
             </Link>
           )}
 
           <button
             type="button"
             onClick={() => setIsOpen((open) => !open)}
-            className={cn( "ml-auto flex size-9 items-center justify-center rounded-md text-white transition-colors hover:bg-vegr-berry-dark hover:text-vegr-gold-soft",
+            className={cn( "ml-auto flex size-9 items-center justify-center rounded-md text-white transition-colors hover:bg-brand-berry-dark hover:text-brand-gold-soft",
               !isOpen && "mx-auto"
             )}
             aria-label={isOpen ? "Collapse navigation" : "Expand navigation"}
@@ -162,7 +170,7 @@ export default function NavigationMenu() {
 
         <button type="button" onClick={() => void handleLogout()}
             className={cn(
-              "mt-2 flex h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-semibold text-vegr-gold-soft transition-colors hover:bg-vegr-berry-dark hover:text-white",
+              "mt-2 flex h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-semibold text-brand-gold-soft transition-colors hover:bg-brand-berry-dark hover:text-white",
               !isOpen && "justify-center px-0"
             )}
           >
@@ -193,8 +201,8 @@ function MobileNavLink({
       className={cn(
         "flex size-10 items-center justify-center rounded-full transition-colors",
         active
-          ? "bg-vegr-green text-white"
-          : "text-white hover:bg-white hover:text-vegr-berry"
+          ? "bg-brand-green text-white"
+          : "text-white hover:bg-white hover:text-brand-berry"
       )}
     >
       {children}

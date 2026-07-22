@@ -26,7 +26,7 @@ export const legalPolicies: LegalPolicy[] = [
   {
     slug: "terms",
     title: "Terms of Service",
-    summary: "The baseline rules for using VegR and keeping the community usable.",
+    summary: "The baseline rules for using Vegan Steps and keeping the community usable.",
     sections: [
       {
         heading: "Your account",
@@ -34,22 +34,22 @@ export const legalPolicies: LegalPolicy[] = [
       },
       {
         heading: "Your content",
-        body: "Only upload recipes, text, and images that you created or have permission to use. VegR may remove content that appears illegal, unsafe, infringing, misleading, or against the community guidelines.",
+        body: "Only upload recipes, text, and images that you created or have permission to use. Vegan Steps may remove content that appears illegal, unsafe, infringing, misleading, or against the community guidelines.",
       },
       {
         heading: "Service changes",
-        body: "VegR is still evolving, so features may change, break, or be removed. Important legal or privacy changes should be shown clearly before they apply.",
+        body: "Vegan Steps is still evolving, so features may change, break, or be removed. Important legal or privacy changes should be shown clearly before they apply.",
       },
     ],
   },
   {
     slug: "privacy",
     title: "Privacy Policy",
-    summary: "What personal data VegR needs, what is optional, and how long it should be kept.",
+    summary: "What personal data Vegan Steps needs, what is optional, and how long it should be kept.",
     sections: [
       {
         heading: "Core data",
-        body: "VegR needs your email, username, password hash, session data, recipes, saved recipes, ratings, reports, and moderation records to run the service.",
+        body: "Vegan Steps needs your email, username, password hash, session data, recipes, saved recipes, ratings, reports, and moderation records to run the service.",
       },
       {
         heading: "Optional data",
@@ -72,7 +72,7 @@ export const legalPolicies: LegalPolicy[] = [
     sections: [
       {
         heading: "Necessary cookies",
-        body: "VegR uses necessary cookies for login sessions, security, and remembering your cookie preference. These are needed for the service to work.",
+        body: "Vegan Steps uses necessary cookies for login sessions, security, and remembering your cookie preference. These are needed for the service to work.",
       },
       {
         heading: "Optional cookies",
@@ -110,7 +110,7 @@ export const legalPolicies: LegalPolicy[] = [
       },
       {
         heading: "Takedowns",
-        body: "VegR may remove recipes, images, comments, or accounts when content appears illegal, unsafe, infringing, or against the rules.",
+        body: "Vegan Steps may remove recipes, images, comments, or accounts when content appears illegal, unsafe, infringing, or against the rules.",
       },
       {
         heading: "Appeals",
@@ -140,7 +140,7 @@ export const legalPolicies: LegalPolicy[] = [
     sections: [
       {
         heading: "User-submitted information",
-        body: "VegR recipes, tags, ingredients, and instructions are submitted by users and are not professionally verified unless explicitly stated.",
+        body: "Vegan Steps recipes, tags, ingredients, and instructions are submitted by users and are not professionally verified unless explicitly stated.",
       },
       {
         heading: "Allergens",

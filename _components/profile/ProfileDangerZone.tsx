@@ -35,7 +35,7 @@ export default function ProfileDangerZone() {
 
       setDialogMode(null);
       setMessage(data.message || "Optional data deleted.");
-      window.dispatchEvent(new Event("vegr-optional-data-deleted"));
+      window.dispatchEvent(new Event("brand-optional-data-deleted"));
     } catch (requestError) {
       setError(
         requestError instanceof Error ? requestError.message : "Could not delete optional data."
@@ -78,7 +78,7 @@ export default function ProfileDangerZone() {
       <p className="text-sm font-bold uppercase tracking-wide text-deep-crimson-700">
         Account controls
       </p>
-      <h2 className="mt-1 text-2xl font-bold text-vegr-ink">Danger zone</h2>
+      <h2 className="mt-1 text-2xl font-bold text-brand-ink">Danger zone</h2>
       <p className="mt-2 text-sm leading-6 text-zinc-700">
         Optional data can be removed without deleting your account. Account
         deletion signs you out and queues the account for permanent deletion.
@@ -86,7 +86,7 @@ export default function ProfileDangerZone() {
 
       <div className="mt-5 flex flex-wrap gap-3">
         <Button type="button" variant="outline" onClick={() => setDialogMode("optional-data")}
-          className="border-vegr-berry bg-white text-vegr-berry hover:bg-vegr-berry-soft"
+          className="border-brand-berry bg-white text-brand-berry hover:bg-brand-berry-soft"
         >
           Delete Optional Data
         </Button>
@@ -99,7 +99,7 @@ export default function ProfileDangerZone() {
       </div>
 
       {message && (
-        <p className="mt-4 rounded-md bg-vegr-green-soft px-3 py-2 text-sm font-medium text-vegr-green-dark">
+        <p className="mt-4 rounded-md bg-brand-green-soft px-3 py-2 text-sm font-medium text-brand-green-dark">
           {message}
         </p>
       )}
@@ -111,7 +111,7 @@ export default function ProfileDangerZone() {
       )}
 
       <Dialog open={Boolean(dialogMode)} onOpenChange={(open) => !open && setDialogMode(null)}>
-        <DialogContent className="border-deep-crimson-200 bg-vegr-cream text-vegr-ink sm:max-w-md">
+        <DialogContent className="border-deep-crimson-200 bg-brand-cream text-brand-ink sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
               {isAccountDelete ? "Delete account?" : "Delete optional data?"}
@@ -125,7 +125,7 @@ export default function ProfileDangerZone() {
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setDialogMode(null)} disabled={isDeleting}
-              className="border-vegr-berry-soft bg-white text-vegr-ink hover:bg-vegr-berry-soft"
+              className="border-brand-berry-soft bg-white text-brand-ink hover:bg-brand-berry-soft"
             >
               Cancel
             </Button>

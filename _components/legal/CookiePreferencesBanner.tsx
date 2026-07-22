@@ -9,7 +9,7 @@ import { useSession } from "@/lib/session";
 
 import PreferenceToggle from "@/_components/legal/PreferenceToggle";
 
-const COOKIE_NAME = "vegr_cookie_preferences";
+const COOKIE_NAME = "vegansteps_cookie_preferences";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 180;
 
 export default function CookiePreferencesBanner() {
@@ -39,7 +39,7 @@ export default function CookiePreferencesBanner() {
     setPreferences(nextPreferences);
     setIsOpen(false);
     window.dispatchEvent(
-      new CustomEvent("vegr-cookie-preferences-saved", {
+      new CustomEvent("brand-cookie-preferences-saved", {
         detail: nextPreferences,
       })
     );
@@ -50,34 +50,34 @@ export default function CookiePreferencesBanner() {
   }
 
   return (
-    <div className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-4xl rounded-lg border border-vegr-berry-soft bg-vegr-paper p-4 text-vegr-ink shadow-2xl md:p-5">
+    <div className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-4xl rounded-lg border border-brand-berry-soft bg-brand-paper p-4 text-brand-ink shadow-2xl md:p-5">
       <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
         <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-vegr-berry">
+          <p className="text-sm font-bold uppercase tracking-wide text-brand-berry">
             Cookie preferences
           </p>
-          <h2 className="mt-1 text-xl font-bold">Choose how VegR learns.</h2>
+          <h2 className="mt-1 text-xl font-bold">Choose how Vegan Steps learns.</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-700">
             Essential cookies keep login and security working. Optional analytics and visitor recommendations stay off unless you allow them.
           </p>
-          <Link href="/legal#cookies" className="mt-2 inline-flex text-sm font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline">
+          <Link href="/legal#cookies" className="mt-2 inline-flex text-sm font-bold text-brand-berry hover:text-brand-berry-dark hover:underline">
             Read the FAQ
           </Link>
         </div>
 
         <div className="flex flex-wrap gap-2 md:justify-end">
           <Button type="button" variant="outline" onClick={() => savePreferences(defaultPrivacyPreferences)}
-            className="border-vegr-berry bg-white text-vegr-berry hover:bg-vegr-berry-soft"
+            className="border-brand-berry bg-white text-brand-berry hover:bg-brand-berry-soft"
           >
             Reject optional
           </Button>
           <Button type="button" variant="outline" onClick={() => setShowDetails((current) => !current)}
-            className="border-vegr-green bg-white text-vegr-green-dark hover:bg-vegr-green-soft"
+            className="border-brand-green bg-white text-brand-green-dark hover:bg-brand-green-soft"
           >
             Manage
           </Button>
           <Button type="button" onClick={() => savePreferences({ personalisedRecommendations: true, analytics: true, productEmails: false })}
-            className="bg-vegr-green text-white hover:bg-vegr-green-dark"
+            className="bg-brand-green text-white hover:bg-brand-green-dark"
           >
             Accept optional
           </Button>
@@ -85,7 +85,7 @@ export default function CookiePreferencesBanner() {
       </div>
 
       {showDetails && (
-        <div className="mt-4 grid gap-3 border-t border-vegr-berry-soft pt-4 md:grid-cols-3">
+        <div className="mt-4 grid gap-3 border-t border-brand-berry-soft pt-4 md:grid-cols-3">
           <PreferenceToggle label="Visitor recommendations" description="Use browsing signals to improve recipe suggestions before login."
             checked={preferences.personalisedRecommendations}
             onCheckedChange={(checked) =>
@@ -109,7 +109,7 @@ export default function CookiePreferencesBanner() {
             }
           />
           <div className="md:col-span-3">
-            <Button type="button" onClick={() => savePreferences(preferences)} className="bg-vegr-berry text-white hover:bg-vegr-berry-dark">
+            <Button type="button" onClick={() => savePreferences(preferences)} className="bg-brand-berry text-white hover:bg-brand-berry-dark">
               Save preferences
             </Button>
           </div>

@@ -39,11 +39,11 @@ export default function PrivacyPreferences() {
     }
 
     window.addEventListener(
-      "vegr-optional-data-deleted",
+      "brand-optional-data-deleted",
       handleOptionalDataDeleted
     );
     window.addEventListener(
-      "vegr-cookie-preferences-saved",
+      "brand-cookie-preferences-saved",
       handleCookiePreferencesSaved
     );
 
@@ -86,11 +86,11 @@ export default function PrivacyPreferences() {
     return () => {
       isActive = false;
       window.removeEventListener(
-        "vegr-optional-data-deleted",
+        "brand-optional-data-deleted",
         handleOptionalDataDeleted
       );
       window.removeEventListener(
-        "vegr-cookie-preferences-saved",
+        "brand-cookie-preferences-saved",
         handleCookiePreferencesSaved
       );
     };
@@ -129,20 +129,20 @@ export default function PrivacyPreferences() {
     <section className="bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-vegr-berry">
+          <p className="text-sm font-bold uppercase tracking-wide text-brand-berry">
             Privacy choices
           </p>
-          <h2 className="mt-1 text-2xl font-bold text-vegr-ink">
+          <h2 className="mt-1 text-2xl font-bold text-brand-ink">
             Optional data
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-700">
-            Core account data is needed for VegR to work. These settings control
+            Core account data is needed for Vegan Steps to work. These settings control
             the extra bits you can say no to.
           </p>
         </div>
         <Link
           href="/legal#privacy"
-          className="text-sm font-bold text-vegr-berry hover:text-vegr-berry-dark hover:underline"
+          className="text-sm font-bold text-brand-berry hover:text-brand-berry-dark hover:underline"
         >
           FAQ
         </Link>
@@ -181,7 +181,7 @@ export default function PrivacyPreferences() {
       {message && (
         <p
           className={`mt-4 rounded-md px-3 py-2 text-sm font-medium ${
-            storageReady ? "bg-vegr-green-soft text-vegr-green-dark" : "bg-vegr-gold-soft text-vegr-berry-dark"}`
+            storageReady ? "bg-brand-green-soft text-brand-green-dark" : "bg-brand-gold-soft text-brand-berry-dark"}`
           }
         >
           {message}
@@ -189,7 +189,7 @@ export default function PrivacyPreferences() {
       )}
 
       <Button type="button" onClick={() => void savePreferences()} disabled={isSaving || isLoading} 
-        className="mt-5 bg-vegr-green text-white hover:bg-vegr-green-dark"
+        className="mt-5 bg-brand-green text-white hover:bg-brand-green-dark"
       >
         {isSaving ? (
           <LoaderCircle className="size-4 animate-spin" />

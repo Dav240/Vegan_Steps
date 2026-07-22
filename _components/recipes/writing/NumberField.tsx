@@ -17,7 +17,7 @@ export default function NumberField({
     onChange: (value: number | null) => void;
 }) {
     return (
-        <div className="flex h-10 items-center gap-2 rounded-full border border-vegr-berry-soft bg-white px-4 text-sm font-bold shadow-sm">
+        <div className="flex h-10 items-center gap-2 rounded-full border border-brand-berry-soft bg-white px-4 text-sm font-bold shadow-sm">
         <Label htmlFor={id}>{label}:</Label>
         <Input
             id={id}

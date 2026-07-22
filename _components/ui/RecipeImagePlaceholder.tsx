@@ -18,8 +18,8 @@ export default function RecipeImagePlaceholder({
       className={cn(
         "flex size-full items-center justify-center",
         variant === "upload"
-          ? "bg-vegr-green-soft text-vegr-green-dark"
-          : "text-vegr-green",
+          ? "bg-brand-green-soft text-brand-green-dark"
+          : "text-brand-green",
         className
       )}
     >

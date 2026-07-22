@@ -23,9 +23,9 @@ export default function StarsRating({ rating, size = "sm", className }: {
 
         return (
           <span key={index} className={cn("relative block shrink-0", starSize)}aria-hidden="true">
-            <Star className={cn( "absolute inset-0 fill-transparent text-vegr-gold-dark", starSize)}/>
+            <Star className={cn( "absolute inset-0 fill-transparent text-brand-gold-dark", starSize)}/>
             <span className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${fillPercentage}%` }}>
-              <Star className={cn( "fill-vegr-gold text-vegr-gold-dark", starSize)}/>
+              <Star className={cn( "fill-brand-gold text-brand-gold-dark", starSize)}/>
             </span>
           </span>
         );

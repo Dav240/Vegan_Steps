@@ -1,29 +1,22 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowDown } from "lucide-react";
 
 import AdSlot from "@/_components/ads/AdSlot";
 import NavigationMenu from "@/_components/NavigationMenu";
-import RecipeCard from "@/_components/recipes/cards/RecipeCard";
-import RecommendationRow, {
-  type ExploreRecipe,
-  type RecommendationRowData,
-} from "@/_components/recipes/explore/RecommendationRow";
-import RecipeFilterPanel, {
-  type RecipeStatusFilter,
-  type RecipeTagMode,
-} from "@/_components/recipes/library/RecipeFilterPanel";
-import RecipeLibraryToolbar, {
-  type RecipeLibrarySort,
-} from "@/_components/recipes/library/RecipeLibraryToolbar";
+import { type ExploreRecipe, type RecommendationRowData } from "@/_components/recipes/explore/RecommendationRow";
+import RecipeFilterPanel, { type RecipeStatusFilter, type RecipeTagMode } from "@/_components/recipes/library/RecipeFilterPanel";
+import RecipeLibraryToolbar, { type RecipeLibrarySort } from "@/_components/recipes/library/RecipeLibraryToolbar";
+import ExploreBanner from "@/_components/recipes/explore/ExploreBanner";
+import ExploreHeader from "@/_components/recipes/explore/ExploreHeader";
+import ExploreSearchResults from "@/_components/recipes/explore/ExploreSearchResults";
+import ExploreRecommendations from "@/_components/recipes/explore/ExploreRecommendations";
+
 import type { RecipeTag } from "@/lib/recipe-draft";
 import { useSession } from "@/lib/session";
 
-const BANNER_URL = "https://res.cloudinary.com/diqefvh29/image/upload/banner_plbcgv";
-const PAGE_SIZE = 10;
+export const PAGE_SIZE = 10;
 const EMPTY_STATUS_FILTERS: RecipeStatusFilter[] = [];
 
 type ExploreVariant = "page" | "visitor";
@@ -42,7 +35,7 @@ type SearchResponse = {
 
 export default function ExplorePage({
   variant = "page",
-}: {
+} : {
   variant?: ExploreVariant;
 }) {
   const router = useRouter();
@@ -67,16 +60,14 @@ export default function ExplorePage({
   const hasMounted = useHasMounted();
 
   const isVisitorVariant = variant === "visitor";
-  const isLoggedInClient =
-    Boolean(currentUser.id) && currentUser.userType === "CLIENT";
+  const isLoggedInClient = Boolean(currentUser.id) && currentUser.userType === "CLIENT";
   const isSearchMode =
     settledSearch.length > 0 ||
     sort !== "recent" ||
     minRating > 0 ||
     maxRating < 5 ||
     selectedTags.length > 0;
-  const activeFilterCount =
-    Number(minRating > 0 || maxRating < 5) + selectedTags.length;
+  const activeFilterCount = Number(minRating > 0 || maxRating < 5) + selectedTags.length;
   const remainingRecipeCount = Math.max(0, total - searchRecipes.length);
   const loadMoreCount = Math.min(PAGE_SIZE, remainingRecipeCount);
   const actionsMode = isLoggedInClient && !isVisitorVariant ? "full" : "readonly";
@@ -269,37 +260,31 @@ export default function ExplorePage({
     <div className={isVisitorVariant ? "mx-auto w-full max-w-7xl px-5 py-16 md:px-8" : "min-w-0 flex-1"}>
       {!isVisitorVariant && <ExploreBanner />}
       <div
-        className={
-          isVisitorVariant
-            ? ""
-            : "grid gap-8 px-5 py-9 md:px-8 xl:grid-cols-[minmax(0,1fr)_180px] xl:px-10 2xl:grid-cols-[minmax(0,1fr)_220px]"
-        }
+        className={ isVisitorVariant ? "" : "grid gap-8 px-5 py-9 md:px-8 xl:grid-cols-[minmax(0,1fr)_180px] xl:px-10 2xl:grid-cols-[minmax(0,1fr)_220px]" }
       >
         <div className="min-w-0">
           <ExploreHeader isVisitor={isVisitorVariant} />
           <div className="mt-7">
-            <RecipeLibraryToolbar
-              search={search}
-              onSearchChange={setSearch}
-              sort={sort}
-              onSortChange={setSort}
+            <RecipeLibraryToolbar 
+              search={search} 
+              onSearchChange={setSearch} 
+              sort={sort} 
+              onSortChange={setSort} 
               filtersOpen={filtersOpen}
               onFiltersOpenChange={setFiltersOpen}
               activeFilterCount={activeFilterCount}
             />
             {filtersOpen && (
-              <RecipeFilterPanel
-                minRating={minRating}
-                maxRating={maxRating}
-                onRatingChange={changeRatingRange}
+              <RecipeFilterPanel 
+                minRating={minRating} 
+                maxRating={maxRating} 
+                onRatingChange={changeRatingRange} 
                 selectedTags={selectedTags}
-                onSelectedTagsChange={setSelectedTags}
-                tagMode={tagMode}
-                onTagModeChange={setTagMode}
+                onSelectedTagsChange={setSelectedTags} 
+                tagMode={tagMode} 
+                onTagModeChange={setTagMode} 
                 selectedStatuses={EMPTY_STATUS_FILTERS}
-                onSelectedStatusesChange={() => undefined}
-                showStatusFilter={false}
-                onReset={resetFilters}
+                onSelectedStatusesChange={() => undefined} showStatusFilter={false} onReset={resetFilters}
               />
             )}
           </div>
@@ -309,10 +294,10 @@ export default function ExplorePage({
           )}
 
           {isSearchMode ? (
-            <ExploreSearchResults
-              recipes={searchRecipes}
-              savedStates={savedStates}
-              actionsMode={actionsMode}
+            <ExploreSearchResults 
+              recipes={searchRecipes} 
+              savedStates={savedStates} 
+              actionsMode={actionsMode} 
               total={total}
               hasMore={hasMore}
               loadMoreCount={loadMoreCount}
@@ -346,7 +331,7 @@ export default function ExplorePage({
 
   if (isVisitorVariant) {
     return (
-      <section id="explore" className="border-t-[10px] border-vegr-gold bg-vegr-cream text-vegr-ink">
+      <section id="explore" className="border-t-[10px] border-brand-gold bg-brand-cream text-brand-ink">
         {content}
         <div className="px-5 pb-12 md:px-8">
           <AdSlot className="mx-auto max-w-7xl" />
@@ -360,206 +345,10 @@ export default function ExplorePage({
   if (isSessionLoading || currentUser.userType !== "CLIENT" || !currentUser.id) return null;
 
   return (
-    <main className="flex min-h-screen bg-vegr-cream text-vegr-ink">
+    <main className="flex min-h-screen bg-brand-cream text-brand-ink">
       <NavigationMenu />
       {content}
     </main>
-  );
-}
-
-function ExploreBanner() {
-  return (
-    <section className="relative h-44 overflow-hidden border-b border-vegr-gold">
-      <Image
-        src={BANNER_URL}
-        alt="Vegan food banner"
-        fill
-        priority
-        className="object-cover"
-      />
-      <div className="absolute inset-0 bg-vegr-berry-dark/50" />
-      <div className="relative z-10 flex h-full items-center px-5 md:px-8 xl:px-10">
-        <h1 className="font-indie-flower text-6xl font-bold text-white md:text-7xl">
-          Explore
-        </h1>
-      </div>
-    </section>
-  );
-}
-
-function ExploreHeader({ isVisitor }: { isVisitor: boolean }) {
-  return (
-    <header className="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <p className="text-sm font-bold uppercase text-vegr-green-dark">
-          Recipe discovery
-        </p>
-        <h2 className="mt-1 text-4xl font-bold text-vegr-ink md:text-5xl">
-          {isVisitor ? "Explore vegan recipes" : "Find your next vegan meal"}
-        </h2>
-        <p className="mt-3 max-w-3xl text-base leading-7 text-zinc-700">
-          Search approved community recipes, or scroll through a few rows of
-          recommendations picked from tags, ratings, views, and a little
-          randomness.
-        </p>
-      </div>
-    </header>
-  );
-}
-
-function ExploreRecommendations({
-  rows,
-  savedStates,
-  actionsMode,
-  isLoading,
-  onSavedChange,
-}: {
-  rows: RecommendationRowData[];
-  savedStates: Record<string, boolean>;
-  actionsMode: "full" | "readonly";
-  isLoading: boolean;
-  onSavedChange: (recipeId: string, saved: boolean) => void;
-}) {
-  if (isLoading) return <ExploreLoadingRows />;
-
-  if (rows.length === 0) {
-    return (
-      <p className="mt-10 text-zinc-600">
-        No approved recipes are ready for Explore yet.
-      </p>
-    );
-  }
-
-  return (
-    <div className="mt-10 space-y-16">
-      {rows.map((row) => (
-        <RecommendationRow
-          key={row.id}
-          row={row}
-          savedStates={savedStates}
-          actionsMode={actionsMode}
-          onSavedChange={onSavedChange}
-        />
-      ))}
-    </div>
-  );
-}
-
-function ExploreSearchResults({
-  recipes,
-  savedStates,
-  actionsMode,
-  total,
-  hasMore,
-  loadMoreCount,
-  isLoading,
-  isLoadingMore,
-  onSavedChange,
-  onLoadMore,
-}: {
-  recipes: ExploreRecipe[];
-  savedStates: Record<string, boolean>;
-  actionsMode: "full" | "readonly";
-  total: number;
-  hasMore: boolean;
-  loadMoreCount: number;
-  isLoading: boolean;
-  isLoadingMore: boolean;
-  onSavedChange: (recipeId: string, saved: boolean) => void;
-  onLoadMore: () => void;
-}) {
-  if (isLoading) return <ExploreGridLoading />;
-
-  return (
-    <>
-      <div className="mt-8 flex justify-end">
-        <p className="text-sm font-semibold text-zinc-600">
-          {total} approved recipe{total === 1 ? "" : "s"}
-        </p>
-      </div>
-
-      {recipes.length === 0 ? (
-        <p className="mt-10 text-zinc-600">
-          No approved recipes match your current search and filters.
-        </p>
-      ) : (
-        <div className="mt-5 grid grid-cols-1 items-stretch justify-start gap-5 sm:grid-cols-2 lg:[grid-template-columns:repeat(auto-fit,minmax(260px,300px))]">
-          {recipes.map((recipe) => (
-            <RecipeCard
-              key={recipe.recipeId}
-              {...recipe}
-              actionsMode={actionsMode}
-              tagPresentation="explore"
-              showOwnerStatus={false}
-              savedState={savedStates[recipe.recipeId] ?? recipe.initiallySaved}
-              onSavedChange={onSavedChange}
-              className="min-h-[390px] w-full max-w-[300px] md:min-h-0"
-            />
-          ))}
-        </div>
-      )}
-
-      {hasMore && (
-        <div className="mt-10 flex justify-center">
-          <button
-            type="button"
-            onClick={() => void onLoadMore()}
-            disabled={isLoadingMore}
-            className="flex h-11 items-center gap-2 rounded-md border border-vegr-green bg-white px-5 text-sm font-bold text-vegr-green-dark transition-colors hover:bg-vegr-green hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-green disabled:cursor-wait disabled:opacity-60"
-          >
-            <ArrowDown
-              className={isLoadingMore ? "size-4 animate-bounce" : "size-4"}
-            />
-            {isLoadingMore ? "Loading..." : `Load ${loadMoreCount} more`}
-          </button>
-        </div>
-      )}
-    </>
-  );
-}
-
-function ExploreLoadingRows() {
-  return (
-    <div className="mt-10 space-y-16">
-      {Array.from({ length: 4 }, (_, rowIndex) => (
-        <div key={rowIndex}>
-          <div className="h-8 w-56 animate-pulse rounded bg-vegr-berry-soft" />
-          <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-            {Array.from({ length: 5 }, (_, index) => (
-              <div
-                key={index}
-                className="min-h-80 animate-pulse overflow-hidden rounded-lg border border-vegr-berry-soft bg-white"
-              >
-                <div className="aspect-[4/3] bg-vegr-green-soft" />
-                <div className="space-y-3 p-4">
-                  <div className="h-5 w-3/4 rounded bg-vegr-berry-soft" />
-                  <div className="h-4 w-1/2 rounded bg-vegr-green-soft" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function ExploreGridLoading() {
-  return (
-    <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-      {Array.from({ length: PAGE_SIZE }, (_, index) => (
-        <div
-          key={index}
-          className="min-h-80 animate-pulse overflow-hidden rounded-lg border border-vegr-berry-soft bg-white"
-        >
-          <div className="aspect-[4/3] bg-vegr-green-soft" />
-          <div className="space-y-3 p-4">
-            <div className="h-5 w-3/4 rounded bg-vegr-berry-soft" />
-            <div className="h-4 w-1/2 rounded bg-vegr-green-soft" />
-          </div>
-        </div>
-      ))}
-    </div>
   );
 }
 

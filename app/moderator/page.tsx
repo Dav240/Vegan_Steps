@@ -57,29 +57,29 @@ export default function ModeratorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-vegr-cream px-6 py-8 text-vegr-ink md:px-10">
+    <main className="min-h-screen bg-brand-cream px-6 py-8 text-brand-ink md:px-10">
       <div className="mx-auto max-w-7xl">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-bold uppercase text-vegr-green-dark">
+            <p className="text-sm font-bold uppercase text-brand-green-dark">
               Moderator
             </p>
-            <h1 className="mt-1 text-4xl font-bold text-vegr-ink">
+            <h1 className="mt-1 text-4xl font-bold text-brand-ink">
               Moderator Home
             </h1>
           </div>
           <Button
             type="button"
             onClick={() => void logout()}
-            className="bg-vegr-berry text-white hover:bg-vegr-berry-dark"
+            className="bg-brand-berry text-white hover:bg-brand-berry-dark"
           >
             <LogOut />
             Logout
           </Button>
         </header>
 
-        <div className="mt-8 overflow-hidden rounded-lg border border-vegr-berry-soft bg-white shadow-sm">
-          <div className="grid grid-cols-2 border-b border-vegr-berry-soft bg-vegr-berry-soft">
+        <div className="mt-8 overflow-hidden rounded-lg border border-brand-berry-soft bg-white shadow-sm">
+          <div className="grid grid-cols-2 border-b border-brand-berry-soft bg-brand-berry-soft">
             <ModeratorTabButton
               active={activeTab === "reports"}
               onClick={() => setActiveTab("reports")}
@@ -126,8 +126,8 @@ function ModeratorTabButton({
       className={cn(
         "flex min-h-16 items-center justify-center gap-2 border-b-4 px-4 text-base font-bold transition-colors",
         active
-          ? "border-vegr-green bg-white text-vegr-green-dark"
-          : "border-transparent text-vegr-berry-dark hover:bg-white/80 hover:text-vegr-green-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-vegr-green"
+          ? "border-brand-green bg-white text-brand-green-dark"
+          : "border-transparent text-brand-berry-dark hover:bg-white/80 hover:text-brand-green-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green"
       )}
     >
       {icon}

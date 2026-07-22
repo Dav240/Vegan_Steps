@@ -38,15 +38,15 @@ export default function ProfileEmailField({
   return (
     <div>
       <div className="space-y-2">
-        <Label htmlFor="profile-email" className="font-semibold text-vegr-berry-dark">
+        <Label htmlFor="profile-email" className="font-semibold text-brand-berry-dark">
           Email
         </Label>
         <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
           <Input id="profile-email" type="email" value={email} onChange={(event) => onEmailChange(event.target.value)}
-            className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+            className="h-10 border-brand-berry-soft bg-white text-brand-ink shadow-sm focus-visible:border-brand-green focus-visible:ring-brand-green-soft"
           />
           <button type="button" onClick={onSendCodes} disabled={sending || pending}
-            className="flex h-10 items-center justify-center gap-2 rounded-md border border-vegr-green bg-white px-3 text-sm font-semibold text-vegr-green-dark shadow-sm transition-colors hover:bg-vegr-green-soft disabled:cursor-wait disabled:opacity-60"
+            className="flex h-10 items-center justify-center gap-2 rounded-md border border-brand-green bg-white px-3 text-sm font-semibold text-brand-green-dark shadow-sm transition-colors hover:bg-brand-green-soft disabled:cursor-wait disabled:opacity-60"
           >
             {sending ? (
               <LoaderCircle className="size-4 animate-spin" />
@@ -73,7 +73,7 @@ export default function ProfileEmailField({
               autoComplete="off"
               inputMode="numeric"
               spellCheck={false}
-              className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+              className="h-10 border-brand-berry-soft bg-white text-brand-ink shadow-sm focus-visible:border-brand-green focus-visible:ring-brand-green-soft"
             />
           </div>
 
@@ -91,13 +91,13 @@ export default function ProfileEmailField({
                 autoComplete="off"
                 inputMode="numeric"
                 spellCheck={false}
-                className="h-10 border-vegr-berry-soft bg-white text-vegr-ink shadow-sm focus-visible:border-vegr-green focus-visible:ring-vegr-green-soft"
+                className="h-10 border-brand-berry-soft bg-white text-brand-ink shadow-sm focus-visible:border-brand-green focus-visible:ring-brand-green-soft"
               />
             </div>
 
             <button type="button" onClick={onConfirm} disabled={pending || sending}
               aria-label="Confirm email change"
-              className="flex size-10 items-center justify-center rounded-md border border-vegr-green-dark bg-vegr-green text-white shadow-sm transition-colors hover:bg-vegr-green-dark disabled:cursor-wait disabled:opacity-60"
+              className="flex size-10 items-center justify-center rounded-md border border-brand-green-dark bg-brand-green text-white shadow-sm transition-colors hover:bg-brand-green-dark disabled:cursor-wait disabled:opacity-60"
             >
               {pending ? (
                 <LoaderCircle className="size-5 animate-spin" />
@@ -112,7 +112,7 @@ export default function ProfileEmailField({
       {message && (
         <p
           className={
-            message.type === "error" ? "mt-2 text-sm text-red-700" : "mt-2 text-sm text-vegr-green-dark"
+            message.type === "error" ? "mt-2 text-sm text-red-700" : "mt-2 text-sm text-brand-green-dark"
           }
         >
           {message.text}

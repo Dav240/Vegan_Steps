@@ -52,7 +52,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="flex min-h-screen bg-vegr-cream text-vegr-ink">
+    <main className="flex min-h-screen bg-brand-cream text-brand-ink">
       <NavigationMenu />
 
       <div className="grid min-w-0 flex-1 gap-8 px-6 py-10 md:px-12 lg:px-16 xl:grid-cols-[minmax(0,1fr)_180px] 2xl:grid-cols-[minmax(0,1fr)_220px]">

@@ -12,7 +12,7 @@ const indieFlower = Indie_Flower({
 });
 
 export const metadata: Metadata = {
-  title: "VegR",
+  title: "Vegan Steps",
   description: "A place for your vegan recipes.",
 };
 

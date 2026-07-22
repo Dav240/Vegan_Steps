@@ -22,9 +22,9 @@ export default function ConfirmDialog({
 }) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent showCloseButton={false} className="border-vegr-berry-soft bg-vegr-cream sm:max-w-md">
+            <DialogContent showCloseButton={false} className="border-brand-berry-soft bg-brand-cream sm:max-w-md">
             <DialogHeader>
-                <DialogTitle className="font-indie-flower text-3xl font-bold text-vegr-ink">
+                <DialogTitle className="font-indie-flower text-3xl font-bold text-brand-ink">
                     {title}
                 </DialogTitle>
                 <DialogDescription className="leading-6 text-zinc-700">
@@ -36,7 +36,7 @@ export default function ConfirmDialog({
                     Cancel
                 </Button>
                 <Button type="button" variant={destructive ? "destructive" : "default"} onClick={onConfirm} disabled={isPending}
-                    className={destructive ? undefined : "bg-vegr-green text-white hover:bg-vegr-green-dark"}
+                    className={destructive ? undefined : "bg-brand-green text-white hover:bg-brand-green-dark"}
                 >
                     {confirmLabel}
                 </Button>

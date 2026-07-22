@@ -100,8 +100,8 @@ export default function SubmittedReportsTab() {
         <ModerationTableLoading />
       ) : (
         <>
-          <div className="overflow-hidden rounded-md border border-vegr-berry-soft">
-            <div className="grid grid-cols-[190px_minmax(0,1fr)_140px_160px] bg-vegr-green-soft px-4 py-3 text-sm font-bold uppercase text-vegr-berry-dark">
+          <div className="overflow-hidden rounded-md border border-brand-berry-soft">
+            <div className="grid grid-cols-[190px_minmax(0,1fr)_140px_160px] bg-brand-green-soft px-4 py-3 text-sm font-bold uppercase text-brand-berry-dark">
               <span>Recent report</span>
               <span>Recipe name</span>
               <span>Reports</span>
@@ -113,26 +113,22 @@ export default function SubmittedReportsTab() {
               </p>
             ) : (
               entries.map((entry) => (
-                <button
-                  key={`${entry.recipeId}-${entry.status}`}
-                  type="button"
+                <button key={`${entry.recipeId}-${entry.status}`} type="button"
                   onClick={() =>
                     router.push(`/recipes?recipeId=${encodeURIComponent(entry.recipeId)}`)
                   }
-                  className="group grid w-full grid-cols-[190px_minmax(0,1fr)_140px_160px] border-t border-vegr-berry-soft px-4 py-3 text-left text-sm transition-colors hover:bg-vegr-green-soft/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-vegr-green"
+                  className="group grid w-full grid-cols-[190px_minmax(0,1fr)_140px_160px] border-t border-brand-berry-soft px-4 py-3 text-left text-sm transition-colors hover:bg-brand-green-soft/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-green"
                 >
-                  <span className="font-semibold text-zinc-700 transition-colors group-hover:text-vegr-green-dark">
-                    {entry.mostRecentReportAt
-                      ? formatDateTime(entry.mostRecentReportAt)
-                      : "Unknown"}
+                  <span className="font-semibold text-zinc-700 transition-colors group-hover:text-brand-green-dark">
+                    {entry.mostRecentReportAt ? formatDateTime(entry.mostRecentReportAt) : "Unknown"}
                   </span>
-                  <span className="truncate font-bold text-vegr-ink transition-colors group-hover:text-vegr-green-dark">
+                  <span className="truncate font-bold text-brand-ink transition-colors group-hover:text-brand-green-dark">
                     {entry.recipeName || "Untitled recipe"}
                   </span>
-                  <span className="transition-colors group-hover:text-vegr-green-dark">
+                  <span className="transition-colors group-hover:text-brand-green-dark">
                     {entry.reportCount}
                   </span>
-                  <span className="transition-colors group-hover:text-vegr-green-dark">
+                  <span className="transition-colors group-hover:text-brand-green-dark">
                     {formatEnum(entry.status)}
                   </span>
                 </button>
@@ -142,17 +138,11 @@ export default function SubmittedReportsTab() {
 
           {hasMore && (
             <div className="mt-6 flex justify-center">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => void loadMore()}
-                disabled={isLoadingMore}
-                className="border-vegr-green bg-white text-vegr-green-dark hover:bg-vegr-green-soft"
+              <Button type="button" variant="outline" onClick={() => void loadMore()} disabled={isLoadingMore}
+                className="border-brand-green bg-white text-brand-green-dark hover:bg-brand-green-soft"
               >
                 <ArrowDown className={isLoadingMore ? "animate-bounce" : ""} />
-                {isLoadingMore
-                  ? "Loading..."
-                  : `Load ${Math.min(PAGE_SIZE, total - entries.length)} more`}
+                {isLoadingMore ? "Loading..." : `Load ${Math.min(PAGE_SIZE, total - entries.length)} more`}
               </Button>
             </div>
           )}
@@ -166,7 +156,7 @@ function ModerationTableLoading() {
   return (
     <div className="space-y-3 p-4">
       {Array.from({ length: 6 }, (_, index) => (
-        <div key={index} className="h-11 animate-pulse rounded bg-vegr-green-soft" />
+        <div key={index} className="h-11 animate-pulse rounded bg-brand-green-soft" />
       ))}
     </div>
   );

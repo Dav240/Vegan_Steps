@@ -31,8 +31,8 @@ export default function PasswordRequirementsPanel({
   ];
 
   return (
-    <div className="rounded-lg border border-vegr-green/25 bg-vegr-green-soft/45 p-3">
-      <p className="text-sm font-bold uppercase tracking-wide text-vegr-berry">
+    <div className="rounded-lg border border-brand-green/25 bg-brand-green-soft/45 p-3">
+      <p className="text-sm font-bold uppercase tracking-wide text-brand-berry">
         Password requirements
       </p>
       <ul className="mt-2 space-y-1.5">
@@ -43,7 +43,7 @@ export default function PasswordRequirementsPanel({
             <li
               key={requirement.label}
               className={
-                requirement.passed ? "flex items-center gap-2 text-sm font-medium text-vegr-green-dark" : "flex items-center gap-2 text-sm font-medium text-red-700"
+                requirement.passed ? "flex items-center gap-2 text-sm font-medium text-brand-green-dark" : "flex items-center gap-2 text-sm font-medium text-red-700"
               }
             >
               <Icon className="size-4 shrink-0" />

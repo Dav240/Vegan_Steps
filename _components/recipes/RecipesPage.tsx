@@ -252,16 +252,16 @@ export default function RecipesPage({
   if (isSessionLoading || currentUser.userType !== "CLIENT" || !currentUser.id) return null;
 
   return (
-    <main className="flex min-h-screen bg-vegr-cream text-vegr-ink">
+    <main className="flex min-h-screen bg-brand-cream text-brand-ink">
       <NavigationMenu />
 
       <div className="min-w-0 flex-1 px-5 py-9 md:px-8 xl:px-10">
         <header className="grid items-end gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,420px)]">
           <div>
-            <p className="text-sm font-bold uppercase text-vegr-green-dark">
+            <p className="text-sm font-bold uppercase text-brand-green-dark">
               Recipe library
             </p>
-            <h1 className="mt-1 font-indie-flower text-5xl font-bold text-vegr-ink md:text-6xl">
+            <h1 className="mt-1 font-indie-flower text-5xl font-bold text-brand-ink md:text-6xl">
               {title}
             </h1>
           </div>
@@ -342,7 +342,7 @@ export default function RecipesPage({
                   type="button"
                   onClick={() => void loadMore()}
                   disabled={isLoadingMore}
-                  className="flex h-11 items-center gap-2 rounded-md border border-vegr-green bg-white px-5 text-sm font-bold text-vegr-green-dark transition-colors hover:bg-vegr-green-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegr-green disabled:cursor-wait disabled:opacity-60"
+                  className="flex h-11 items-center gap-2 rounded-md border border-brand-green bg-white px-5 text-sm font-bold text-brand-green-dark transition-colors hover:bg-brand-green-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green disabled:cursor-wait disabled:opacity-60"
                 >
                   <ArrowDown
                     className={isLoadingMore ? "size-4 animate-bounce" : "size-4"}
@@ -411,12 +411,12 @@ function RecipeLibraryLoading() {
       {Array.from({ length: PAGE_SIZE }, (_, index) => (
         <div
           key={index}
-          className="min-h-80 animate-pulse overflow-hidden rounded-lg border border-vegr-berry-soft bg-white"
+          className="min-h-80 animate-pulse overflow-hidden rounded-lg border border-brand-berry-soft bg-white"
         >
-          <div className="aspect-[4/3] bg-vegr-green-soft" />
+          <div className="aspect-[4/3] bg-brand-green-soft" />
           <div className="space-y-3 p-4">
-            <div className="h-5 w-3/4 rounded bg-vegr-berry-soft" />
-            <div className="h-4 w-1/2 rounded bg-vegr-green-soft" />
+            <div className="h-5 w-3/4 rounded bg-brand-berry-soft" />
+            <div className="h-4 w-1/2 rounded bg-brand-green-soft" />
           </div>
         </div>
       ))}

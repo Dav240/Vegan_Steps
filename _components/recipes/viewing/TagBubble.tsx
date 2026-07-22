@@ -7,7 +7,7 @@ export default function TagBubble({ tag, className }: {
   return (
     <span
       className={cn(
-        "rounded-full border border-vegr-green/25 bg-vegr-green-soft px-2.5 py-1 text-xs font-semibold text-vegr-green-dark",
+        "rounded-full border border-brand-green/25 bg-brand-green-soft px-2.5 py-1 text-xs font-semibold text-brand-green-dark",
         className
       )}
     >
