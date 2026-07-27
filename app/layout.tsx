@@ -14,6 +14,9 @@ const indieFlower = Indie_Flower({
 export const metadata: Metadata = {
   title: "Vegan Steps",
   description: "A place for your vegan recipes.",
+  other: {
+    "google-adsense-account": "ca-pub-4242261254772442",
+  },
 };
 
 export default function RootLayout({
