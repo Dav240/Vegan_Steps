@@ -185,25 +185,13 @@ export default function RecipeCard({
               {name}
             </h3>
 
-            <div
-              className={cn(
-                "mt-3 flex max-w-full gap-1.5",
-                tagPresentation === "explore" ? "flex-col items-start" : "flex-nowrap items-center overflow-hidden"
-              )}
-            >
-              {displayedTags.map((tag) => (
-                <TagBubble key={tag} tag={tag}
-                  className={cn( "max-w-full shrink-0",
-                    tagPresentation === "explore" ? "whitespace-normal break-words text-left leading-tight" : "whitespace-nowrap"
-                  )}
-                />
-              ))}
-              {tagPresentation !== "explore" && tags.length > 3 && (
-                <span className="shrink-0 px-1 text-sm font-bold text-brand-berry" aria-label={`${tags.length - 3} more tags`}>
-                  ...
-                </span>
-              )}
-            </div>
+            {tagPresentation !== "explore" && (
+              <RecipeCardTags
+                displayedTags={displayedTags}
+                totalTags={tags.length}
+                tagPresentation={tagPresentation}
+              />
+            )}
 
             {showOwnerStatus && isOwner && status && (
               <p className="mt-3 text-xs font-bold uppercase text-brand-berry-dark">
@@ -265,6 +253,15 @@ export default function RecipeCard({
 
             <StarsRating rating={rating} className="mt-2" />
           </div>
+
+          {tagPresentation === "explore" && (
+            <RecipeCardTags
+              displayedTags={displayedTags}
+              totalTags={tags.length}
+              tagPresentation={tagPresentation}
+              className="col-span-2"
+            />
+          )}
         </div>
       </article>
 
@@ -309,6 +306,46 @@ export default function RecipeCard({
         recipeName={name}
       />
     </>
+  );
+}
+
+function RecipeCardTags({
+  displayedTags,
+  totalTags,
+  tagPresentation,
+  className,
+}: {
+  displayedTags: string[];
+  totalTags: number;
+  tagPresentation: "compact" | "explore";
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "mt-3 flex max-w-full gap-1.5",
+        tagPresentation === "explore"
+          ? "flex-col items-start sm:flex-row sm:flex-wrap sm:items-center"
+          : "flex-nowrap items-center overflow-hidden",
+        className
+      )}
+    >
+      {displayedTags.map((tag) => (
+        <TagBubble
+          key={tag}
+          tag={tag}
+          className="max-w-full shrink-0 whitespace-nowrap text-left leading-tight"
+        />
+      ))}
+      {tagPresentation !== "explore" && totalTags > 3 && (
+        <span
+          className="shrink-0 px-1 text-sm font-bold text-brand-berry"
+          aria-label={`${totalTags - 3} more tags`}
+        >
+          ...
+        </span>
+      )}
+    </div>
   );
 }
 

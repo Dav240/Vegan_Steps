@@ -93,7 +93,12 @@ export default function RecommendationRow({
           <span className="hidden size-11 md:block" aria-hidden="true" />
         )}
 
-        <div className="grid min-w-0 justify-start gap-5 [grid-template-columns:repeat(auto-fit,minmax(240px,300px))]">
+        <div
+          className="grid min-w-0 gap-5 overflow-hidden"
+          style={{
+            gridTemplateColumns: `repeat(${visibleRecipes.length}, minmax(0, 1fr))`,
+          }}
+        >
           {visibleRecipes.map((recipe) => (
             <RecipeCard
               key={`${row.id}-${recipe.recipeId}`}
@@ -103,7 +108,7 @@ export default function RecommendationRow({
               showOwnerStatus={false}
               savedState={savedStates[recipe.recipeId] ?? recipe.initiallySaved}
               onSavedChange={onSavedChange}
-              className="max-w-[300px]"
+              className="h-full max-w-none"
             />
           ))}
         </div>
@@ -150,12 +155,10 @@ function useVisibleRecipeCount() {
 
   useEffect(() => {
     function updateVisibleCount() {
-      if (window.matchMedia("(min-width: 1280px)").matches) {
-        setVisibleCount(4);
-      } else if (window.matchMedia("(min-width: 1024px)").matches) {
-        setVisibleCount(4);
+      if (window.matchMedia("(min-width: 1536px)").matches) {
+        setVisibleCount(5);
       } else if (window.matchMedia("(min-width: 768px)").matches) {
-        setVisibleCount(2);
+        setVisibleCount(4);
       } else {
         setVisibleCount(1);
       }
