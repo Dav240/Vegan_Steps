@@ -96,7 +96,7 @@ export default function RecommendationRow({
         <div
           className="grid min-w-0 gap-5 overflow-hidden"
           style={{
-            gridTemplateColumns: `repeat(${visibleRecipes.length}, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${visibleCount}, minmax(0, 1fr))`,
           }}
         >
           {visibleRecipes.map((recipe) => (

@@ -260,7 +260,7 @@ export default function ExplorePage({
     <div className={isVisitorVariant ? "mx-auto w-full max-w-7xl px-5 py-16 md:px-8" : "min-w-0 flex-1"}>
       {!isVisitorVariant && <ExploreBanner />}
       <div
-        className={ isVisitorVariant ? "" : "grid gap-8 px-5 py-9 md:px-8 xl:grid-cols-[minmax(0,1fr)_180px] xl:px-10 2xl:grid-cols-[minmax(0,1fr)_220px]" }
+        className={ isVisitorVariant ? "" : "grid gap-6 px-5 py-9 md:px-6 xl:grid-cols-[minmax(0,1fr)_150px] 2xl:grid-cols-[minmax(0,1fr)_180px]" }
       >
         <div className="min-w-0">
           <ExploreHeader isVisitor={isVisitorVariant} />
