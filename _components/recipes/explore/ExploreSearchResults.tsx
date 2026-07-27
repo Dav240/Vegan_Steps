@@ -8,6 +8,7 @@ export default function ExploreSearchResults({
     recipes,
     savedStates,
     actionsMode,
+    ratingPlacement = "side",
     total,
     hasMore,
     loadMoreCount,
@@ -19,6 +20,7 @@ export default function ExploreSearchResults({
     recipes: ExploreRecipe[];
     savedStates: Record<string, boolean>;
     actionsMode: "full" | "readonly";
+    ratingPlacement?: "side" | "below-title";
     total: number;
     hasMore: boolean;
     loadMoreCount: number;
@@ -49,6 +51,7 @@ export default function ExploreSearchResults({
                 {...recipe}
                 actionsMode={actionsMode}
                 tagPresentation="explore"
+                ratingPlacement={ratingPlacement}
                 showOwnerStatus={false}
                 savedState={savedStates[recipe.recipeId] ?? recipe.initiallySaved}
                 onSavedChange={onSavedChange}

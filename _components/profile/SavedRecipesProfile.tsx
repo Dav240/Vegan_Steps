@@ -113,6 +113,7 @@ export default function SavedRecipesProfile({ refreshKey, savedRecipeStates, onS
               savedState={savedRecipeStates[recipe.recipeId]}
               onSavedChange={onSavedChange}
               onDeleted={handleDeleted}
+              wrapCompactTags
             />
           ))}
           {hasMoreRecipes && (

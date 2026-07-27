@@ -330,6 +330,7 @@ export default function RecipesPage({
                   savedState={savedStates[recipe.recipeId]}
                   onSavedChange={handleSavedChange}
                   onDeleted={handleDeleted}
+                  wrapCompactTags
                   className="max-w-none"
                 />
               ))}

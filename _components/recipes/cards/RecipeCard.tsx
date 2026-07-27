@@ -38,6 +38,8 @@ export type RecipeCardProps = {
   onDeleted?: (recipeId: string) => void;
   actionsMode?: "full" | "readonly";
   tagPresentation?: "compact" | "explore";
+  ratingPlacement?: "side" | "below-title";
+  wrapCompactTags?: boolean;
   showOwnerStatus?: boolean;
   className?: string;
 };
@@ -60,6 +62,8 @@ export default function RecipeCard({
   onDeleted,
   actionsMode = "full",
   tagPresentation = "compact",
+  ratingPlacement = "side",
+  wrapCompactTags = false,
   showOwnerStatus = true,
   className,
 }: RecipeCardProps) {
@@ -76,6 +80,8 @@ export default function RecipeCard({
   const recipeHref = `/recipes?recipeId=${encodeURIComponent(recipeId)}`;
   const isOwner = Boolean(currentUser.id) && currentUser.id === authorId;
   const showActions = actionsMode === "full";
+  const showRatingBelowTitle = ratingPlacement === "below-title";
+  const showSideColumn = showActions || !showRatingBelowTitle;
 
   if (isDeleted) return null;
 
@@ -179,17 +185,27 @@ export default function RecipeCard({
           </div>
         </div>
 
-        <div className="grid min-h-32 grid-cols-[minmax(0,1fr)_auto] gap-4 p-4">
+        <div
+          className={cn(
+            "grid min-h-32 gap-4 p-4",
+            showSideColumn ? "grid-cols-[minmax(0,1fr)_auto]" : "grid-cols-1"
+          )}
+        >
           <div className="min-w-0">
             <h3 className="line-clamp-2 text-lg font-bold leading-6 text-brand-ink">
               {name}
             </h3>
+
+            {showRatingBelowTitle && (
+              <StarsRating rating={rating} className="mt-2" />
+            )}
 
             {tagPresentation !== "explore" && (
               <RecipeCardTags
                 displayedTags={displayedTags}
                 totalTags={tags.length}
                 tagPresentation={tagPresentation}
+                wrapCompactTags={wrapCompactTags}
               />
             )}
 
@@ -200,6 +216,7 @@ export default function RecipeCard({
             )}
           </div>
 
+          {showSideColumn && (
           <div className="flex min-w-[104px] flex-col items-end">
             {showActions && (
               <div className="flex items-center gap-1">
@@ -251,15 +268,16 @@ export default function RecipeCard({
               </div>
             )}
 
-            <StarsRating rating={rating} className="mt-2" />
+            {!showRatingBelowTitle && <StarsRating rating={rating} className="mt-2" />}
           </div>
+          )}
 
           {tagPresentation === "explore" && (
             <RecipeCardTags
               displayedTags={displayedTags}
               totalTags={tags.length}
               tagPresentation={tagPresentation}
-              className="col-span-2"
+              className={cn(showSideColumn && "col-span-2")}
             />
           )}
         </div>
@@ -313,11 +331,13 @@ function RecipeCardTags({
   displayedTags,
   totalTags,
   tagPresentation,
+  wrapCompactTags,
   className,
 }: {
   displayedTags: string[];
   totalTags: number;
   tagPresentation: "compact" | "explore";
+  wrapCompactTags?: boolean;
   className?: string;
 }) {
   return (
@@ -326,7 +346,12 @@ function RecipeCardTags({
         "mt-3 flex max-w-full gap-1.5",
         tagPresentation === "explore"
           ? "flex-col items-start sm:flex-row sm:flex-wrap sm:items-center"
-          : "flex-nowrap items-center overflow-hidden",
+          : cn(
+              "items-center",
+              wrapCompactTags
+                ? "flex-wrap overflow-visible"
+                : "flex-nowrap overflow-hidden"
+            ),
         className
       )}
     >

@@ -71,6 +71,7 @@ export default function ExplorePage({
   const remainingRecipeCount = Math.max(0, total - searchRecipes.length);
   const loadMoreCount = Math.min(PAGE_SIZE, remainingRecipeCount);
   const actionsMode = isLoggedInClient && !isVisitorVariant ? "full" : "readonly";
+  const exploreRatingPlacement = isVisitorVariant ? "below-title" : "side";
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setSettledSearch(search.trim()), 300);
@@ -257,7 +258,7 @@ export default function ExplorePage({
   }
 
   const content = (
-    <div className={isVisitorVariant ? "mx-auto w-full max-w-7xl px-5 py-16 md:px-8" : "min-w-0 flex-1"}>
+    <div className={isVisitorVariant ? "mx-auto w-full max-w-[1500px] px-5 py-16 md:px-8" : "min-w-0 flex-1"}>
       {!isVisitorVariant && <ExploreBanner />}
       <div
         className={ isVisitorVariant ? "" : "grid gap-6 px-5 py-9 md:px-6 xl:grid-cols-[minmax(0,1fr)_150px] 2xl:grid-cols-[minmax(0,1fr)_180px]" }
@@ -298,6 +299,7 @@ export default function ExplorePage({
               recipes={searchRecipes} 
               savedStates={savedStates} 
               actionsMode={actionsMode} 
+              ratingPlacement={exploreRatingPlacement}
               total={total}
               hasMore={hasMore}
               loadMoreCount={loadMoreCount}
@@ -311,6 +313,7 @@ export default function ExplorePage({
               rows={rows}
               savedStates={savedStates}
               actionsMode={actionsMode}
+              ratingPlacement={exploreRatingPlacement}
               isLoading={isLoadingRecommendations}
               onSavedChange={handleSavedChange}
             />

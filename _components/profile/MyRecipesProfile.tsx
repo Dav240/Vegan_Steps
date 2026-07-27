@@ -114,6 +114,7 @@ export default function MyRecipesProfile({ refreshKey, savedRecipeStates, onSave
                 savedState={savedRecipeStates[recipe.recipeId]}
                 onSavedChange={onSavedChange}
                 onDeleted={handleDeleted}
+                wrapCompactTags
               />
             ))}
             {hasMoreRecipes ? <AddSeeMoreCard /> : <AddCard />}

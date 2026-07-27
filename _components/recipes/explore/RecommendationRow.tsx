@@ -30,11 +30,13 @@ export default function RecommendationRow({
   row,
   savedStates,
   actionsMode,
+  ratingPlacement = "side",
   onSavedChange,
 }: {
   row: RecommendationRowData;
   savedStates: Record<string, boolean>;
   actionsMode: "full" | "readonly";
+  ratingPlacement?: "side" | "below-title";
   onSavedChange: (recipeId: string, saved: boolean) => void;
 }) {
   const [startIndex, setStartIndex] = useState(0);
@@ -73,6 +75,7 @@ export default function RecommendationRow({
               {...recipe}
               actionsMode={actionsMode}
               tagPresentation="explore"
+              ratingPlacement={ratingPlacement}
               showOwnerStatus={false}
               savedState={savedStates[recipe.recipeId] ?? recipe.initiallySaved}
               onSavedChange={onSavedChange}
@@ -105,6 +108,7 @@ export default function RecommendationRow({
               {...recipe}
               actionsMode={actionsMode}
               tagPresentation="explore"
+              ratingPlacement={ratingPlacement}
               showOwnerStatus={false}
               savedState={savedStates[recipe.recipeId] ?? recipe.initiallySaved}
               onSavedChange={onSavedChange}

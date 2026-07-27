@@ -5,12 +5,14 @@ export default function ExploreRecommendations({
     rows,
     savedStates,
     actionsMode,
+    ratingPlacement = "side",
     isLoading,
     onSavedChange,
 } : {
     rows: RecommendationRowData[];
     savedStates: Record<string, boolean>;
     actionsMode: "full" | "readonly";
+    ratingPlacement?: "side" | "below-title";
     isLoading: boolean;
     onSavedChange: (recipeId: string, saved: boolean) => void;
 }) {
@@ -32,6 +34,7 @@ export default function ExploreRecommendations({
             row={row}
             savedStates={savedStates}
             actionsMode={actionsMode}
+            ratingPlacement={ratingPlacement}
             onSavedChange={onSavedChange}
         />
         ))}
