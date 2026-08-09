@@ -10,8 +10,7 @@ export default function ExploreHeader({ isVisitor }: { isVisitor: boolean }) {
         </h2>
         <p className="mt-3 max-w-3xl text-base leading-7 text-zinc-700">
           Search approved community recipes, or scroll through a few rows of
-          recommendations picked from tags, ratings, views, and a little
-          randomness.
+          recommendations picked from tags, ratings, and views.
         </p>
       </div>
     </header>

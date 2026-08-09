@@ -229,9 +229,7 @@ export default function ExplorePage({
       setTotal(data.total);
     } catch (requestError) {
       setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Could not load more recipes."
+        requestError instanceof Error ? requestError.message : "Could not load more recipes."
       );
     } finally {
       setIsLoadingMore(false);
