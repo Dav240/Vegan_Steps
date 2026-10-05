@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://vegansteps.com";
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://vegansteps.com"
+).replace(/\/$/, "");
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -13,7 +15,7 @@ export default function robots(): MetadataRoute.Robots {
         "/my-recipes",
         "/saved-recipes",
         "/recipes/write",
-        "/api",
+        "/api/",
       ],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
