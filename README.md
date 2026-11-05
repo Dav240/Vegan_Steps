@@ -1,8 +1,13 @@
 # Vegan Steps
 
-Vegan Steps is a full-stack vegan recipe discovery and publishing platform. Users can browse approved community recipes, save favourites, write and submit their own recipes, manage profile details, and receive personalised recipe recommendations. The app also includes concrete moderation workflows for submitted recipes and reports, image safety checks before upload, privacy controls, and email-based account verification.
+<img width="1902" height="934" alt="image" src="https://github.com/user-attachments/assets/d74d1bcf-a76d-43ae-b81a-edd122fce06f" />
 
-This project is built as a portfolio-grade web application, with attention paid to real product concerns: authentication, database modelling, draft and review states, safe image handling, account recovery, soft deletion, legal/privacy preferences, and reusable UI architecture.
+[Full Website](https://vegansteps.com/)
+
+Vegan Steps is an independent recipe platform designed and maintained by Dav240.
+
+Vegan Steps is a full-stack vegan recipe discovery and publishing platform. Users can browse approved community recipes, save favourites, write and submit own recipes, manage profile details, and receive personalised recipe recommendations. The app also includes concrete moderation workflows, for submitted recipes and reports, image safety checks before upload, privacy controls, and email-based account verification.
+
 
 ## Highlights
 
@@ -118,11 +123,9 @@ The Prisma schema models the main product workflow:
 - `EmailVerificationCode`: registration, email-change, and password-reset codes
 - `RecipeView`: recent viewing signals for recommendations
 
-These checks help catch TypeScript, routing, and production build issues before they appear in deployment.
-
 ## Notes
 
-Vegan Steps demonstrates more than a basic CRUD application. It includes:
+Vegan Steps tries to be more than a basic CRUD application. It includes:
 
 - Custom auth/session handling instead of relying entirely on a plug-and-play auth provider
 - A relational Prisma schema with role-based workflows
@@ -133,8 +136,8 @@ Vegan Steps demonstrates more than a basic CRUD application. It includes:
 - Search, filtering, sorting, and recommendation-oriented recipe discovery
 - Reusable component architecture across recipe cards, profile pages, recipe writing, and libraries
 
-The project is intentionally built around real-world product constraints: user safety, account security, content moderation, responsive UI, data retention, and future deployment.
+The project is intentionally built around real-world product constraints, such as user safety, account security, content moderation, responsive UI, data retention, and future deployment.
 
 ## Status
 
-Vegan Steps is currently an in-progress portfolio project. Core user, recipe, profile, discovery, moderation, email, and image-upload flows are implemented, with ongoing work planned around deployment, polish, recommendation tuning, and production hardening.
+Vegan Steps is currently an in-progress portfolio project. Core user, recipe, profile, discovery, moderation, email, and image-upload flows are implemented, with ongoing work planned around deployment and polish.
